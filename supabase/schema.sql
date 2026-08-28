@@ -1,0 +1,12 @@
+-- Apply in a new Supabase project. Enable RLS and configure authenticated admin policies before production.
+create extension if not exists "uuid-ossp";
+create table if not exists site_settings (key text primary key, value jsonb not null default '{}'::jsonb, updated_at timestamptz default now());
+create table if not exists categories (id uuid primary key default uuid_generate_v4(), name text not null, slug text unique not null, description text, sort_order int default 0, active boolean default true);
+create table if not exists products (id uuid primary key default uuid_generate_v4(), category_id uuid references categories on delete set null, name text not null, slug text unique not null, sku text, description text, cut_format text, packing text, storage text, recommended_use text, image_url text, active boolean default true, created_at timestamptz default now());
+create table if not exists services (id uuid primary key default uuid_generate_v4(), title text not null, slug text unique not null, description text, image_url text, active boolean default true);
+create table if not exists certificates (id uuid primary key default uuid_generate_v4(), name text not null, description text, document_url text, issued_date date, expiry_date date, active boolean default true);
+create table if not exists articles (id uuid primary key default uuid_generate_v4(), title text not null, slug text unique not null, excerpt text, content text, cover_image_url text, published_at timestamptz, status text default 'draft' check(status in ('draft','published')));
+create table if not exists faqs (id uuid primary key default uuid_generate_v4(), question text not null, answer text not null, sort_order int default 0, active boolean default true);
+create table if not exists rfqs (id uuid primary key default uuid_generate_v4(), reference text unique not null, status text not null default 'new' check(status in ('new','in_progress','quoted','closed')), company_name text not null, contact_name text not null, phone text not null, email text not null, line_id text, address text, notes text, created_at timestamptz default now());
+create table if not exists rfq_items (id uuid primary key default uuid_generate_v4(), rfq_id uuid not null references rfqs on delete cascade, product_id uuid references products on delete set null, product_name text not null, sku text, quantity numeric not null check(quantity > 0), unit text not null, note text);
+-- Store media in a private Storage bucket named `dct-media`; persist its URL in the corresponding *_url column.

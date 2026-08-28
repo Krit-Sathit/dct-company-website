@@ -1,0 +1,30 @@
+/* Keep product actions aligned even when descriptions have different lengths. */
+.product-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card .inside {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.product-card .actions {
+  margin-top: auto;
+}
+
+/* Product names are the primary label; category pills add visual noise here. */
+.product-card .tag {
+  display: none;
+}
+
+.product-card h3 {
+  font-size: 21px;
+  line-height: 1.35;
+}
+
+.product-card .small {
+  font-size: 14px;
+  line-height: 1.75;
+}

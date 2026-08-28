@@ -1,0 +1,9 @@
+/* High-contrast text treatment for the dark brand field. */
+.dark .eyebrow,
+.dark .step b {
+  color: var(--cream);
+}
+
+.dark .step {
+  border-color: var(--gold);
+}
