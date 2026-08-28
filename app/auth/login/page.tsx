@@ -2,15 +2,14 @@
 
 import Link from 'next/link';
 import { FormEvent, useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
 export default function AdminLogin() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [message, setMessage] = useState('กรอกอีเมลและรหัสผ่านของผู้ดูแลระบบ');
   const [loading, setLoading] = useState(false);
-  const next = searchParams.get('next') === '/admin' ? '/admin' : '/admin';
+  const next = '/admin';
 
   useEffect(() => {
     supabaseBrowser().auth.getSession().then(({ data }) => {
