@@ -1,0 +1,7 @@
+.admin-nav button.active { background: var(--brown); border-color: var(--brown); color: #fff; }
+.admin-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+.button.secondary { background: transparent; color: var(--red); border: 1px solid var(--red); }
+.button.secondary:hover { background: #fff5f0; }
+.login-card { max-width: 560px; margin: auto; }
+.login-label { display: grid; gap: 7px; margin-top: 16px; font-weight: 600; }
+@media (max-width: 520px) { .admin-heading { align-items: stretch; flex-direction: column; } }
