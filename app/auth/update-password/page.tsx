@@ -6,6 +6,10 @@ export default function UpdatePassword() {
   const [ready, setReady] = useState(false);
   const [message, setMessage] = useState('กำลังยืนยันคำเชิญ…');
   useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      setMessage('ระบบผู้ดูแลกำลังตั้งค่า กรุณารับลิงก์คำเชิญฉบับใหม่');
+      return;
+    }
     const client = supabaseBrowser();
     client.auth.getSession().then(({ data }) => {
       setReady(Boolean(data.session));
@@ -18,6 +22,7 @@ export default function UpdatePassword() {
     const password = String(form.get('password') || '');
     const confirm = String(form.get('confirm') || '');
     if (password.length < 12 || password !== confirm) { setMessage('รหัสผ่านต้องมีอย่างน้อย 12 ตัวอักษรและต้องตรงกัน'); return; }
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) return;
     const { error } = await supabaseBrowser().auth.updateUser({ password });
     setMessage(error ? error.message : 'ตั้งรหัสผ่านเรียบร้อยแล้ว คุณสามารถเข้าสู่ระบบ CMS ได้');
   }
