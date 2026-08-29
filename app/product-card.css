@@ -14,6 +14,11 @@
   padding: 20px;
 }
 
+/* Ensure category pill tags are completely removed from product cards */
+.product-card .tag {
+  display: none !important;
+}
+
 .product-card .actions {
   margin-top: auto !important;
   padding-top: 16px;

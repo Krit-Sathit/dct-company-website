@@ -128,7 +128,6 @@ export default function Home() {
               <div className="card product-card" key={p.id}>
                 <div className="product-image" style={{ backgroundImage: `url(${p.image})` }} />
                 <div className="inside">
-                  <span className="tag">{p.category}</span>
                   <h3>{p.name}</h3>
                   <p className="small">{p.description}</p>
                   <div className="actions">

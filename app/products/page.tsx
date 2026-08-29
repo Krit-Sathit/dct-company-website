@@ -119,7 +119,6 @@ export default function Products() {
                 }}
               />
               <div className="inside">
-                <span className="tag">{p.category}</span>
                 <h3>{p.name}</h3>
                 <p className="small">
                   <b>รหัส:</b> {p.code}
