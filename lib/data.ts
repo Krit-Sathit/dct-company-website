@@ -22,7 +22,7 @@ export const products: Product[] = [
     pack: '5 กก. / Vacuum pack',
     storage: 'แช่เย็นหรือแช่แข็งตามข้อตกลง',
     use: 'ครัวกลาง ร้านอาหาร และโรงงาน',
-    image: 'https://images.unsplash.com/photo-1603048297172-c92544798d5a?auto=format&fit=crop&w=1000&q=80',
+    image: '/products/trimmed-pork.webp',
   },
   {
     id: 'pork-belly',
@@ -46,7 +46,7 @@ export const products: Product[] = [
     pack: '5 กก. / Custom',
     storage: 'แช่เย็นหรือแช่แข็ง',
     use: 'ร้านอาหารและครัวกลาง',
-    image: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=1000&q=80',
+    image: '/products/pork-neck.webp',
   },
   {
     id: 'loin',
@@ -58,7 +58,7 @@ export const products: Product[] = [
     pack: 'Vacuum pack',
     storage: 'แช่เย็นหรือแช่แข็ง',
     use: 'สเต๊ก หมูทอด และอาหารพร้อมปรุง',
-    image: 'https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=1000&q=80',
+    image: '/products/loin.webp',
   },
   {
     id: 'ribs',
@@ -70,7 +70,7 @@ export const products: Product[] = [
     pack: 'Custom pack',
     storage: 'แช่เย็นหรือแช่แข็ง',
     use: 'ร้านอาหาร โรงแรม และครัวกลาง',
-    image: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=1000&q=80',
+    image: '/products/ribs.webp',
   },
   {
     id: 'mince',
@@ -82,7 +82,7 @@ export const products: Product[] = [
     pack: '1 / 5 กก. Vacuum',
     storage: 'แช่เย็นหรือแช่แข็ง',
     use: 'โรงงานแปรรูปและครัวกลาง',
-    image: 'https://images.unsplash.com/photo-1588168333986-5078d3ae3976?auto=format&fit=crop&w=1000&q=80',
+    image: '/products/mince.webp',
   },
 ];
 
