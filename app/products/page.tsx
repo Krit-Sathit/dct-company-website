@@ -126,7 +126,7 @@ export default function Products() {
                   <br />
                   {p.description}
                 </p>
-                <div className="actions" style={{ marginTop: '16px' }}>
+                <div className="actions">
                   <Link className="button alt" href={`/products/${p.id}`}>
                     ดูสเปกสินค้า
                   </Link>

@@ -1,30 +1,42 @@
-/* Keep product actions aligned even when descriptions have different lengths. */
+/* Keep product cards full height and action buttons aligned at the bottom across all cards */
 .product-card {
-  display: flex;
-  flex-direction: column;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  padding: 0;
+  overflow: hidden;
 }
 
 .product-card .inside {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
+  display: flex !important;
+  flex: 1 1 auto !important;
+  flex-direction: column !important;
+  padding: 20px;
 }
 
 .product-card .actions {
-  margin-top: auto;
+  margin-top: auto !important;
+  padding-top: 16px;
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  width: 100%;
 }
 
-/* Product names are the primary label; category pills add visual noise here. */
-.product-card .tag {
-  display: none;
+.product-card .actions > * {
+  flex: 1 1 auto;
+  text-align: center;
+  justify-content: center;
 }
 
 .product-card h3 {
-  font-size: 21px;
+  font-size: 20px;
   line-height: 1.35;
+  margin: 6px 0 8px;
 }
 
 .product-card .small {
   font-size: 14px;
-  line-height: 1.75;
+  line-height: 1.65;
+  color: #6e594d;
 }
