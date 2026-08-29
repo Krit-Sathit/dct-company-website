@@ -77,9 +77,9 @@ export function CmsSettings() {
       <div className="cms-settings-header">
         <div>
           <h2>ตั้งค่าเว็บไซต์และข้อมูลติดต่อ</h2>
-          <p className="small">จัดการข้อมูลติดต่อ เบอร์โทรศัพท์ ที่อยู่ โซเชียลมีเดีย และข้อความหลักของเว็บไซต์</p>
+          <p className="small">จัดการข้อมูลติดต่อ เบอร์โทรศัพท์ ที่อยู่ รูปภาพโรงงาน/สำนักงาน และข้อความหลักของเว็บไซต์</p>
         </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <a href="/contact" target="_blank" rel="noopener noreferrer" className="button secondary" style={{ fontSize: '13px', padding: '8px 14px' }}>
             👁️ ดูหน้าติดต่อเรา
           </a>
@@ -96,7 +96,7 @@ export function CmsSettings() {
           onClick={() => { setActiveSubTab('contact'); setMessage(null); }}
           style={{ padding: '8px 16px', fontSize: '14px' }}
         >
-          📍 ข้อมูลติดต่อ & ที่อยู่บริษัท
+          📍 ข้อมูลติดต่อ & รูปภาพโรงงาน
         </button>
         <button
           type="button"
@@ -171,9 +171,7 @@ export function CmsSettings() {
                   placeholder="เช่น sales@duangcharoen.com"
                 />
               </label>
-            </div>
 
-            <div className="settings-col">
               <label className="login-label">
                 LINE ID / LINE Official
                 <input
@@ -183,6 +181,33 @@ export function CmsSettings() {
                   placeholder="เช่น @dctfood หรือ https://line.me/ti/p/..."
                 />
               </label>
+            </div>
+
+            <div className="settings-col">
+              <label className="login-label">
+                🖼️ URL รูปภาพโรงงาน / สำนักงาน (แสดงในหน้าติดต่อเรา)
+                <input
+                  className="field"
+                  value={contact.image_url || ''}
+                  onChange={(e) => handleContactChange('image_url', e.target.value)}
+                  placeholder="เช่น https://... หรือ /factory.jpg"
+                />
+                <span className="small" style={{ color: '#806c60' }}>
+                  สามารถวางลิงก์รูปภาพออนไลน์ (URL) หรือใส่ชื่อไฟล์ที่อยู่ในโฟลเดอร์ <code>public/</code> ได้
+                </span>
+              </label>
+
+              {contact.image_url && (
+                <div style={{ marginTop: '8px', border: '1px solid #eadfd4', borderRadius: '4px', overflow: 'hidden', padding: '6px', background: '#fff' }}>
+                  <span className="small" style={{ fontWeight: 600, display: 'block', marginBottom: '4px' }}>ตัวอย่างรูปภาพที่จะแสดงในหน้าติดต่อเรา:</span>
+                  <img
+                    src={contact.image_url}
+                    alt="Preview โรงงาน"
+                    style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '3px' }}
+                    onError={(e) => { (e.currentTarget as HTMLElement).style.display = 'none'; }}
+                  />
+                </div>
+              )}
 
               <label className="login-label">
                 เวลาทำการ
@@ -201,16 +226,6 @@ export function CmsSettings() {
                   value={contact.google_maps_url}
                   onChange={(e) => handleContactChange('google_maps_url', e.target.value)}
                   placeholder="https://maps.google.com/..."
-                />
-              </label>
-
-              <label className="login-label">
-                ลิงก์ Facebook Page
-                <input
-                  className="field"
-                  value={contact.facebook_url}
-                  onChange={(e) => handleContactChange('facebook_url', e.target.value)}
-                  placeholder="https://facebook.com/..."
                 />
               </label>
 

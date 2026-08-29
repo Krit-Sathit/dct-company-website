@@ -17,6 +17,10 @@ export default function Contact() {
     void load();
   }, []);
 
+  const factoryImage =
+    contact.image_url ||
+    'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1000&q=80';
+
   return (
     <>
       <section className="page-hero">
@@ -107,8 +111,7 @@ export default function Contact() {
         <div
           className="photo"
           style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1000&q=80')",
+            backgroundImage: `url('${factoryImage}')`,
           }}
         />
       </main>

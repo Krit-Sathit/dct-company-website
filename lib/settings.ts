@@ -13,6 +13,7 @@ export type ContactSettings = {
   business_hours: string;
   google_maps_url: string;
   facebook_url: string;
+  image_url: string;
 };
 
 export type CompanyProfileSettings = {
@@ -35,6 +36,7 @@ export const defaultContactSettings: ContactSettings = {
   business_hours: 'จันทร์ - เสาร์: 08:00 - 17:00 น.',
   google_maps_url: 'https://maps.google.com',
   facebook_url: 'https://facebook.com/duangcharoen',
+  image_url: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1000&q=80',
 };
 
 export const defaultCompanyProfile: CompanyProfileSettings = {
