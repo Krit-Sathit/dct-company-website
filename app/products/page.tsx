@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { categories as defaultCategories, products as defaultProducts, Product } from '@/lib/data';
 import { AddButton } from '@/components/site';
-import { supabaseBrowser } from '@/lib/supabase-browser';
+import { supabaseBrowser, isSupabaseConfigured } from '@/lib/supabase-browser';
 
 export default function Products() {
   const [q, setQ] = useState('');
@@ -14,6 +14,12 @@ export default function Products() {
 
   useEffect(() => {
     async function load() {
+      if (!isSupabaseConfigured()) {
+        setProductList(defaultProducts);
+        setCatList(defaultCategories);
+        return;
+      }
+
       try {
         const client = supabaseBrowser();
         const [{ data: dbProducts }, { data: dbCategories }] = await Promise.all([
@@ -40,37 +46,11 @@ export default function Products() {
             image: p.image_url || 'https://images.unsplash.com/photo-1603048297172-c92544798d5a?auto=format&fit=crop&w=1000&q=80',
           }));
           setProductList(mapped);
-          return;
-        }
-
-        // Check local cache if offline/staging
-        if (typeof window !== 'undefined') {
-          const cachedProds = localStorage.getItem('dct_cms_products');
-          if (cachedProds) {
-            const parsed = JSON.parse(cachedProds);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              const activeOnes = parsed.filter((p: any) => p.active !== false);
-              if (activeOnes.length > 0) {
-                setProductList(
-                  activeOnes.map((p: any) => ({
-                    id: p.slug || p.id,
-                    name: p.name,
-                    code: p.sku || 'DCT-PK-000',
-                    category: p.category || 'เนื้อหมูตัดแต่ง',
-                    description: p.description || '',
-                    cut: p.cut_format || 'Custom cut',
-                    pack: p.packing || 'ตามสเปกลูกค้า',
-                    storage: p.storage || 'แช่เย็น / แช่แข็ง',
-                    use: p.recommended_use || 'ธุรกิจอาหาร',
-                    image: p.image_url || p.image || 'https://images.unsplash.com/photo-1603048297172-c92544798d5a?auto=format&fit=crop&w=1000&q=80',
-                  }))
-                );
-              }
-            }
-          }
+        } else {
+          setProductList(defaultProducts);
         }
       } catch {
-        // use default
+        setProductList(defaultProducts);
       }
     }
     void load();

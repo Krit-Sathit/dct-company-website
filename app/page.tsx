@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { products as defaultProducts, articles, Product } from '@/lib/data';
 import { AddButton } from '@/components/site';
 import { CompanyProfileSettings, defaultCompanyProfile, getCompanyProfile } from '@/lib/settings';
-import { supabaseBrowser } from '@/lib/supabase-browser';
+import { supabaseBrowser, isSupabaseConfigured } from '@/lib/supabase-browser';
 
 export default function Home() {
   const [profile, setProfile] = useState<CompanyProfileSettings>(defaultCompanyProfile);
@@ -17,7 +17,12 @@ export default function Home() {
       const prof = await getCompanyProfile();
       setProfile(prof);
 
-      // 2. Load products
+      // 2. Load products from Supabase Cloud if configured
+      if (!isSupabaseConfigured()) {
+        setProds(defaultProducts);
+        return;
+      }
+
       try {
         const client = supabaseBrowser();
         const { data: dbProducts } = await client.from('products').select('*').eq('active', true).limit(3);
@@ -36,36 +41,11 @@ export default function Home() {
               image: p.image_url || 'https://images.unsplash.com/photo-1603048297172-c92544798d5a?auto=format&fit=crop&w=1000&q=80',
             }))
           );
-          return;
-        }
-
-        if (typeof window !== 'undefined') {
-          const cached = localStorage.getItem('dct_cms_products');
-          if (cached) {
-            const parsed = JSON.parse(cached);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              const activeOnes = parsed.filter((p: any) => p.active !== false).slice(0, 3);
-              if (activeOnes.length > 0) {
-                setProds(
-                  activeOnes.map((p: any) => ({
-                    id: p.slug || p.id,
-                    name: p.name,
-                    code: p.sku || 'DCT-PK-000',
-                    category: p.category || 'เนื้อหมูตัดแต่ง',
-                    description: p.description || '',
-                    cut: p.cut_format || 'Custom cut',
-                    pack: p.packing || 'ตามสเปกลูกค้า',
-                    storage: p.storage || 'แช่เย็น / แช่แข็ง',
-                    use: p.recommended_use || 'ธุรกิจอาหาร',
-                    image: p.image_url || p.image || 'https://images.unsplash.com/photo-1603048297172-c92544798d5a?auto=format&fit=crop&w=1000&q=80',
-                  }))
-                );
-              }
-            }
-          }
+        } else {
+          setProds(defaultProducts);
         }
       } catch {
-        // use default
+        setProds(defaultProducts);
       }
     }
     void load();
