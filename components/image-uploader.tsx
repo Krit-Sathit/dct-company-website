@@ -11,8 +11,19 @@ interface ImageUploaderProps {
   helperText?: string;
 }
 
-// Compress image on client side to keep size optimal (max 1200px, jpeg 85%)
-async function compressImage(file: File): Promise<string> {
+type ProcessedImageResult = {
+  dataUrl: string;
+  blob: Blob;
+  originalSizeKb: number;
+  optimizedSizeKb: number;
+  width: number;
+  height: number;
+};
+
+// Auto-resize large images (max 1200px) and convert format to modern WebP (quality 82%)
+async function processAndConvertToWebp(file: File, maxWidth = 1200, maxHeight = 1200, quality = 0.82): Promise<ProcessedImageResult> {
+  const originalSizeKb = Math.round(file.size / 1024);
+
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -21,20 +32,19 @@ async function compressImage(file: File): Promise<string> {
       img.src = e.target?.result as string;
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 1200;
-        const MAX_HEIGHT = 1200;
         let width = img.width;
         let height = img.height;
 
+        // Calculate aspect-ratio preserved dimensions
         if (width > height) {
-          if (width > MAX_WIDTH) {
-            height = Math.round((height * MAX_WIDTH) / width);
-            width = MAX_WIDTH;
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
           }
         } else {
-          if (height > MAX_HEIGHT) {
-            width = Math.round((width * MAX_HEIGHT) / height);
-            height = MAX_HEIGHT;
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
           }
         }
 
@@ -42,16 +52,45 @@ async function compressImage(file: File): Promise<string> {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         if (!ctx) {
-          resolve(img.src);
+          reject(new Error('Canvas context not available'));
           return;
         }
+
+        // Enable high quality image scaling
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, 0, 0, width, height);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-        resolve(dataUrl);
+
+        // Convert to WebP Data URL
+        let dataUrl = canvas.toDataURL('image/webp', quality);
+        // Fallback to JPEG if browser doesn't support WebP canvas export
+        if (!dataUrl.startsWith('data:image/webp')) {
+          dataUrl = canvas.toDataURL('image/jpeg', quality);
+        }
+
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              reject(new Error('Failed to create WebP blob'));
+              return;
+            }
+            const optimizedSizeKb = Math.round(blob.size / 1024);
+            resolve({
+              dataUrl,
+              blob,
+              originalSizeKb,
+              optimizedSizeKb,
+              width,
+              height,
+            });
+          },
+          'image/webp',
+          quality
+        );
       };
-      img.onerror = () => reject(new Error('Failed to load image'));
+      img.onerror = () => reject(new Error('ไม่สามารถอ่านไฟล์รูปภาพได้'));
     };
-    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.onerror = () => reject(new Error('เกิดข้อผิดพลาดในการเปิดไฟล์'));
   });
 }
 
@@ -60,26 +99,36 @@ export function ImageUploader({ label, value, onChange, folder = 'uploads', help
   const [dragOver, setDragOver] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [optimizeStats, setOptimizeStats] = useState<{ orig: number; opt: number; dim: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function processFile(file: File) {
     if (!file.type.startsWith('image/')) {
-      setErrorMsg('กรุณาเลือกไฟล์รูปภาพเท่านั้น (JPG, PNG, WEBP)');
+      setErrorMsg('กรุณาเลือกไฟล์รูปภาพเท่านั้น (JPG, PNG, WEBP, HEIC)');
       return;
     }
     setErrorMsg('');
     setUploading(true);
+    setOptimizeStats(null);
 
     try {
-      // 1. If Supabase is configured, attempt upload to Storage bucket `dct-media`
+      // 1. Process, Auto-Resize & Convert to WebP on client side
+      const processed = await processAndConvertToWebp(file, 1200, 1200, 0.82);
+      setOptimizeStats({
+        orig: processed.originalSizeKb,
+        opt: processed.optimizedSizeKb,
+        dim: `${processed.width} × ${processed.height}px`,
+      });
+
+      // 2. If Supabase is configured, attempt upload to Storage bucket `dct-media` as .webp
       if (isSupabaseConfigured()) {
         try {
           const client = supabaseBrowser();
-          const ext = file.name.split('.').pop() || 'jpg';
-          const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+          const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.webp`;
 
-          const { data, error } = await client.storage.from('dct-media').upload(fileName, file, {
-            cacheControl: '3600',
+          const { data, error } = await client.storage.from('dct-media').upload(fileName, processed.blob, {
+            contentType: 'image/webp',
+            cacheControl: '31536000',
             upsert: true,
           });
 
@@ -92,16 +141,15 @@ export function ImageUploader({ label, value, onChange, folder = 'uploads', help
             }
           }
         } catch {
-          // Fallback to compressed base64
+          // Fallback to compressed WebP data URL
         }
       }
 
-      // 2. Client-side compressed data URL (works anywhere, zero setup needed)
-      const compressedDataUrl = await compressImage(file);
-      onChange(compressedDataUrl);
+      // 3. Fallback: Use optimized WebP Data URL directly
+      onChange(processed.dataUrl);
       setUploading(false);
     } catch (err: any) {
-      setErrorMsg(`อัปโหลดรูปภาพไม่สำเร็จ: ${err?.message || 'ข้อผิดพลาด'}`);
+      setErrorMsg(`เกิดข้อผิดพลาดในการแปลงรูปภาพ: ${err?.message || 'ข้อผิดพลาด'}`);
       setUploading(false);
     }
   }
@@ -141,7 +189,10 @@ export function ImageUploader({ label, value, onChange, folder = 'uploads', help
           style={{ marginBottom: '10px', fontSize: '13px' }}
           placeholder="วางลิงก์รูปภาพ เช่น https://... หรือ /products/..."
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => {
+            onChange(e.target.value);
+            setOptimizeStats(null);
+          }}
         />
       )}
 
@@ -164,14 +215,14 @@ export function ImageUploader({ label, value, onChange, folder = 'uploads', help
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/png, image/jpeg, image/webp, image/jpg"
+          accept="image/png, image/jpeg, image/webp, image/jpg, image/heic"
           onChange={handleFileChange}
           style={{ display: 'none' }}
         />
 
         {uploading ? (
-          <div style={{ color: 'var(--red)', fontWeight: 600, padding: '12px 0' }}>
-            ⏳ กำลังประมวลผลและอัปโหลดรูปภาพ…
+          <div style={{ color: 'var(--red)', fontWeight: 600, padding: '16px 0' }}>
+            ⚡ กำลัง Resize ขนาดภาพ และแปลงเป็นฟอร์แมต WebP อัตโนมัติ…
           </div>
         ) : value ? (
           <div>
@@ -190,6 +241,25 @@ export function ImageUploader({ label, value, onChange, folder = 'uploads', help
                 }}
               />
             </div>
+
+            {optimizeStats && (
+              <div
+                style={{
+                  marginTop: '8px',
+                  display: 'inline-block',
+                  background: '#f0fff4',
+                  border: '1px solid #c6f6d5',
+                  color: '#22543d',
+                  padding: '4px 10px',
+                  borderRadius: '20px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                }}
+              >
+                ✓ แปลงเป็น WebP สำเร็จ: {optimizeStats.orig} KB → <b>{optimizeStats.opt} KB</b> ({optimizeStats.dim})
+              </div>
+            )}
+
             <div style={{ marginTop: '10px', display: 'flex', gap: '8px', justifyContent: 'center' }}>
               <button
                 type="button"
@@ -209,6 +279,7 @@ export function ImageUploader({ label, value, onChange, folder = 'uploads', help
                 onClick={(e) => {
                   e.stopPropagation();
                   onChange('');
+                  setOptimizeStats(null);
                 }}
               >
                 🗑️ ลบรูป
@@ -220,7 +291,7 @@ export function ImageUploader({ label, value, onChange, folder = 'uploads', help
             <div style={{ fontSize: '32px', marginBottom: '8px' }}>📷</div>
             <b style={{ color: 'var(--red)', fontSize: '15px' }}>คลิกเพื่อเลือกไฟล์รูปภาพจากเครื่อง</b>
             <p className="small" style={{ color: '#806c60', margin: '4px 0 0' }}>
-              หรือลากไฟล์รูปภาพ (JPG, PNG, WEBP) มาวางที่นี่
+              หรือลากไฟล์รูปภาพมาวางที่นี่ (ระบบจะ Resize และแปลงเป็น <b>WebP</b> ให้อัตโนมัติ)
             </p>
           </div>
         )}
