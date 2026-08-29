@@ -51,7 +51,7 @@ export default function Home() {
     void load();
   }, []);
 
-  const heroBg = profile.hero_image_url || 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1800&q=85';
+  const heroBg = profile.hero_image_url || '/hero-banner.webp';
   const oemBg = profile.oem_section_image_url || 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=1000&q=80';
 
   return (
@@ -59,7 +59,10 @@ export default function Home() {
       <section
         className="hero"
         style={{
-          backgroundImage: `linear-gradient(90deg, rgba(247,242,234,.96) 0%, rgba(247,242,234,.86) 45%, rgba(247,242,234,.14) 100%), url('${heroBg}')`,
+          backgroundImage: `linear-gradient(90deg, rgba(247,242,234,.95) 0%, rgba(247,242,234,.82) 46%, rgba(247,242,234,.12) 80%, rgba(247,242,234,.02) 100%), url('${heroBg}')`,
+          backgroundPosition: 'right center',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
         }}
       >
         <div className="wrap">
