@@ -56,8 +56,26 @@ export const defaultCompanyProfile: CompanyProfileSettings = {
   oem_description: 'Custom Cut, Slice, Dice, Mince, Vacuum และ OEM สำหรับร้านอาหาร ครัวกลาง และผู้ผลิตอาหารที่ต้องการความสม่ำเสมอในทุกล็อต',
 };
 
+const CONTACT_KEY = 'dct_contact_settings';
+const PROFILE_KEY = 'dct_profile_settings';
+
 export async function getContactSettings(): Promise<ContactSettings> {
-  // 1. Try Supabase if configured
+  // 1. Check local storage cache
+  if (typeof window !== 'undefined') {
+    const cached = localStorage.getItem(CONTACT_KEY);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (parsed && typeof parsed === 'object') {
+          return { ...defaultContactSettings, ...parsed };
+        }
+      } catch {
+        // ignore
+      }
+    }
+  }
+
+  // 2. Try Supabase if configured
   if (isSupabaseConfigured()) {
     try {
       const client = supabaseBrowser();
@@ -68,14 +86,18 @@ export async function getContactSettings(): Promise<ContactSettings> {
         .maybeSingle();
 
       if (!error && data?.value && typeof data.value === 'object') {
-        return { ...defaultContactSettings, ...data.value };
+        const merged = { ...defaultContactSettings, ...data.value };
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(CONTACT_KEY, JSON.stringify(merged));
+        }
+        return merged;
       }
     } catch {
       // ignore
     }
   }
 
-  // 2. Fetch from Server API
+  // 3. Try Server API
   try {
     const res = await fetch('/api/settings?type=contact', { cache: 'no-store' });
     if (res.ok) {
@@ -90,7 +112,12 @@ export async function getContactSettings(): Promise<ContactSettings> {
 }
 
 export async function saveContactSettings(settings: ContactSettings): Promise<{ success: boolean; message: string }> {
-  // 1. Save to Server API
+  // 1. Save to local storage
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(CONTACT_KEY, JSON.stringify(settings));
+  }
+
+  // 2. Save to Server API
   try {
     await fetch('/api/settings', {
       method: 'POST',
@@ -101,7 +128,7 @@ export async function saveContactSettings(settings: ContactSettings): Promise<{ 
     // ignore
   }
 
-  // 2. Save to Supabase if configured
+  // 3. Save to Supabase if configured
   if (isSupabaseConfigured()) {
     try {
       const client = supabaseBrowser();
@@ -119,7 +146,22 @@ export async function saveContactSettings(settings: ContactSettings): Promise<{ 
 }
 
 export async function getCompanyProfile(): Promise<CompanyProfileSettings> {
-  // 1. Try Supabase if configured
+  // 1. Check local storage cache
+  if (typeof window !== 'undefined') {
+    const cached = localStorage.getItem(PROFILE_KEY);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (parsed && typeof parsed === 'object') {
+          return { ...defaultCompanyProfile, ...parsed };
+        }
+      } catch {
+        // ignore
+      }
+    }
+  }
+
+  // 2. Try Supabase if configured
   if (isSupabaseConfigured()) {
     try {
       const client = supabaseBrowser();
@@ -130,14 +172,18 @@ export async function getCompanyProfile(): Promise<CompanyProfileSettings> {
         .maybeSingle();
 
       if (!error && data?.value && typeof data.value === 'object') {
-        return { ...defaultCompanyProfile, ...data.value };
+        const merged = { ...defaultCompanyProfile, ...data.value };
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(PROFILE_KEY, JSON.stringify(merged));
+        }
+        return merged;
       }
     } catch {
       // ignore
     }
   }
 
-  // 2. Fetch from Server API
+  // 3. Try Server API
   try {
     const res = await fetch('/api/settings?type=company_profile', { cache: 'no-store' });
     if (res.ok) {
@@ -152,7 +198,12 @@ export async function getCompanyProfile(): Promise<CompanyProfileSettings> {
 }
 
 export async function saveCompanyProfile(profile: CompanyProfileSettings): Promise<{ success: boolean; message: string }> {
-  // 1. Save to Server API
+  // 1. Save to local storage
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+  }
+
+  // 2. Save to Server API
   try {
     await fetch('/api/settings', {
       method: 'POST',
@@ -163,7 +214,7 @@ export async function saveCompanyProfile(profile: CompanyProfileSettings): Promi
     // ignore
   }
 
-  // 2. Save to Supabase if configured
+  // 3. Save to Supabase if configured
   if (isSupabaseConfigured()) {
     try {
       const client = supabaseBrowser();
@@ -177,5 +228,5 @@ export async function saveCompanyProfile(profile: CompanyProfileSettings): Promi
     }
   }
 
-  return { success: true, message: '✅ บันทึกข้อมูลและอัปเดตรูปภาพหน้าเว็บเรียบร้อยแล้ว' };
+  return { success: true, message: '✅ บันทึกรูปภาพและข้อมูลขึ้นหน้าเว็บเรียบร้อยแล้ว' };
 }
