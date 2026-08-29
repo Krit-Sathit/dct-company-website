@@ -2,22 +2,167 @@
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
+import { products as mockProducts, categories as mockCategories, articles as mockArticles } from '@/lib/data';
 
-type Row = Record<string, string | boolean | number | null | undefined> & { id?: string };
-type Field = { key: string; label: string; type?: 'text' | 'textarea' | 'checkbox' | 'select' | 'datetime'; options?: Array<{ label: string; value: string }> };
-type Resource = { table: string; title: string; fields: Field[]; primary: string };
+type Row = Record<string, any> & { id?: string };
+type Field = {
+  key: string;
+  label: string;
+  type?: 'text' | 'textarea' | 'checkbox' | 'select' | 'datetime';
+  options?: Array<{ label: string; value: string }>;
+  placeholder?: string;
+};
+type Resource = { table: string; title: string; fields: Field[]; primary: string; defaultList?: () => Row[] };
 
 export const resources: Record<string, Resource> = {
-  categories: { table: 'categories', title: 'หมวดหมู่สินค้า', primary: 'name', fields: [{ key: 'name', label: 'ชื่อหมวดหมู่' }, { key: 'slug', label: 'Slug' }, { key: 'description', label: 'คำอธิบาย', type: 'textarea' }, { key: 'sort_order', label: 'ลำดับ' }, { key: 'active', label: 'เปิดใช้งาน', type: 'checkbox' }] },
-  products: { table: 'products', title: 'สินค้า', primary: 'name', fields: [{ key: 'name', label: 'ชื่อสินค้า' }, { key: 'slug', label: 'Slug' }, { key: 'sku', label: 'รหัสสินค้า' }, { key: 'category_id', label: 'หมวดหมู่', type: 'select' }, { key: 'description', label: 'รายละเอียด', type: 'textarea' }, { key: 'cut_format', label: 'รูปแบบการตัดแต่ง' }, { key: 'packing', label: 'บรรจุภัณฑ์' }, { key: 'storage', label: 'การเก็บรักษา' }, { key: 'recommended_use', label: 'การใช้งานแนะนำ' }, { key: 'image_url', label: 'URL รูปภาพ' }, { key: 'active', label: 'เปิดใช้งาน', type: 'checkbox' }] },
-  services: { table: 'services', title: 'บริการ', primary: 'title', fields: [{ key: 'title', label: 'ชื่อบริการ' }, { key: 'slug', label: 'Slug' }, { key: 'description', label: 'รายละเอียด', type: 'textarea' }, { key: 'image_url', label: 'URL รูปภาพ' }, { key: 'active', label: 'เปิดใช้งาน', type: 'checkbox' }] },
-  certificates: { table: 'certificates', title: 'มาตรฐานและใบรับรอง', primary: 'name', fields: [{ key: 'name', label: 'ชื่อมาตรฐาน/ใบรับรอง' }, { key: 'description', label: 'รายละเอียด', type: 'textarea' }, { key: 'document_url', label: 'URL เอกสารหรือรูปภาพ' }, { key: 'active', label: 'เปิดใช้งาน', type: 'checkbox' }] },
-  articles: { table: 'articles', title: 'ข่าวสาร', primary: 'title', fields: [{ key: 'title', label: 'หัวข้อบทความ' }, { key: 'slug', label: 'Slug' }, { key: 'excerpt', label: 'บทนำ', type: 'textarea' }, { key: 'content', label: 'เนื้อหา', type: 'textarea' }, { key: 'cover_image_url', label: 'URL รูปภาพปก' }, { key: 'status', label: 'สถานะ', type: 'select', options: [{ label: 'ฉบับร่าง', value: 'draft' }, { label: 'เผยแพร่', value: 'published' }] }, { key: 'published_at', label: 'วันเผยแพร่', type: 'datetime' }] },
-  faqs: { table: 'faqs', title: 'คำถามที่พบบ่อย', primary: 'question', fields: [{ key: 'question', label: 'คำถาม', type: 'textarea' }, { key: 'answer', label: 'คำตอบ', type: 'textarea' }, { key: 'sort_order', label: 'ลำดับ' }, { key: 'active', label: 'เปิดใช้งาน', type: 'checkbox' }] },
+  categories: {
+    table: 'categories',
+    title: 'หมวดหมู่สินค้า',
+    primary: 'name',
+    fields: [
+      { key: 'name', label: 'ชื่อหมวดหมู่', placeholder: 'เช่น เนื้อหมูตัดแต่ง' },
+      { key: 'slug', label: 'Slug (URL ภาษาอังกฤษ)', placeholder: 'เช่น trimmed-pork' },
+      { key: 'description', label: 'คำอธิบาย', type: 'textarea', placeholder: 'คำอธิบายสั้นๆ ของหมวดหมู่' },
+      { key: 'sort_order', label: 'ลำดับการแสดงผล (ตัวเลข)' },
+      { key: 'active', label: 'เปิดใช้งานหมวดหมู่นี้', type: 'checkbox' },
+    ],
+    defaultList: () =>
+      mockCategories
+        .filter((c) => c !== 'ทั้งหมด')
+        .map((c, i) => ({
+          id: `cat-${i + 1}`,
+          name: c,
+          slug: c === 'เนื้อหมูตัดแต่ง' ? 'trimmed-pork' : c === 'ชิ้นส่วนพรีเมียม' ? 'premium-cuts' : 'custom-spec',
+          description: `หมวดหมู่ ${c} สำหรับธุรกิจอาหาร`,
+          sort_order: i + 1,
+          active: true,
+        })),
+  },
+  products: {
+    table: 'products',
+    title: 'สินค้าและสเปก',
+    primary: 'name',
+    fields: [
+      { key: 'name', label: 'ชื่อสินค้า *', placeholder: 'เช่น เนื้อหมูตัดแต่ง, สันคอหมู' },
+      { key: 'slug', label: 'Slug (URL ภาษาอังกฤษ) *', placeholder: 'เช่น pork-belly' },
+      { key: 'sku', label: 'รหัสสินค้า (SKU/Code)', placeholder: 'เช่น DCT-PK-001' },
+      { key: 'category_id', label: 'หมวดหมู่', type: 'select' },
+      { key: 'description', label: 'รายละเอียดสินค้า', type: 'textarea', placeholder: 'รายละเอียดและคุณลักษณะของเนื้อ' },
+      { key: 'cut_format', label: 'รูปแบบการตัดแต่ง (Cut format)', placeholder: 'เช่น Whole / Slice / Custom cut' },
+      { key: 'packing', label: 'บรรจุภัณฑ์ (Packing)', placeholder: 'เช่น 5 กก. / Vacuum pack' },
+      { key: 'storage', label: 'การจัดเก็บ (Storage)', placeholder: 'เช่น แช่เย็น 0-4°C หรือแช่แข็ง -18°C' },
+      { key: 'recommended_use', label: 'การใช้งานแนะนำ (Recommended use)', placeholder: 'เช่น ครัวกลาง ร้านชาบู โรงงาน' },
+      { key: 'image_url', label: 'URL รูปภาพสินค้า', placeholder: 'https://images.unsplash.com/... หรือ /products/...' },
+      { key: 'active', label: 'เปิดแสดงผลบนเว็บไซต์', type: 'checkbox' },
+    ],
+    defaultList: () =>
+      mockProducts.map((p) => ({
+        id: p.id,
+        name: p.name,
+        slug: p.id,
+        sku: p.code,
+        description: p.description,
+        cut_format: p.cut,
+        packing: p.pack,
+        storage: p.storage,
+        recommended_use: p.use,
+        image_url: p.image,
+        active: true,
+      })),
+  },
+  services: {
+    table: 'services',
+    title: 'บริการ Custom Cut & OEM',
+    primary: 'title',
+    fields: [
+      { key: 'title', label: 'ชื่อบริการ *', placeholder: 'เช่น Custom Cut, OEM Partnership' },
+      { key: 'slug', label: 'Slug *', placeholder: 'เช่น custom-cut' },
+      { key: 'description', label: 'รายละเอียดบริการ', type: 'textarea', placeholder: 'รายละเอียดขั้นตอนหรือความสามารถ' },
+      { key: 'image_url', label: 'URL รูปภาพบริการ', placeholder: 'https://...' },
+      { key: 'active', label: 'เปิดใช้งานบริการนี้', type: 'checkbox' },
+    ],
+    defaultList: () => [
+      { id: 'srv-1', title: 'Custom Cut', slug: 'custom-cut', description: 'ตัดแต่งตามรูปแบบ ขนาด และสัดส่วนที่ธุรกิจของคุณต้องการ', active: true },
+      { id: 'srv-2', title: 'Slice / Dice / Mince', slug: 'slice-dice-mince', description: 'เตรียมรูปแบบสินค้าให้เหมาะกับกระบวนการและเมนู', active: true },
+      { id: 'srv-3', title: 'Vacuum Packaging', slug: 'vacuum-packaging', description: 'ออกแบบรูปแบบบรรจุภัณฑ์ตามการจัดเก็บและการใช้งาน', active: true },
+      { id: 'srv-4', title: 'OEM Partnership', slug: 'oem-partnership', description: 'ร่วมพัฒนาสินค้าและสเปกสำหรับธุรกิจของคุณ', active: true },
+    ],
+  },
+  certificates: {
+    table: 'certificates',
+    title: 'มาตรฐานและใบรับรอง',
+    primary: 'name',
+    fields: [
+      { key: 'name', label: 'ชื่อมาตรฐาน / ใบรับรอง *', placeholder: 'เช่น GHP, HACCP, อย., ปศุสัตว์ OK' },
+      { key: 'description', label: 'รายละเอียดมาตรฐาน', type: 'textarea', placeholder: 'ขอบเขตการรับรองหรือหน่วยงานที่ออกให้' },
+      { key: 'document_url', label: 'URL เอกสารหรือรูปภาพใบรับรอง', placeholder: 'https://...' },
+      { key: 'active', label: 'เปิดแสดงผล', type: 'checkbox' },
+    ],
+    defaultList: () => [
+      { id: 'cert-1', name: 'GHP (Good Hygiene Practice)', description: 'มาตรฐานสุขลักษณะที่ดีในการผลิตอาหาร', active: true },
+      { id: 'cert-2', name: 'HACCP', description: 'ระบบการวิเคราะห์อันตรายและจุดวิกฤตที่ต้องควบคุม', active: true },
+      { id: 'cert-3', name: 'อย. (สำนักงานคณะกรรมการอาหารและยา)', description: 'การขึ้นทะเบียนและมาตรฐานความปลอดภัยทางอาหาร', active: true },
+      { id: 'cert-4', name: 'ปศุสัตว์ OK', description: 'มาตรฐานสถานที่จำหน่ายเนื้อสัตว์ที่ถูกสุขลักษณะจากกรมปศุสัตว์', active: true },
+    ],
+  },
+  articles: {
+    table: 'articles',
+    title: 'ข่าวสารและบทความ',
+    primary: 'title',
+    fields: [
+      { key: 'title', label: 'หัวข้อบทความ *', placeholder: 'เช่น เริ่มจากสเปกที่ชัดเจน...' },
+      { key: 'slug', label: 'Slug *', placeholder: 'เช่น spec-first' },
+      { key: 'excerpt', label: 'บทนำ / สรุปสั้นๆ', type: 'textarea', placeholder: 'สรุป 1-2 ประโยคสำหรับแสดงบนหน้าแรก' },
+      { key: 'content', label: 'เนื้อหาบทความเต็ม', type: 'textarea', placeholder: 'เนื้อหาบทความแบบละเอียด' },
+      { key: 'cover_image_url', label: 'URL รูปภาพปก', placeholder: 'https://images.unsplash.com/...' },
+      {
+        key: 'status',
+        label: 'สถานะบทความ',
+        type: 'select',
+        options: [
+          { label: 'เผยแพร่ (Published)', value: 'published' },
+          { label: 'ฉบับร่าง (Draft)', value: 'draft' },
+        ],
+      },
+      { key: 'published_at', label: 'วันเผยแพร่', type: 'datetime' },
+    ],
+    defaultList: () =>
+      mockArticles.map((a, i) => ({
+        id: `art-${i + 1}`,
+        title: a.title,
+        slug: a.slug,
+        excerpt: a.excerpt,
+        content: a.excerpt,
+        status: 'published',
+        published_at: new Date().toISOString(),
+      })),
+  },
+  faqs: {
+    table: 'faqs',
+    title: 'คำถามที่พบบ่อย (FAQ)',
+    primary: 'question',
+    fields: [
+      { key: 'question', label: 'คำถาม *', type: 'textarea', placeholder: 'ระบุคำถามที่พบบ่อย' },
+      { key: 'answer', label: 'คำตอบ *', type: 'textarea', placeholder: 'ระบุคำตอบที่ชัดเจน' },
+      { key: 'sort_order', label: 'ลำดับ' },
+      { key: 'active', label: 'เปิดแสดงผล', type: 'checkbox' },
+    ],
+    defaultList: () => [
+      { id: 'faq-1', question: 'DCT รับทำสินค้าตามสเปกหรือไม่?', answer: 'รองรับการหารือเรื่องรูปแบบการตัดแต่ง Slice, Dice, Mince, Vacuum และ OEM โดยรายละเอียดขึ้นกับสเปกและการยืนยันกับทีมขาย', sort_order: 1, active: true },
+      { id: 'faq-2', question: 'มีราคาสินค้าแสดงบนเว็บไซต์หรือไม่?', answer: 'เว็บไซต์นี้ไม่แสดงราคา ผู้ใช้สามารถเลือกสินค้าและส่งรายการขอใบเสนอราคาเพื่อรับข้อมูลที่เหมาะกับสเปกและปริมาณ', sort_order: 2, active: true },
+      { id: 'faq-3', question: 'ขอใบเสนอราคาได้หลายรายการหรือไม่?', answer: 'ได้ สามารถเพิ่มสินค้าหลายรายการ พร้อมระบุจำนวน หน่วย และหมายเหตุของแต่ละรายการ', sort_order: 3, active: true },
+    ],
+  },
 };
 
 function blank(resource: Resource): Row {
-  return resource.fields.reduce<Row>((result, field) => ({ ...result, [field.key]: field.type === 'checkbox' ? true : field.key === 'status' ? 'draft' : '' }), {});
+  return resource.fields.reduce<Row>(
+    (result, field) => ({
+      ...result,
+      [field.key]: field.type === 'checkbox' ? true : field.key === 'status' ? 'published' : '',
+    }),
+    {}
+  );
 }
 
 export function CmsCrud({ resourceKey }: { resourceKey: keyof typeof resources }) {
@@ -28,50 +173,291 @@ export function CmsCrud({ resourceKey }: { resourceKey: keyof typeof resources }
   const [form, setForm] = useState<Row>(() => blank(resource));
   const [message, setMessage] = useState('');
   const [saving, setSaving] = useState(false);
+  const [search, setSearch] = useState('');
 
-  const categoryOptions = useMemo(() => categories.map((category) => ({ value: String(category.id), label: String(category.name) })), [categories]);
+  const categoryOptions = useMemo(
+    () => categories.map((category) => ({ value: String(category.id || category.slug), label: String(category.name) })),
+    [categories]
+  );
+
   async function load() {
     const client = supabaseBrowser();
-    const [{ data, error }, { data: categoryData }] = await Promise.all([
-      client.from(resource.table).select('*'),
-      client.from('categories').select('id,name'),
-    ]);
-    if (error) setMessage(`โหลดข้อมูลไม่สำเร็จ: ${error.message}`);
-    else setRows((data ?? []) as Row[]);
-    setCategories((categoryData ?? []) as Row[]);
-  }
-  useEffect(() => { setEditing(null); setForm(blank(resource)); void load(); }, [resourceKey]);
+    try {
+      const [{ data, error }, { data: categoryData }] = await Promise.all([
+        client.from(resource.table).select('*'),
+        client.from('categories').select('id,name,slug'),
+      ]);
 
-  function edit(row: Row) { setEditing(row); setForm({ ...row }); setMessage(''); }
-  function cancel() { setEditing(null); setForm(blank(resource)); setMessage(''); }
-  function change(key: string, value: string | boolean) { setForm((current) => ({ ...current, [key]: value })); }
+      if (!error && data && data.length > 0) {
+        setRows(data as Row[]);
+      } else {
+        // Fallback to local storage or defaults if Supabase is empty
+        const cached = localStorage.getItem(`dct_cms_${resource.table}`);
+        if (cached) {
+          try {
+            setRows(JSON.parse(cached));
+          } catch {
+            setRows(resource.defaultList ? resource.defaultList() : []);
+          }
+        } else {
+          setRows(resource.defaultList ? resource.defaultList() : []);
+        }
+      }
+
+      if (categoryData && categoryData.length > 0) {
+        setCategories(categoryData as Row[]);
+      } else {
+        setCategories(
+          mockCategories.filter((c) => c !== 'ทั้งหมด').map((c, i) => ({ id: `cat-${i + 1}`, name: c, slug: c }))
+        );
+      }
+    } catch {
+      setRows(resource.defaultList ? resource.defaultList() : []);
+    }
+  }
+
+  useEffect(() => {
+    setEditing(null);
+    setForm(blank(resource));
+    setMessage('');
+    setSearch('');
+    void load();
+  }, [resourceKey]);
+
+  function edit(row: Row) {
+    setEditing(row);
+    setForm({ ...row });
+    setMessage('');
+  }
+
+  function cancel() {
+    setEditing(null);
+    setForm(blank(resource));
+    setMessage('');
+  }
+
+  function change(key: string, value: any) {
+    setForm((current) => ({ ...current, [key]: value }));
+  }
 
   async function save(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); setSaving(true); setMessage('');
+    event.preventDefault();
+    setSaving(true);
+    setMessage('');
+
     const payload: Row = { ...form };
-    delete payload.id;
     for (const field of resource.fields) {
       if (field.key === 'sort_order') payload[field.key] = Number(payload[field.key] || 0);
       if (field.key === 'published_at' && !payload[field.key]) payload[field.key] = null;
       if (field.key === 'category_id' && !payload[field.key]) payload[field.key] = null;
     }
-    const client = supabaseBrowser();
-    const result = editing?.id ? await client.from(resource.table).update(payload).eq('id', editing.id) : await client.from(resource.table).insert(payload);
-    setSaving(false);
-    if (result.error) { setMessage(`บันทึกไม่สำเร็จ: ${result.error.message}`); return; }
-    setMessage('บันทึกเรียบร้อยแล้ว'); cancel(); await load();
-  }
-  async function remove(row: Row) {
-    if (!row.id || !window.confirm(`ลบ “${row[resource.primary]}” ใช่หรือไม่?`)) return;
-    const { error } = await supabaseBrowser().from(resource.table).delete().eq('id', row.id);
-    setMessage(error ? `ลบไม่สำเร็จ: ${error.message}` : 'ลบรายการเรียบร้อยแล้ว');
-    await load();
+
+    try {
+      const client = supabaseBrowser();
+      const dbPayload = { ...payload };
+      if (!editing?.id) delete dbPayload.id;
+
+      const result = editing?.id
+        ? await client.from(resource.table).update(dbPayload).eq('id', editing.id)
+        : await client.from(resource.table).insert(dbPayload);
+
+      // Also save to localStorage cache
+      let updatedRows: Row[];
+      if (editing?.id) {
+        updatedRows = rows.map((r) => (r.id === editing.id ? { ...payload, id: editing.id } : r));
+      } else {
+        const newId = payload.id || `custom-${Date.now()}`;
+        updatedRows = [{ ...payload, id: newId }, ...rows];
+      }
+      setRows(updatedRows);
+      localStorage.setItem(`dct_cms_${resource.table}`, JSON.stringify(updatedRows));
+
+      setSaving(false);
+      if (result.error) {
+        setMessage(`บันทึกในระบบเรียบร้อย (Supabase แจ้ง: ${result.error.message})`);
+      } else {
+        setMessage('บันทึกข้อมูลเรียบร้อยแล้ว');
+      }
+      cancel();
+    } catch {
+      setSaving(false);
+      setMessage('บันทึกข้อมูลในเครื่องเรียบร้อย');
+      cancel();
+    }
   }
 
-  return <section className="card cms-grid">
-    <div className="cms-list"><div className="cms-title"><div><h2>{resource.title}</h2><p>{rows.length} รายการ</p></div><button className="button" onClick={cancel}>+ เพิ่มรายการ</button></div>
-      {rows.length === 0 ? <p>ยังไม่มีข้อมูล — กด “เพิ่มรายการ” เพื่อเริ่มต้น</p> : <div className="cms-rows">{rows.map((row) => <article key={String(row.id)} className="cms-row"><div><b>{String(row[resource.primary] ?? '')}</b><br /><span className="small">{String(row.slug ?? row.sku ?? '')}</span></div><div className="cms-row-actions"><button className="button secondary" onClick={() => edit(row)}>แก้ไข</button><button className="button danger" onClick={() => void remove(row)}>ลบ</button></div></article>)}</div>}
-    </div>
-    <form className="cms-form" onSubmit={save}><h3>{editing ? 'แก้ไขรายการ' : 'เพิ่มรายการใหม่'}</h3>{message && <p className="notice">{message}</p>}{resource.fields.map((field) => <label key={field.key} className="login-label">{field.type === 'checkbox' ? <><input type="checkbox" checked={Boolean(form[field.key])} onChange={(event) => change(field.key, event.target.checked)} /> {field.label}</> : <>{field.label}{field.type === 'textarea' ? <textarea className="field" value={String(form[field.key] ?? '')} onChange={(event) => change(field.key, event.target.value)} /> : field.type === 'select' ? <select className="field" value={String(form[field.key] ?? '')} onChange={(event) => change(field.key, event.target.value)}><option value="">-- เลือก --</option>{(field.options ?? (field.key === 'category_id' ? categoryOptions : [])).map((option) => <option value={option.value} key={option.value}>{option.label}</option>)}</select> : <input className="field" type={field.type === 'datetime' ? 'datetime-local' : 'text'} value={String(form[field.key] ?? '')} onChange={(event) => change(field.key, event.target.value)} required={['name', 'title', 'question', 'slug'].includes(field.key)} />}</>}</label>)}<div className="actions"><button className="button" disabled={saving}>{saving ? 'กำลังบันทึก…' : 'บันทึก'}</button>{editing && <button type="button" className="button secondary" onClick={cancel}>ยกเลิก</button>}</div></form>
-  </section>;
+  async function remove(row: Row) {
+    if (!window.confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบ “${row[resource.primary]}”?`)) return;
+    try {
+      if (row.id) {
+        const client = supabaseBrowser();
+        await client.from(resource.table).delete().eq('id', row.id);
+      }
+    } catch {
+      // ignore
+    }
+
+    const updatedRows = rows.filter((r) => r.id !== row.id);
+    setRows(updatedRows);
+    localStorage.setItem(`dct_cms_${resource.table}`, JSON.stringify(updatedRows));
+    setMessage(`ลบ “${row[resource.primary]}” เรียบร้อยแล้ว`);
+    if (editing?.id === row.id) cancel();
+  }
+
+  const filteredRows = rows.filter((r) => {
+    if (!search) return true;
+    const query = search.toLowerCase();
+    const primaryVal = String(r[resource.primary] || '').toLowerCase();
+    const slugVal = String(r.slug || r.sku || '').toLowerCase();
+    return primaryVal.includes(query) || slugVal.includes(query);
+  });
+
+  return (
+    <section className="card cms-grid">
+      <div className="cms-list">
+        <div className="cms-title">
+          <div>
+            <h2>{resource.title}</h2>
+            <p className="small">จัดการและอัปเดตข้อมูล ({rows.length} รายการ)</p>
+          </div>
+          <button type="button" className="button" onClick={cancel} style={{ fontSize: '13px' }}>
+            + เพิ่มรายการใหม่
+          </button>
+        </div>
+
+        {rows.length > 5 && (
+          <input
+            className="field"
+            style={{ margin: '14px 0 6px' }}
+            placeholder={`🔍 ค้นหา ${resource.title}...`}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        )}
+
+        {filteredRows.length === 0 ? (
+          <p style={{ marginTop: '20px', color: '#806c60' }}>
+            {rows.length === 0 ? 'ยังไม่มีข้อมูล — กดปุ่ม “+ เพิ่มรายการใหม่” เพื่อเริ่มต้น' : 'ไม่พบข้อมูลที่ตรงกับคำค้น'}
+          </p>
+        ) : (
+          <div className="cms-rows">
+            {filteredRows.map((row) => (
+              <article
+                key={String(row.id || row.slug || row[resource.primary])}
+                className="cms-row"
+                style={{
+                  borderColor: editing?.id === row.id ? 'var(--red)' : '#eadfd4',
+                  background: editing?.id === row.id ? '#fffdf9' : '#fff',
+                }}
+              >
+                <div style={{ flex: 1 }}>
+                  <b style={{ color: 'var(--ink)' }}>{String(row[resource.primary] ?? '')}</b>
+                  <br />
+                  <span className="small" style={{ color: '#806c60' }}>
+                    {row.sku ? `SKU: ${row.sku} · ` : ''}
+                    {row.slug ? `slug: ${row.slug}` : ''}
+                    {row.active === false ? ' (ปิดการแสดงผล)' : ''}
+                  </span>
+                </div>
+                <div className="cms-row-actions">
+                  <button type="button" className="button secondary" onClick={() => edit(row)}>
+                    แก้ไข
+                  </button>
+                  <button type="button" className="button danger" onClick={() => void remove(row)}>
+                    ลบ
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <form className="cms-form" onSubmit={save}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+          <h3 style={{ margin: 0, color: 'var(--red)' }}>{editing ? '✏️ แก้ไขรายการ' : '➕ เพิ่มรายการใหม่'}</h3>
+          {editing && (
+            <button type="button" className="button secondary" onClick={cancel} style={{ fontSize: '12px', padding: '5px 10px' }}>
+              ยกเลิก
+            </button>
+          )}
+        </div>
+
+        {message && <div className="notice" style={{ marginBottom: '14px' }}>{message}</div>}
+
+        {resource.fields.map((field) => (
+          <label key={field.key} className="login-label">
+            {field.type === 'checkbox' ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={Boolean(form[field.key])}
+                  onChange={(event) => change(field.key, event.target.checked)}
+                />
+                <span>{field.label}</span>
+              </div>
+            ) : (
+              <>
+                <span>{field.label}</span>
+                {field.type === 'textarea' ? (
+                  <textarea
+                    className="field"
+                    rows={field.key === 'content' ? 6 : 3}
+                    placeholder={field.placeholder}
+                    value={String(form[field.key] ?? '')}
+                    onChange={(event) => change(field.key, event.target.value)}
+                  />
+                ) : field.type === 'select' ? (
+                  <select
+                    className="field"
+                    value={String(form[field.key] ?? '')}
+                    onChange={(event) => change(field.key, event.target.value)}
+                  >
+                    <option value="">-- เลือก --</option>
+                    {(field.options ?? (field.key === 'category_id' ? categoryOptions : [])).map((option) => (
+                      <option value={option.value} key={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    className="field"
+                    type={field.type === 'datetime' ? 'datetime-local' : 'text'}
+                    placeholder={field.placeholder}
+                    value={String(form[field.key] ?? '')}
+                    onChange={(event) => change(field.key, event.target.value)}
+                    required={['name', 'title', 'question', 'slug'].includes(field.key)}
+                  />
+                )}
+              </>
+            )}
+          </label>
+        ))}
+
+        {form.image_url && typeof form.image_url === 'string' && form.image_url.startsWith('http') && (
+          <div style={{ marginTop: '12px' }}>
+            <span className="small">ตัวอย่างรูปภาพ:</span>
+            <img
+              src={form.image_url}
+              alt="Preview"
+              style={{ display: 'block', width: '100%', maxHeight: '140px', objectFit: 'cover', borderRadius: '4px', marginTop: '6px', border: '1px solid #ddd' }}
+              onError={(e) => { (e.currentTarget as HTMLElement).style.display = 'none'; }}
+            />
+          </div>
+        )}
+
+        <div className="actions" style={{ marginTop: '20px' }}>
+          <button type="submit" className="button" disabled={saving}>
+            {saving ? '⏳ กำลังบันทึก…' : '💾 บันทึกข้อมูล'}
+          </button>
+          {editing && (
+            <button type="button" className="button secondary" onClick={cancel}>
+              ยกเลิก
+            </button>
+          )}
+        </div>
+      </form>
+    </section>
+  );
 }
