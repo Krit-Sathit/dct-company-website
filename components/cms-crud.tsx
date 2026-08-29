@@ -263,11 +263,19 @@ export function CmsCrud({ resourceKey }: { resourceKey: keyof typeof resources }
     try {
       const client = supabaseBrowser();
       const dbPayload = { ...payload };
-      if (!editing?.id) delete dbPayload.id;
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(editing?.id || ''));
+      delete dbPayload.id;
 
-      const result = editing?.id
-        ? await client.from(resource.table).update(dbPayload).eq('id', editing.id)
-        : await client.from(resource.table).insert(dbPayload);
+      let result;
+      if (editing?.id && isUuid) {
+        result = await client.from(resource.table).update(dbPayload).eq('id', editing.id);
+      } else if (payload.slug) {
+        result = await client.from(resource.table).upsert({ ...dbPayload, slug: payload.slug }, { onConflict: 'slug' });
+      } else if (editing?.id) {
+        result = await client.from(resource.table).update(dbPayload).eq('id', editing.id);
+      } else {
+        result = await client.from(resource.table).insert(dbPayload);
+      }
 
       setSaving(false);
       if (result.error) {
