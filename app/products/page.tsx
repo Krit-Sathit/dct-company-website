@@ -14,44 +14,72 @@ export default function Products() {
 
   useEffect(() => {
     async function load() {
-      if (!isSupabaseConfigured()) {
-        setProductList(defaultProducts);
-        setCatList(defaultCategories);
-        return;
+      // 1. Try Supabase first if configured
+      if (isSupabaseConfigured()) {
+        try {
+          const client = supabaseBrowser();
+          const [{ data: dbProducts }, { data: dbCategories }] = await Promise.all([
+            client.from('products').select('*').eq('active', true),
+            client.from('categories').select('*').eq('active', true).order('sort_order', { ascending: true }),
+          ]);
+
+          if (dbCategories && dbCategories.length > 0) {
+            setCatList(['ทั้งหมด', ...dbCategories.map((cat) => cat.name)]);
+          }
+
+          if (dbProducts && dbProducts.length > 0) {
+            const mapped: Product[] = dbProducts.map((p) => ({
+              id: p.slug || p.id,
+              name: p.name,
+              code: p.sku || 'DCT-PK-000',
+              category: p.category || p.category_id || 'ชิ้นส่วนพรีเมียม',
+              description: p.description || '',
+              cut: p.cut_format || 'Custom cut',
+              pack: p.packing || 'ตามสเปกลูกค้า',
+              storage: p.storage || 'แช่เย็น / แช่แข็ง',
+              use: p.recommended_use || 'ธุรกิจอาหาร',
+              image: p.image_url || p.image || 'https://images.unsplash.com/photo-1603048297172-c92544798d5a?auto=format&fit=crop&w=1000&q=80',
+            }));
+            setProductList(mapped);
+            return;
+          }
+        } catch {
+          // Fallback to Server API
+        }
       }
 
+      // 2. Fetch from Server API (Auto-CMS Store)
       try {
-        const client = supabaseBrowser();
-        const [{ data: dbProducts }, { data: dbCategories }] = await Promise.all([
-          client.from('products').select('*').eq('active', true),
-          client.from('categories').select('*').eq('active', true).order('sort_order', { ascending: true }),
-        ]);
-
-        if (dbCategories && dbCategories.length > 0) {
-          const names = ['ทั้งหมด', ...dbCategories.map((cat) => cat.name)];
-          setCatList(names);
-        }
-
-        if (dbProducts && dbProducts.length > 0) {
-          const mapped: Product[] = dbProducts.map((p) => ({
-            id: p.slug || p.id,
-            name: p.name,
-            code: p.sku || 'DCT-PK-000',
-            category: p.category_id || 'สินค้าทั่วไป',
-            description: p.description || '',
-            cut: p.cut_format || 'Custom cut',
-            pack: p.packing || 'ตามสเปกลูกค้า',
-            storage: p.storage || 'แช่เย็น / แช่แข็ง',
-            use: p.recommended_use || 'ธุรกิจอาหาร',
-            image: p.image_url || 'https://images.unsplash.com/photo-1603048297172-c92544798d5a?auto=format&fit=crop&w=1000&q=80',
-          }));
-          setProductList(mapped);
-        } else {
-          setProductList(defaultProducts);
+        const res = await fetch('/api/cms?table=products', { cache: 'no-store' });
+        if (res.ok) {
+          const serverProducts = await res.json();
+          if (Array.isArray(serverProducts) && serverProducts.length > 0) {
+            const activeOnes = serverProducts.filter((p: any) => p.active !== false);
+            if (activeOnes.length > 0) {
+              setProductList(
+                activeOnes.map((p: any) => ({
+                  id: p.slug || p.id,
+                  name: p.name,
+                  code: p.sku || 'DCT-PK-000',
+                  category: p.category || 'ชิ้นส่วนพรีเมียม',
+                  description: p.description || '',
+                  cut: p.cut_format || 'Custom cut',
+                  pack: p.packing || 'ตามสเปกลูกค้า',
+                  storage: p.storage || 'แช่เย็น / แช่แข็ง',
+                  use: p.recommended_use || 'ธุรกิจอาหาร',
+                  image: p.image_url || p.image || 'https://images.unsplash.com/photo-1603048297172-c92544798d5a?auto=format&fit=crop&w=1000&q=80',
+                }))
+              );
+              return;
+            }
+          }
         }
       } catch {
-        setProductList(defaultProducts);
+        // ignore
       }
+
+      // 3. Fallback
+      setProductList(defaultProducts);
     }
     void load();
   }, []);

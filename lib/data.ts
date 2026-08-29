@@ -34,7 +34,7 @@ export const products: Product[] = [
     pack: 'Vacuum pack ตามสเปก',
     storage: 'แช่เย็นหรือแช่แข็ง',
     use: 'ร้านอาหาร ชาบู และผลิตภัณฑ์แปรรูป',
-    image: 'https://images.unsplash.com/photo-1602470520998-f4a52199a3d6?auto=format&fit=crop&w=1000&q=80',
+    image: '/products/pork-belly.webp',
   },
   {
     id: 'pork-neck',

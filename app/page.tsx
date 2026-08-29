@@ -17,36 +17,64 @@ export default function Home() {
       const prof = await getCompanyProfile();
       setProfile(prof);
 
-      // 2. Load products from Supabase Cloud if configured
-      if (!isSupabaseConfigured()) {
-        setProds(defaultProducts);
-        return;
+      // 2. Load products
+      if (isSupabaseConfigured()) {
+        try {
+          const client = supabaseBrowser();
+          const { data: dbProducts } = await client.from('products').select('*').eq('active', true).limit(3);
+          if (dbProducts && dbProducts.length > 0) {
+            setProds(
+              dbProducts.map((p) => ({
+                id: p.slug || p.id,
+                name: p.name,
+                code: p.sku || 'DCT-PK-000',
+                category: p.category_id || 'สินค้าแนะนำ',
+                description: p.description || '',
+                cut: p.cut_format || 'Custom cut',
+                pack: p.packing || 'ตามสเปกลูกค้า',
+                storage: p.storage || 'แช่เย็น / แช่แข็ง',
+                use: p.recommended_use || 'ธุรกิจอาหาร',
+                image: p.image_url || 'https://images.unsplash.com/photo-1603048297172-c92544798d5a?auto=format&fit=crop&w=1000&q=80',
+              }))
+            );
+            return;
+          }
+        } catch {
+          // ignore
+        }
       }
 
+      // 3. Server CMS API Fallback
       try {
-        const client = supabaseBrowser();
-        const { data: dbProducts } = await client.from('products').select('*').eq('active', true).limit(3);
-        if (dbProducts && dbProducts.length > 0) {
-          setProds(
-            dbProducts.map((p) => ({
-              id: p.slug || p.id,
-              name: p.name,
-              code: p.sku || 'DCT-PK-000',
-              category: p.category_id || 'สินค้าแนะนำ',
-              description: p.description || '',
-              cut: p.cut_format || 'Custom cut',
-              pack: p.packing || 'ตามสเปกลูกค้า',
-              storage: p.storage || 'แช่เย็น / แช่แข็ง',
-              use: p.recommended_use || 'ธุรกิจอาหาร',
-              image: p.image_url || 'https://images.unsplash.com/photo-1603048297172-c92544798d5a?auto=format&fit=crop&w=1000&q=80',
-            }))
-          );
-        } else {
-          setProds(defaultProducts);
+        const res = await fetch('/api/cms?table=products', { cache: 'no-store' });
+        if (res.ok) {
+          const serverProducts = await res.json();
+          if (Array.isArray(serverProducts) && serverProducts.length > 0) {
+            const activeOnes = serverProducts.filter((p: any) => p.active !== false);
+            if (activeOnes.length > 0) {
+              setProds(
+                activeOnes.slice(0, 3).map((p: any) => ({
+                  id: p.slug || p.id,
+                  name: p.name,
+                  code: p.sku || 'DCT-PK-000',
+                  category: p.category || 'สินค้าแนะนำ',
+                  description: p.description || '',
+                  cut: p.cut_format || 'Custom cut',
+                  pack: p.packing || 'ตามสเปกลูกค้า',
+                  storage: p.storage || 'แช่เย็น / แช่แข็ง',
+                  use: p.recommended_use || 'ธุรกิจอาหาร',
+                  image: p.image_url || p.image || 'https://images.unsplash.com/photo-1603048297172-c92544798d5a?auto=format&fit=crop&w=1000&q=80',
+                }))
+              );
+              return;
+            }
+          }
         }
       } catch {
-        setProds(defaultProducts);
+        // ignore
       }
+
+      setProds(defaultProducts);
     }
     void load();
   }, []);
