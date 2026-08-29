@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { supabaseBrowser } from '@/lib/supabase-browser';
+import { supabaseBrowser, isSupabaseConfigured } from '@/lib/supabase-browser';
 import { products as mockProducts, categories as mockCategories, articles as mockArticles } from '@/lib/data';
 import { ImageUploader } from '@/components/image-uploader';
 
@@ -172,7 +172,7 @@ export function CmsCrud({ resourceKey }: { resourceKey: keyof typeof resources }
   const [categories, setCategories] = useState<Row[]>([]);
   const [editing, setEditing] = useState<Row | null>(null);
   const [form, setForm] = useState<Row>(() => blank(resource));
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState('');
 
@@ -182,6 +182,14 @@ export function CmsCrud({ resourceKey }: { resourceKey: keyof typeof resources }
   );
 
   async function load() {
+    if (!isSupabaseConfigured()) {
+      setRows(resource.defaultList ? resource.defaultList() : []);
+      setCategories(
+        mockCategories.filter((c) => c !== 'ทั้งหมด').map((c, i) => ({ id: `cat-${i + 1}`, name: c, slug: c }))
+      );
+      return;
+    }
+
     const client = supabaseBrowser();
     try {
       const [{ data, error }, { data: categoryData }] = await Promise.all([
@@ -192,17 +200,7 @@ export function CmsCrud({ resourceKey }: { resourceKey: keyof typeof resources }
       if (!error && data && data.length > 0) {
         setRows(data as Row[]);
       } else {
-        // Fallback to local storage or defaults if Supabase is empty
-        const cached = localStorage.getItem(`dct_cms_${resource.table}`);
-        if (cached) {
-          try {
-            setRows(JSON.parse(cached));
-          } catch {
-            setRows(resource.defaultList ? resource.defaultList() : []);
-          }
-        } else {
-          setRows(resource.defaultList ? resource.defaultList() : []);
-        }
+        setRows(resource.defaultList ? resource.defaultList() : []);
       }
 
       if (categoryData && categoryData.length > 0) {
@@ -220,7 +218,7 @@ export function CmsCrud({ resourceKey }: { resourceKey: keyof typeof resources }
   useEffect(() => {
     setEditing(null);
     setForm(blank(resource));
-    setMessage('');
+    setMessage(null);
     setSearch('');
     void load();
   }, [resourceKey]);
@@ -228,13 +226,13 @@ export function CmsCrud({ resourceKey }: { resourceKey: keyof typeof resources }
   function edit(row: Row) {
     setEditing(row);
     setForm({ ...row });
-    setMessage('');
+    setMessage(null);
   }
 
   function cancel() {
     setEditing(null);
     setForm(blank(resource));
-    setMessage('');
+    setMessage(null);
   }
 
   function change(key: string, value: any) {
@@ -244,7 +242,16 @@ export function CmsCrud({ resourceKey }: { resourceKey: keyof typeof resources }
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSaving(true);
-    setMessage('');
+    setMessage(null);
+
+    if (!isSupabaseConfigured()) {
+      setSaving(false);
+      setMessage({
+        text: '❌ ไม่สามารถบันทึกได้: ยังไม่ได้เชื่อมต่อ Cloud Database (Supabase) บน Vercel กรุณาตั้งค่า Supabase URL & Key เพื่อให้ข้อมูลบันทึกขึ้นระบบกลางและแสดงผลทุกอุปกรณ์',
+        type: 'error',
+      });
+      return;
+    }
 
     const payload: Row = { ...form };
     for (const field of resource.fields) {
@@ -262,47 +269,55 @@ export function CmsCrud({ resourceKey }: { resourceKey: keyof typeof resources }
         ? await client.from(resource.table).update(dbPayload).eq('id', editing.id)
         : await client.from(resource.table).insert(dbPayload);
 
-      // Also save to localStorage cache
-      let updatedRows: Row[];
-      if (editing?.id) {
-        updatedRows = rows.map((r) => (r.id === editing.id ? { ...payload, id: editing.id } : r));
-      } else {
-        const newId = payload.id || `custom-${Date.now()}`;
-        updatedRows = [{ ...payload, id: newId }, ...rows];
-      }
-      setRows(updatedRows);
-      localStorage.setItem(`dct_cms_${resource.table}`, JSON.stringify(updatedRows));
-
       setSaving(false);
       if (result.error) {
-        setMessage(`บันทึกในระบบเรียบร้อย (Supabase แจ้ง: ${result.error.message})`);
+        setMessage({
+          text: `❌ บันทึกล้มเหลว (Supabase error: ${result.error.message})`,
+          type: 'error',
+        });
       } else {
-        setMessage('บันทึกข้อมูลเรียบร้อยแล้ว');
+        setMessage({
+          text: '✅ บันทึกข้อมูลขึ้น Cloud Database เรียบร้อยแล้ว (อัปเดตทุกอุปกรณ์ทันที)',
+          type: 'success',
+        });
+        cancel();
+        void load();
       }
-      cancel();
-    } catch {
+    } catch (err: any) {
       setSaving(false);
-      setMessage('บันทึกข้อมูลในเครื่องเรียบร้อย');
-      cancel();
+      setMessage({
+        text: `❌ เกิดข้อผิดพลาด: ${err?.message || 'Unknown error'}`,
+        type: 'error',
+      });
     }
   }
 
   async function remove(row: Row) {
     if (!window.confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบ “${row[resource.primary]}”?`)) return;
+
+    if (!isSupabaseConfigured()) {
+      setMessage({
+        text: '❌ ไม่สามารถลบได้: ยังไม่ได้เชื่อมต่อ Cloud Database (Supabase)',
+        type: 'error',
+      });
+      return;
+    }
+
     try {
       if (row.id) {
         const client = supabaseBrowser();
-        await client.from(resource.table).delete().eq('id', row.id);
+        const { error } = await client.from(resource.table).delete().eq('id', row.id);
+        if (error) {
+          setMessage({ text: `❌ ลบล้มเหลว: ${error.message}`, type: 'error' });
+          return;
+        }
       }
+      setMessage({ text: `✅ ลบ “${row[resource.primary]}” จากระบบคลาวด์เรียบร้อยแล้ว`, type: 'success' });
+      if (editing?.id === row.id) cancel();
+      void load();
     } catch {
-      // ignore
+      setMessage({ text: '❌ เกิดข้อผิดพลาดในการลบข้อมูล', type: 'error' });
     }
-
-    const updatedRows = rows.filter((r) => r.id !== row.id);
-    setRows(updatedRows);
-    localStorage.setItem(`dct_cms_${resource.table}`, JSON.stringify(updatedRows));
-    setMessage(`ลบ “${row[resource.primary]}” เรียบร้อยแล้ว`);
-    if (editing?.id === row.id) cancel();
   }
 
   const filteredRows = rows.filter((r) => {
@@ -392,7 +407,11 @@ export function CmsCrud({ resourceKey }: { resourceKey: keyof typeof resources }
           )}
         </div>
 
-        {message && <div className="notice" style={{ marginBottom: '14px' }}>{message}</div>}
+        {message && (
+          <div className={`notice ${message.type === 'error' ? 'notice-error' : 'notice-success'}`} style={{ marginBottom: '14px' }}>
+            {message.text}
+          </div>
+        )}
 
         {resource.fields.map((field) => {
           if (field.type === 'image' || field.key === 'image_url' || field.key === 'cover_image_url' || field.key === 'document_url') {
@@ -461,7 +480,7 @@ export function CmsCrud({ resourceKey }: { resourceKey: keyof typeof resources }
 
         <div className="actions" style={{ marginTop: '20px' }}>
           <button type="submit" className="button" disabled={saving}>
-            {saving ? '⏳ กำลังบันทึก…' : '💾 บันทึกข้อมูล'}
+            {saving ? '⏳ กำลังบันทึกขึ้น Cloud…' : '💾 บันทึกข้อมูล'}
           </button>
           {editing && (
             <button type="button" className="button secondary" onClick={cancel}>

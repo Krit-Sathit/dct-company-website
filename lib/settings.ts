@@ -1,6 +1,6 @@
 'use client';
 
-import { supabaseBrowser } from '@/lib/supabase-browser';
+import { supabaseBrowser, isSupabaseConfigured } from '@/lib/supabase-browser';
 
 export type ContactSettings = {
   company_name_th: string;
@@ -56,22 +56,9 @@ export const defaultCompanyProfile: CompanyProfileSettings = {
   oem_description: 'Custom Cut, Slice, Dice, Mince, Vacuum และ OEM สำหรับร้านอาหาร ครัวกลาง และผู้ผลิตอาหารที่ต้องการความสม่ำเสมอในทุกล็อต',
 };
 
-const CONTACT_STORAGE_KEY = 'dct_contact_settings';
-const PROFILE_STORAGE_KEY = 'dct_profile_settings';
-
 export async function getContactSettings(): Promise<ContactSettings> {
-  if (typeof window !== 'undefined') {
-    const cached = localStorage.getItem(CONTACT_STORAGE_KEY);
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached);
-        if (parsed && typeof parsed === 'object') {
-          return { ...defaultContactSettings, ...parsed };
-        }
-      } catch {
-        // ignore parse error
-      }
-    }
+  if (!isSupabaseConfigured()) {
+    return defaultContactSettings;
   }
 
   try {
@@ -83,22 +70,21 @@ export async function getContactSettings(): Promise<ContactSettings> {
       .maybeSingle();
 
     if (!error && data?.value && typeof data.value === 'object') {
-      const merged = { ...defaultContactSettings, ...data.value };
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(CONTACT_STORAGE_KEY, JSON.stringify(merged));
-      }
-      return merged;
+      return { ...defaultContactSettings, ...data.value };
     }
   } catch {
-    // Supabase might not be configured or reachable
+    // Supabase query error
   }
 
   return defaultContactSettings;
 }
 
 export async function saveContactSettings(settings: ContactSettings): Promise<{ success: boolean; message: string }> {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(CONTACT_STORAGE_KEY, JSON.stringify(settings));
+  if (!isSupabaseConfigured()) {
+    return {
+      success: false,
+      message: '❌ ไม่สามารถบันทึกได้: ยังไม่ได้เชื่อมต่อ Cloud Database (Supabase) บน Vercel กรุณาตั้งค่า Supabase เพื่อให้ข้อมูลบันทึกขึ้นระบบกลางและซิงค์ทุกอุปกรณ์',
+    };
   }
 
   try {
@@ -110,28 +96,18 @@ export async function saveContactSettings(settings: ContactSettings): Promise<{ 
     });
 
     if (error) {
-      return { success: false, message: `บันทึกในเครื่องแล้ว (Supabase: ${error.message})` };
+      return { success: false, message: `❌ บันทึกล้มเหลว (Supabase error: ${error.message})` };
     }
-    return { success: true, message: 'บันทึกข้อมูลติดต่อเรียบร้อยแล้ว' };
+    return { success: true, message: '✅ บันทึกข้อมูลขึ้น Cloud Database เรียบร้อยแล้ว (อัปเดตทุกอุปกรณ์ทันที)' };
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Unknown error';
-    return { success: true, message: `บันทึกในเครื่องแล้ว (${msg})` };
+    return { success: false, message: `❌ เกิดข้อผิดพลาดในการเชื่อมต่อ: ${msg}` };
   }
 }
 
 export async function getCompanyProfile(): Promise<CompanyProfileSettings> {
-  if (typeof window !== 'undefined') {
-    const cached = localStorage.getItem(PROFILE_STORAGE_KEY);
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached);
-        if (parsed && typeof parsed === 'object') {
-          return { ...defaultCompanyProfile, ...parsed };
-        }
-      } catch {
-        // ignore
-      }
-    }
+  if (!isSupabaseConfigured()) {
+    return defaultCompanyProfile;
   }
 
   try {
@@ -143,11 +119,7 @@ export async function getCompanyProfile(): Promise<CompanyProfileSettings> {
       .maybeSingle();
 
     if (!error && data?.value && typeof data.value === 'object') {
-      const merged = { ...defaultCompanyProfile, ...data.value };
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(merged));
-      }
-      return merged;
+      return { ...defaultCompanyProfile, ...data.value };
     }
   } catch {
     // Supabase error
@@ -157,8 +129,11 @@ export async function getCompanyProfile(): Promise<CompanyProfileSettings> {
 }
 
 export async function saveCompanyProfile(profile: CompanyProfileSettings): Promise<{ success: boolean; message: string }> {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile));
+  if (!isSupabaseConfigured()) {
+    return {
+      success: false,
+      message: '❌ ไม่สามารถบันทึกได้: ยังไม่ได้เชื่อมต่อ Cloud Database (Supabase) บน Vercel กรุณาตั้งค่า Supabase เพื่อให้ข้อมูลบันทึกขึ้นระบบกลางและซิงค์ทุกอุปกรณ์',
+    };
   }
 
   try {
@@ -170,11 +145,11 @@ export async function saveCompanyProfile(profile: CompanyProfileSettings): Promi
     });
 
     if (error) {
-      return { success: false, message: `บันทึกในเครื่องแล้ว (Supabase: ${error.message})` };
+      return { success: false, message: `❌ บันทึกล้มเหลว (Supabase error: ${error.message})` };
     }
-    return { success: true, message: 'บันทึกข้อมูลเว็บไซต์เรียบร้อยแล้ว' };
+    return { success: true, message: '✅ บันทึกข้อมูลขึ้น Cloud Database เรียบร้อยแล้ว (อัปเดตทุกอุปกรณ์ทันที)' };
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Unknown error';
-    return { success: true, message: `บันทึกในเครื่องแล้ว (${msg})` };
+    return { success: false, message: `❌ เกิดข้อผิดพลาดในการเชื่อมต่อ: ${msg}` };
   }
 }

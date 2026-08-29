@@ -50,20 +50,7 @@ export default function Admin() {
     setIsConfigured(configured);
 
     if (!configured) {
-      // Local/Staging demo mode
-      setEmail('admin@duangcharoen.com (Local / Demo Mode)');
-      
-      // Load local RFQ stats
-      if (typeof window !== 'undefined') {
-        try {
-          const loc = JSON.parse(localStorage.getItem('dct-rfq-submissions') || '[]');
-          if (Array.isArray(loc)) {
-            setStats((prev) => ({ ...prev, rfqs: loc.length }));
-          }
-        } catch {
-          // ignore
-        }
-      }
+      setEmail('admin@duangcharoen.com');
       setChecking(false);
       return;
     }
@@ -92,22 +79,12 @@ export default function Admin() {
           client.from('rfqs').select('*', { count: 'exact', head: true }),
         ]);
 
-        let localRfqCount = 0;
-        if (typeof window !== 'undefined') {
-          try {
-            const loc = JSON.parse(localStorage.getItem('dct-rfq-submissions') || '[]');
-            localRfqCount = Array.isArray(loc) ? loc.length : 0;
-          } catch {
-            // ignore
-          }
-        }
-
         setStats({
           products: prodCount || 6,
           categories: catCount || 3,
           services: srvCount || 4,
           articles: artCount || 3,
-          rfqs: Math.max(rfqCount || 0, localRfqCount),
+          rfqs: rfqCount || 0,
         });
       } catch {
         // keep fallback stats
@@ -163,15 +140,43 @@ export default function Admin() {
         </div>
       </div>
 
-      {!isConfigured && (
-        <div className="notice notice-info" style={{ marginBottom: '20px' }}>
-          ℹ️ <b>โหมดพัฒนาในเครื่อง (Local Mode):</b> ยังไม่ได้ตั้งค่า URL Supabase ในไฟล์ <code>.env.local</code> ระบบจะบันทึกและจำลองข้อมูลผ่านพื้นที่จัดเก็บในเบราว์เซอร์ให้คุณทดสอบได้ทุกฟังก์ชัน
+      {isConfigured ? (
+        <div
+          style={{
+            marginBottom: '20px',
+            padding: '12px 18px',
+            background: '#f0fff4',
+            border: '1px solid #9ae6b4',
+            borderRadius: '4px',
+            color: '#22543d',
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+        >
+          <span>🟢</span>
+          <b>สถานะ Cloud Database:</b> เชื่อมต่อ Supabase สำเร็จ — ทุกการแก้ไขจะซิงค์ไปยังมือถือและลูกค้าทุกอุปกรณ์ทันที
+        </div>
+      ) : (
+        <div
+          style={{
+            marginBottom: '20px',
+            padding: '14px 18px',
+            background: '#fffaf0',
+            border: '1px solid #fbd38d',
+            borderRadius: '4px',
+            color: '#744210',
+            fontSize: '14px',
+            lineHeight: 1.6,
+          }}
+        >
+          <b>⚠️ แจ้งเตือนสถานะฐานข้อมูล:</b> ยังไม่ได้เชื่อมต่อ Cloud Database (Supabase) บน Vercel
+          <div style={{ marginTop: '6px', fontSize: '13px', color: '#8a4b08' }}>
+            ขณะนี้เว็บไซต์กำลังแสดงผลข้อมูลตั้งต้นที่มีในระบบ (เพื่อให้ทุกอุปกรณ์เห็นข้อมูลตรงกัน) หากต้องการแก้ไขหรือเพิ่มข้อมูลผ่าน CMS แล้วให้ซิงค์ทุกอุปกรณ์ทันที กรุณาเชื่อมต่อ Supabase Database บน Vercel Environment Variables ครับ
+          </div>
         </div>
       )}
-
-      <div className="notice" style={{ marginBottom: '24px' }}>
-        💡 <b>คำแนะนำ:</b> คุณสามารถคลิกเลือกแท็บด้านล่างเพื่อ <b>แก้ไขข้อมูลติดต่อและที่อยู่</b>, <b>เพิ่ม/แก้ไขสินค้า</b>, <b>ดูใบเสนอราคา RFQ</b> หรือจัดการเนื้อหาได้ทันที
-      </div>
 
       <div className="admin-nav">
         {tabs.map((item) => (
