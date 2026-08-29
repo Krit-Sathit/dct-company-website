@@ -59,8 +59,8 @@ export default function Home() {
       <section
         className="hero"
         style={{
-          backgroundImage: `linear-gradient(90deg, rgba(247,242,234,.95) 0%, rgba(247,242,234,.82) 46%, rgba(247,242,234,.12) 80%, rgba(247,242,234,.02) 100%), url('${heroBg}')`,
-          backgroundPosition: 'right center',
+          backgroundImage: `linear-gradient(90deg, rgba(247, 242, 234, 0.85) 0%, rgba(247, 242, 234, 0.35) 35%, rgba(247, 242, 234, 0) 55%), url('${heroBg}')`,
+          backgroundPosition: 'center center',
           backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat',
         }}
