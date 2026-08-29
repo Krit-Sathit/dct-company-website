@@ -23,6 +23,10 @@ export type CompanyProfileSettings = {
   about_summary: string;
   vision: string;
   mission: string;
+  hero_image_url: string;
+  oem_section_image_url: string;
+  oem_title: string;
+  oem_description: string;
 };
 
 export const defaultContactSettings: ContactSettings = {
@@ -41,11 +45,15 @@ export const defaultContactSettings: ContactSettings = {
 
 export const defaultCompanyProfile: CompanyProfileSettings = {
   tagline: 'DCT · Trusted B2B Food Supply Partner',
-  headline: 'มาตรฐานที่มั่นใจได้ สำหรับธุรกิจอาหารที่ต้องการความสม่ำเสมอ',
+  headline: 'มาตรฐานที่มั่นใจได้\nสำหรับธุรกิจอาหารที่ต้องการความสม่ำเสมอ',
   subheadline: 'วัตถุดิบเนื้อสุกรที่ได้มาตรฐาน ตัดแต่งตามสเปก พร้อมการจัดเก็บและส่งมอบที่ออกแบบมาเพื่อการทำงานของธุรกิจอาหาร',
   about_summary: 'Duangcharoen Intertrade Co., Ltd. สนับสนุนธุรกิจอาหารด้วยการจัดหาวัตถุดิบเนื้อสุกร การตัดแต่งตามสเปก และการบริหารการจัดเก็บและส่งมอบอย่างเป็นระบบ',
   vision: 'เป็น Food Supply Partner ที่ลูกค้า B2B ไว้วางใจในเรื่องมาตรฐาน ความแม่นยำ และความต่อเนื่องของการทำงาน',
   mission: 'ทำให้ลูกค้าควบคุมคุณภาพ ลดขั้นตอนการเตรียม และวางแผนธุรกิจได้ง่ายขึ้น',
+  hero_image_url: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1800&q=85',
+  oem_section_image_url: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=1000&q=80',
+  oem_title: 'สเปกที่ชัดเจน คือจุดเริ่มต้นของการทำงานที่ลื่นไหล',
+  oem_description: 'Custom Cut, Slice, Dice, Mince, Vacuum และ OEM สำหรับร้านอาหาร ครัวกลาง และผู้ผลิตอาหารที่ต้องการความสม่ำเสมอในทุกล็อต',
 };
 
 const CONTACT_STORAGE_KEY = 'dct_contact_settings';

@@ -78,7 +78,7 @@ export function CmsSettings() {
       <div className="cms-settings-header">
         <div>
           <h2>ตั้งค่าเว็บไซต์และข้อมูลติดต่อ</h2>
-          <p className="small">จัดการข้อมูลติดต่อ เบอร์โทรศัพท์ ที่อยู่ รูปภาพโรงงาน/สำนักงาน และข้อความหลักของเว็บไซต์</p>
+          <p className="small">จัดการข้อมูลติดต่อ เบอร์โทรศัพท์ ที่อยู่ รูปภาพหน้าแรก/โรงงาน และข้อความหลักของเว็บไซต์</p>
         </div>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <a href="/contact" target="_blank" rel="noopener noreferrer" className="button secondary" style={{ fontSize: '13px', padding: '8px 14px' }}>
@@ -105,7 +105,7 @@ export function CmsSettings() {
           onClick={() => { setActiveSubTab('profile'); setMessage(null); }}
           style={{ padding: '8px 16px', fontSize: '14px' }}
         >
-          🏷️ ข้อมูลแบรนด์ & ข้อความหน้าแรก
+          🏷️ ข้อมูลแบรนด์ & รูปภาพหน้าแรก
         </button>
       </div>
 
@@ -260,9 +260,46 @@ export function CmsSettings() {
                   placeholder="เช่น วัตถุดิบเนื้อสุกรที่ได้มาตรฐาน ตัดแต่งตามสเปก..."
                 />
               </label>
+
+              <ImageUploader
+                label="🌅 รูปภาพพื้นหลัง Hero Banner (หน้าแรก)"
+                value={profile.hero_image_url || ''}
+                onChange={(url) => handleProfileChange('hero_image_url', url)}
+                folder="homepage"
+                helperText="รูปภาพพื้นหลังส่วนหัวของหน้าแรก (ระบบจะปรับขนาดและแปลงเป็น WebP ให้อัตโนมัติ)"
+              />
             </div>
 
             <div className="settings-col">
+              <ImageUploader
+                label="🥩 รูปภาพส่วนบริการ Custom Cut & OEM (หน้าแรก)"
+                value={profile.oem_section_image_url || ''}
+                onChange={(url) => handleProfileChange('oem_section_image_url', url)}
+                folder="homepage"
+                helperText="รูปภาพประกอบส่วนบริการ Custom Cut & OEM ที่แสดงอยู่ตรงกลางหน้าแรก"
+              />
+
+              <label className="login-label">
+                หัวข้อส่วนบริการ Custom Cut & OEM
+                <input
+                  className="field"
+                  value={profile.oem_title}
+                  onChange={(e) => handleProfileChange('oem_title', e.target.value)}
+                  placeholder="เช่น สเปกที่ชัดเจน คือจุดเริ่มต้นของการทำงานที่ลื่นไหล"
+                />
+              </label>
+
+              <label className="login-label">
+                คำบรรยายส่วนบริการ Custom Cut & OEM
+                <textarea
+                  className="field"
+                  rows={3}
+                  value={profile.oem_description}
+                  onChange={(e) => handleProfileChange('oem_description', e.target.value)}
+                  placeholder="เช่น Custom Cut, Slice, Dice, Mince, Vacuum และ OEM สำหรับร้านอาหาร ครัวกลาง..."
+                />
+              </label>
+
               <label className="login-label">
                 ภาพรวมบริษัท / ข้อมูลสั้น (About Summary)
                 <textarea
@@ -271,28 +308,6 @@ export function CmsSettings() {
                   value={profile.about_summary}
                   onChange={(e) => handleProfileChange('about_summary', e.target.value)}
                   placeholder="ประวัติหรือภาพรวมบริษัทสั้นๆ สำหรับแสดงบนหน้าเว็บและส่วนท้าย"
-                />
-              </label>
-
-              <label className="login-label">
-                วิสัยทัศน์ (Vision)
-                <textarea
-                  className="field"
-                  rows={2}
-                  value={profile.vision}
-                  onChange={(e) => handleProfileChange('vision', e.target.value)}
-                  placeholder="วิสัยทัศน์ขององค์กร"
-                />
-              </label>
-
-              <label className="login-label">
-                พันธกิจ (Mission)
-                <textarea
-                  className="field"
-                  rows={2}
-                  value={profile.mission}
-                  onChange={(e) => handleProfileChange('mission', e.target.value)}
-                  placeholder="พันธกิจขององค์กร"
                 />
               </label>
             </div>
