@@ -20,8 +20,8 @@ type ProcessedImageResult = {
   height: number;
 };
 
-// Auto-resize large images (max 1200px) and convert format to modern WebP (quality 82%)
-async function processAndConvertToWebp(file: File, maxWidth = 1200, maxHeight = 1200, quality = 0.82): Promise<ProcessedImageResult> {
+// Auto-resize large images (max 2000px) and convert format to modern WebP (quality 90%)
+async function processAndConvertToWebp(file: File, maxWidth = 2000, maxHeight = 1600, quality = 0.90): Promise<ProcessedImageResult> {
   const originalSizeKb = Math.round(file.size / 1024);
 
   return new Promise((resolve, reject) => {
@@ -112,8 +112,8 @@ export function ImageUploader({ label, value, onChange, folder = 'uploads', help
     setOptimizeStats(null);
 
     try {
-      // 1. Process, Auto-Resize & Convert to WebP on client side
-      const processed = await processAndConvertToWebp(file, 1200, 1200, 0.82);
+      // 1. Process, Auto-Resize & Convert to WebP on client side (Ultra-HD 2000px, 90% quality)
+      const processed = await processAndConvertToWebp(file, 2000, 1600, 0.90);
       setOptimizeStats({
         orig: processed.originalSizeKb,
         opt: processed.optimizedSizeKb,
