@@ -50,7 +50,7 @@ export const defaultCompanyProfile: CompanyProfileSettings = {
   about_summary: 'Duangcharoen Intertrade Co., Ltd. สนับสนุนธุรกิจอาหารด้วยการจัดหาวัตถุดิบเนื้อสุกร การตัดแต่งตามสเปก และการบริหารการจัดเก็บและส่งมอบอย่างเป็นระบบ',
   vision: 'เป็น Food Supply Partner ที่ลูกค้า B2B ไว้วางใจในเรื่องมาตรฐาน ความแม่นยำ และความต่อเนื่องของการทำงาน',
   mission: 'ทำให้ลูกค้าควบคุมคุณภาพ ลดขั้นตอนการเตรียม และวางแผนธุรกิจได้ง่ายขึ้น',
-  hero_image_url: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=1800&q=85',
+  hero_image_url: '/hero-banner.webp',
   oem_section_image_url: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=1000&q=80',
   oem_title: 'สเปกที่ชัดเจน คือจุดเริ่มต้นของการทำงานที่ลื่นไหล',
   oem_description: 'Custom Cut, Slice, Dice, Mince, Vacuum และ OEM สำหรับร้านอาหาร ครัวกลาง และผู้ผลิตอาหารที่ต้องการความสม่ำเสมอในทุกล็อต',

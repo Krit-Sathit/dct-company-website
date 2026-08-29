@@ -5,7 +5,7 @@ import { defaultContactSettings, defaultCompanyProfile } from '@/lib/settings';
 let globalContact = { ...defaultContactSettings };
 let globalProfile = {
   ...defaultCompanyProfile,
-  hero_image_url: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=1800&q=85',
+  hero_image_url: '/hero-banner.webp',
 };
 
 export async function GET(req: NextRequest) {

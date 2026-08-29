@@ -21,7 +21,7 @@ button { cursor: pointer; }
 .cta, .button { border: 0; border-radius: 3px; background: var(--red); color: white; padding: 12px 18px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
 .cta:hover, .button:hover { background: #711717; }
 .button.alt { background: transparent; color: var(--red); border: 1px solid var(--red); }
-.hero { min-height: 640px; display: grid; align-items: center; background: linear-gradient(90deg, rgba(247,242,234,.96) 0%, rgba(247,242,234,.86) 45%, rgba(247,242,234,.14) 100%), url('https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=1800&q=85') center/cover; }
+.hero { min-height: 640px; display: grid; align-items: center; background: linear-gradient(90deg, rgba(247,242,234,.96) 0%, rgba(247,242,234,.86) 45%, rgba(247,242,234,.14) 100%), url('/hero-banner.webp') center/cover; }
 .eyebrow { color: var(--red); font-size: 13px; letter-spacing: .12em; font-weight: 700; text-transform: uppercase; }
 .hero h1 { font-size: clamp(38px, 5vw, 64px); line-height: 1.18; max-width: 770px; margin: 16px 0; color: var(--brown); }
 .hero p { max-width: 600px; font-size: 18px; line-height: 1.8; }
