@@ -3,12 +3,13 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 import { products as mockProducts, categories as mockCategories, articles as mockArticles } from '@/lib/data';
+import { ImageUploader } from '@/components/image-uploader';
 
 type Row = Record<string, any> & { id?: string };
 type Field = {
   key: string;
   label: string;
-  type?: 'text' | 'textarea' | 'checkbox' | 'select' | 'datetime';
+  type?: 'text' | 'textarea' | 'checkbox' | 'select' | 'datetime' | 'image';
   options?: Array<{ label: string; value: string }>;
   placeholder?: string;
 };
@@ -52,7 +53,7 @@ export const resources: Record<string, Resource> = {
       { key: 'packing', label: 'บรรจุภัณฑ์ (Packing)', placeholder: 'เช่น 5 กก. / Vacuum pack' },
       { key: 'storage', label: 'การจัดเก็บ (Storage)', placeholder: 'เช่น แช่เย็น 0-4°C หรือแช่แข็ง -18°C' },
       { key: 'recommended_use', label: 'การใช้งานแนะนำ (Recommended use)', placeholder: 'เช่น ครัวกลาง ร้านชาบู โรงงาน' },
-      { key: 'image_url', label: 'URL รูปภาพสินค้า', placeholder: 'https://images.unsplash.com/... หรือ /products/...' },
+      { key: 'image_url', label: 'รูปภาพสินค้า', type: 'image' },
       { key: 'active', label: 'เปิดแสดงผลบนเว็บไซต์', type: 'checkbox' },
     ],
     defaultList: () =>
@@ -78,7 +79,7 @@ export const resources: Record<string, Resource> = {
       { key: 'title', label: 'ชื่อบริการ *', placeholder: 'เช่น Custom Cut, OEM Partnership' },
       { key: 'slug', label: 'Slug *', placeholder: 'เช่น custom-cut' },
       { key: 'description', label: 'รายละเอียดบริการ', type: 'textarea', placeholder: 'รายละเอียดขั้นตอนหรือความสามารถ' },
-      { key: 'image_url', label: 'URL รูปภาพบริการ', placeholder: 'https://...' },
+      { key: 'image_url', label: 'รูปภาพบริการ', type: 'image' },
       { key: 'active', label: 'เปิดใช้งานบริการนี้', type: 'checkbox' },
     ],
     defaultList: () => [
@@ -95,7 +96,7 @@ export const resources: Record<string, Resource> = {
     fields: [
       { key: 'name', label: 'ชื่อมาตรฐาน / ใบรับรอง *', placeholder: 'เช่น GHP, HACCP, อย., ปศุสัตว์ OK' },
       { key: 'description', label: 'รายละเอียดมาตรฐาน', type: 'textarea', placeholder: 'ขอบเขตการรับรองหรือหน่วยงานที่ออกให้' },
-      { key: 'document_url', label: 'URL เอกสารหรือรูปภาพใบรับรอง', placeholder: 'https://...' },
+      { key: 'document_url', label: 'รูปภาพหรือไฟล์ใบรับรอง', type: 'image' },
       { key: 'active', label: 'เปิดแสดงผล', type: 'checkbox' },
     ],
     defaultList: () => [
@@ -114,7 +115,7 @@ export const resources: Record<string, Resource> = {
       { key: 'slug', label: 'Slug *', placeholder: 'เช่น spec-first' },
       { key: 'excerpt', label: 'บทนำ / สรุปสั้นๆ', type: 'textarea', placeholder: 'สรุป 1-2 ประโยคสำหรับแสดงบนหน้าแรก' },
       { key: 'content', label: 'เนื้อหาบทความเต็ม', type: 'textarea', placeholder: 'เนื้อหาบทความแบบละเอียด' },
-      { key: 'cover_image_url', label: 'URL รูปภาพปก', placeholder: 'https://images.unsplash.com/...' },
+      { key: 'cover_image_url', label: 'รูปภาพปกบทความ', type: 'image' },
       {
         key: 'status',
         label: 'สถานะบทความ',
@@ -350,6 +351,14 @@ export function CmsCrud({ resourceKey }: { resourceKey: keyof typeof resources }
                   background: editing?.id === row.id ? '#fffdf9' : '#fff',
                 }}
               >
+                {row.image_url || row.cover_image_url ? (
+                  <img
+                    src={row.image_url || row.cover_image_url}
+                    alt="thumb"
+                    style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #eee' }}
+                    onError={(e) => { (e.currentTarget as HTMLElement).style.display = 'none'; }}
+                  />
+                ) : null}
                 <div style={{ flex: 1 }}>
                   <b style={{ color: 'var(--ink)' }}>{String(row[resource.primary] ?? '')}</b>
                   <br />
@@ -385,67 +394,70 @@ export function CmsCrud({ resourceKey }: { resourceKey: keyof typeof resources }
 
         {message && <div className="notice" style={{ marginBottom: '14px' }}>{message}</div>}
 
-        {resource.fields.map((field) => (
-          <label key={field.key} className="login-label">
-            {field.type === 'checkbox' ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  checked={Boolean(form[field.key])}
-                  onChange={(event) => change(field.key, event.target.checked)}
-                />
-                <span>{field.label}</span>
-              </div>
-            ) : (
-              <>
-                <span>{field.label}</span>
-                {field.type === 'textarea' ? (
-                  <textarea
-                    className="field"
-                    rows={field.key === 'content' ? 6 : 3}
-                    placeholder={field.placeholder}
-                    value={String(form[field.key] ?? '')}
-                    onChange={(event) => change(field.key, event.target.value)}
-                  />
-                ) : field.type === 'select' ? (
-                  <select
-                    className="field"
-                    value={String(form[field.key] ?? '')}
-                    onChange={(event) => change(field.key, event.target.value)}
-                  >
-                    <option value="">-- เลือก --</option>
-                    {(field.options ?? (field.key === 'category_id' ? categoryOptions : [])).map((option) => (
-                      <option value={option.value} key={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    className="field"
-                    type={field.type === 'datetime' ? 'datetime-local' : 'text'}
-                    placeholder={field.placeholder}
-                    value={String(form[field.key] ?? '')}
-                    onChange={(event) => change(field.key, event.target.value)}
-                    required={['name', 'title', 'question', 'slug'].includes(field.key)}
-                  />
-                )}
-              </>
-            )}
-          </label>
-        ))}
+        {resource.fields.map((field) => {
+          if (field.type === 'image' || field.key === 'image_url' || field.key === 'cover_image_url' || field.key === 'document_url') {
+            return (
+              <ImageUploader
+                key={field.key}
+                label={field.label}
+                value={String(form[field.key] ?? '')}
+                onChange={(url) => change(field.key, url)}
+                folder={resource.table}
+                helperText="คลิกเพื่อเลือกไฟล์รูปภาพจากเครื่อง หรือลากรูปมาวางที่นี่"
+              />
+            );
+          }
 
-        {form.image_url && typeof form.image_url === 'string' && form.image_url.startsWith('http') && (
-          <div style={{ marginTop: '12px' }}>
-            <span className="small">ตัวอย่างรูปภาพ:</span>
-            <img
-              src={form.image_url}
-              alt="Preview"
-              style={{ display: 'block', width: '100%', maxHeight: '140px', objectFit: 'cover', borderRadius: '4px', marginTop: '6px', border: '1px solid #ddd' }}
-              onError={(e) => { (e.currentTarget as HTMLElement).style.display = 'none'; }}
-            />
-          </div>
-        )}
+          return (
+            <label key={field.key} className="login-label">
+              {field.type === 'checkbox' ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={Boolean(form[field.key])}
+                    onChange={(event) => change(field.key, event.target.checked)}
+                  />
+                  <span>{field.label}</span>
+                </div>
+              ) : (
+                <>
+                  <span>{field.label}</span>
+                  {field.type === 'textarea' ? (
+                    <textarea
+                      className="field"
+                      rows={field.key === 'content' ? 6 : 3}
+                      placeholder={field.placeholder}
+                      value={String(form[field.key] ?? '')}
+                      onChange={(event) => change(field.key, event.target.value)}
+                    />
+                  ) : field.type === 'select' ? (
+                    <select
+                      className="field"
+                      value={String(form[field.key] ?? '')}
+                      onChange={(event) => change(field.key, event.target.value)}
+                    >
+                      <option value="">-- เลือก --</option>
+                      {(field.options ?? (field.key === 'category_id' ? categoryOptions : [])).map((option) => (
+                        <option value={option.value} key={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      className="field"
+                      type={field.type === 'datetime' ? 'datetime-local' : 'text'}
+                      placeholder={field.placeholder}
+                      value={String(form[field.key] ?? '')}
+                      onChange={(event) => change(field.key, event.target.value)}
+                      required={['name', 'title', 'question', 'slug'].includes(field.key)}
+                    />
+                  )}
+                </>
+              )}
+            </label>
+          );
+        })}
 
         <div className="actions" style={{ marginTop: '20px' }}>
           <button type="submit" className="button" disabled={saving}>

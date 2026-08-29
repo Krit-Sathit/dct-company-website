@@ -11,6 +11,7 @@ import {
   saveContactSettings,
   saveCompanyProfile,
 } from '@/lib/settings';
+import { ImageUploader } from '@/components/image-uploader';
 
 export function CmsSettings() {
   const [activeSubTab, setActiveSubTab] = useState<'contact' | 'profile'>('contact');
@@ -184,30 +185,13 @@ export function CmsSettings() {
             </div>
 
             <div className="settings-col">
-              <label className="login-label">
-                🖼️ URL รูปภาพโรงงาน / สำนักงาน (แสดงในหน้าติดต่อเรา)
-                <input
-                  className="field"
-                  value={contact.image_url || ''}
-                  onChange={(e) => handleContactChange('image_url', e.target.value)}
-                  placeholder="เช่น https://... หรือ /factory.jpg"
-                />
-                <span className="small" style={{ color: '#806c60' }}>
-                  สามารถวางลิงก์รูปภาพออนไลน์ (URL) หรือใส่ชื่อไฟล์ที่อยู่ในโฟลเดอร์ <code>public/</code> ได้
-                </span>
-              </label>
-
-              {contact.image_url && (
-                <div style={{ marginTop: '8px', border: '1px solid #eadfd4', borderRadius: '4px', overflow: 'hidden', padding: '6px', background: '#fff' }}>
-                  <span className="small" style={{ fontWeight: 600, display: 'block', marginBottom: '4px' }}>ตัวอย่างรูปภาพที่จะแสดงในหน้าติดต่อเรา:</span>
-                  <img
-                    src={contact.image_url}
-                    alt="Preview โรงงาน"
-                    style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '3px' }}
-                    onError={(e) => { (e.currentTarget as HTMLElement).style.display = 'none'; }}
-                  />
-                </div>
-              )}
+              <ImageUploader
+                label="🖼️ รูปภาพโรงงาน / สำนักงาน (แสดงในหน้าติดต่อเรา)"
+                value={contact.image_url || ''}
+                onChange={(url) => handleContactChange('image_url', url)}
+                folder="factory"
+                helperText="คลิกเลือกไฟล์รูปโรงงานจริงจากเครื่องของคุณ หรือลากไฟล์มาวางได้เลย"
+              />
 
               <label className="login-label">
                 เวลาทำการ
