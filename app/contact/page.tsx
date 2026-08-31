@@ -6,13 +6,11 @@ import { ContactSettings, defaultContactSettings, getContactSettings } from '@/l
 
 export default function Contact() {
   const [contact, setContact] = useState<ContactSettings>(defaultContactSettings);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       const data = await getContactSettings();
       setContact(data);
-      setLoading(false);
     }
     void load();
   }, []);
@@ -25,27 +23,29 @@ export default function Contact() {
     <>
       <section className="page-hero">
         <div className="wrap">
-          <div className="eyebrow">Contact DCT</div>
-          <h1>เริ่มต้นพูดคุยกับทีมของเรา</h1>
+          <div className="eyebrow">CONTACT DUANGCHAROEN · MASTER V2.0</div>
+          <h1>ติดต่อเรา</h1>
           <p className="lead">
-            ยินดีให้คำปรึกษาเรื่องการจัดหาวัตถุดิบเนื้อสุกร การตัดแต่งตามสเปกเฉพาะ และบริการ OEM สำหรับธุรกิจอาหารทุกประเภท
+            สอบถามสินค้า บริการ และความต้องการด้านวัตถุดิบสำหรับธุรกิจ ติดต่อทีมงานดวงเจริญ อินเตอร์เทรดได้โดยตรง
           </p>
         </div>
       </section>
 
       <main className="wrap section split">
-        <div className="card">
-          <h2>ข้อมูลติดต่อ</h2>
+        <div className="card" style={{ padding: '36px' }}>
+          <div className="eyebrow">Sales & Business Inquiry</div>
+          <h2 style={{ fontSize: '26px', marginTop: '4px' }}>ข้อมูลติดต่อฝ่ายขาย</h2>
+          
           <div className="spec">
-            <span>บริษัท</span>
-            <b>{contact.company_name_th || contact.company_name_en}</b>
+            <span>ชื่อบริษัท</span>
+            <b>{contact.company_name_th}</b>
           </div>
           <div className="spec">
-            <span>ที่อยู่</span>
+            <span>ที่อยู่สำนักงาน</span>
             <b>{contact.address}</b>
           </div>
           <div className="spec">
-            <span>โทรศัพท์</span>
+            <span>โทรศัพท์ฝ่ายขาย</span>
             <b>
               <a href={`tel:${contact.phone}`} style={{ color: 'var(--red)' }}>
                 {contact.phone}
@@ -91,7 +91,7 @@ export default function Contact() {
             </div>
           )}
 
-          <div className="actions" style={{ marginTop: '24px' }}>
+          <div className="actions" style={{ marginTop: '28px' }}>
             <Link className="button" href="/rfq">
               📑 ขอใบเสนอราคาออนไลน์
             </Link>
@@ -102,7 +102,7 @@ export default function Contact() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                🗺️ ดูแผนที่ Google Maps
+                🗺️ ดูแผนที่โรงงาน / สำนักงาน
               </a>
             )}
           </div>
@@ -112,6 +112,7 @@ export default function Contact() {
           className="photo"
           style={{
             backgroundImage: `url('${factoryImage}')`,
+            boxShadow: '0 8px 30px rgba(0,0,0,0.08)',
           }}
         />
       </main>

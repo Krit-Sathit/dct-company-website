@@ -7,9 +7,53 @@ import { AddButton } from '@/components/site';
 import { CompanyProfileSettings, defaultCompanyProfile, getCompanyProfile } from '@/lib/settings';
 import { supabaseBrowser, isSupabaseConfigured } from '@/lib/supabase-browser';
 
+const industries = [
+  {
+    id: 'restaurants',
+    title: 'ร้านอาหาร & ภัตตาคาร',
+    subtitle: 'วัตถุดิบเนื้อสุกรสำหรับการใช้งานในธุรกิจร้านอาหาร',
+    desc: 'บริการตัดแต่งสเปก สไลซ์บาง ชาบู ปิ้งย่าง สเต๊ก พร้อมใช้งานได้ทันที ลดขั้นตอนและเวลาการเตรียมในครัว',
+    image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=80',
+    tags: ['สไลซ์ชาบู/ปิ้งย่าง', 'ควบคุม Portion', 'Vacuum Pack'],
+  },
+  {
+    id: 'food-factories',
+    title: 'โรงงานอาหารแปรรูป',
+    subtitle: 'วัตถุดิบที่รองรับความต้องการของกระบวนการผลิต',
+    desc: 'รองรับการคัดสรรสัดส่วนเนื้อต่อไขมัน (Meat/Fat Ratio) สเปกการบด และการส่งมอบในปริมาณมากอย่างต่อเนื่อง',
+    image: 'https://images.unsplash.com/photo-1588168333986-5078d3ae3976?auto=format&fit=crop&w=1000&q=80',
+    tags: ['Meat/Fat Ratio 80/20', 'บดหยาบ/ละเอียด', 'Lot Consistency'],
+  },
+  {
+    id: 'wholesalers',
+    title: 'ผู้ค้าส่งวัตถุดิบ',
+    subtitle: 'รองรับความต้องการด้านสินค้าและปริมาณสำหรับธุรกิจค้าส่ง',
+    desc: 'กำลังการผลิตและสต็อกที่เพียงพอ พร้อมระบบการจัดส่งแบบยกพาเลทและ Bulk Packaging ที่สะดวกต่อการกระจายสินค้า',
+    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1000&q=80',
+    tags: ['Bulk Packaging', 'สต็อกพร้อมส่ง', 'Pallet Logistics'],
+  },
+  {
+    id: 'supermarkets',
+    title: 'ซูเปอร์มาร์เก็ต & โมเดิร์นเทรด',
+    subtitle: 'รองรับวัตถุดิบสำหรับการจัดจำหน่ายและค้าปลีก',
+    desc: 'บรรจุภัณฑ์มาตรฐานสำหรับวางจำหน่ายหน้าร้าน คุมความสด สะอาด และปลอดภัยด้วยมาตรฐาน GHP/HACCP',
+    image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1000&q=80',
+    tags: ['Retail Ready', 'มาตรฐาน อย.', 'Chilled Delivery'],
+  },
+  {
+    id: 'corporate',
+    title: 'ลูกค้าองค์กร & ครัวกลาง',
+    subtitle: 'รองรับความต้องการด้านวัตถุดิบและ Supply ของลูกค้าองค์กร',
+    desc: 'การวางแผน Supply Chain ระยะยาว ทำงานร่วมกับทีมจัดซื้อและเชฟ เพื่อส่งมอบวัตถุดิบที่ตอบโจทย์โครงสร้างต้นทุน',
+    image: 'https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=1000&q=80',
+    tags: ['สัญญาระยะยาว', 'Supply Planning', 'Dedicated Account'],
+  },
+];
+
 export default function Home() {
   const [profile, setProfile] = useState<CompanyProfileSettings>(defaultCompanyProfile);
   const [prods, setProds] = useState<Product[]>(defaultProducts);
+  const [activeIndustry, setActiveIndustry] = useState(0);
 
   useEffect(() => {
     async function load() {
@@ -17,11 +61,11 @@ export default function Home() {
       const prof = await getCompanyProfile();
       setProfile(prof);
 
-      // 2. Load products
+      // 2. Load products from Supabase or Server CMS API
       if (isSupabaseConfigured()) {
         try {
           const client = supabaseBrowser();
-          const { data: dbProducts } = await client.from('products').select('*').eq('active', true).limit(3);
+          const { data: dbProducts } = await client.from('products').select('*').eq('active', true).limit(4);
           if (dbProducts && dbProducts.length > 0) {
             setProds(
               dbProducts.map((p) => ({
@@ -30,11 +74,12 @@ export default function Home() {
                 code: p.sku || 'DCT-PK-000',
                 category: p.category_id || 'สินค้าแนะนำ',
                 description: p.description || '',
+                type: p.cut_format || 'สดแช่เย็น / แช่แข็ง',
                 cut: p.cut_format || 'Custom cut',
                 pack: p.packing || 'ตามสเปกลูกค้า',
                 storage: p.storage || 'แช่เย็น / แช่แข็ง',
                 use: p.recommended_use || 'ธุรกิจอาหาร',
-                image: p.image_url || 'https://images.unsplash.com/photo-1603048297172-c92544798d5a?auto=format&fit=crop&w=1000&q=80',
+                image: p.image_url || '/products/pork-neck.webp',
               }))
             );
             return;
@@ -53,17 +98,18 @@ export default function Home() {
             const activeOnes = serverProducts.filter((p: any) => p.active !== false);
             if (activeOnes.length > 0) {
               setProds(
-                activeOnes.slice(0, 3).map((p: any) => ({
+                activeOnes.map((p: any) => ({
                   id: p.slug || p.id,
                   name: p.name,
                   code: p.sku || 'DCT-PK-000',
                   category: p.category || 'สินค้าแนะนำ',
                   description: p.description || '',
+                  type: p.cut_format || 'สดแช่เย็น / แช่แข็ง',
                   cut: p.cut_format || 'Custom cut',
                   pack: p.packing || 'ตามสเปกลูกค้า',
                   storage: p.storage || 'แช่เย็น / แช่แข็ง',
                   use: p.recommended_use || 'ธุรกิจอาหาร',
-                  image: p.image_url || p.image || 'https://images.unsplash.com/photo-1603048297172-c92544798d5a?auto=format&fit=crop&w=1000&q=80',
+                  image: p.image_url || p.image || '/products/pork-neck.webp',
                 }))
               );
               return;
@@ -80,143 +126,350 @@ export default function Home() {
   }, []);
 
   const heroBg = profile.hero_image_url || '/hero-banner.webp';
-  const oemBg = profile.oem_section_image_url || 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=1000&q=80';
+  const currentInd = industries[activeIndustry];
 
   return (
     <>
+      {/* SECTION 01 — HERO (Video Ready & Master Copy v2.0) */}
       <section
         className="hero"
         style={{
-          backgroundImage: `linear-gradient(90deg, rgba(247, 242, 234, 0.85) 0%, rgba(247, 242, 234, 0.35) 35%, rgba(247, 242, 234, 0) 55%), url('${heroBg}')`,
+          backgroundImage: `linear-gradient(90deg, rgba(247, 242, 234, 0.90) 0%, rgba(247, 242, 234, 0.45) 42%, rgba(247, 242, 234, 0.05) 65%), url('${heroBg}')`,
           backgroundPosition: 'center center',
           backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat',
         }}
       >
-        <div className="wrap">
-          <div className="eyebrow">{profile.tagline || 'DCT · Trusted B2B Food Supply Partner'}</div>
-          <h1 style={{ whiteSpace: 'pre-line' }}>{profile.headline}</h1>
-          <p>{profile.subheadline}</p>
+        <div className="wrap hero-content">
+          <div className="eyebrow">{profile.tagline || 'DUANGCHAROEN INTERTRADE CO., LTD.'}</div>
+          <h1 style={{ whiteSpace: 'pre-line' }}>{profile.headline || 'แหล่งวัตถุดิบเนื้อสุกรสำหรับธุรกิจ'}</h1>
+          <div className="hero english-tag" style={{ minHeight: 'auto', padding: 0, background: 'none' }}>
+            Reliable Pork Supply for Business
+          </div>
+          <p>{profile.subheadline || 'ที่ต้องการคุณภาพสม่ำเสมอ ปริมาณเพียงพอ และการจัดส่งที่ไว้ใจได้'}</p>
           <div className="actions">
-            <Link className="button" href="/rfq">
-              ขอใบเสนอราคา
+            <Link className="button" href="/products">
+              ดูสินค้าและบริการ
             </Link>
-            <Link className="button alt" href="/products">
-              ดูแคตตาล็อกสินค้า
+            <Link className="button alt" href="/rfq">
+              ขอใบเสนอราคา
             </Link>
           </div>
         </div>
       </section>
 
-      <section className="section">
+      {/* SECTION 02 — ทำไมธุรกิจเลือกเรา (Staggered Feature Strip) */}
+      <section className="section white">
         <div className="wrap">
-          <div className="eyebrow">What we deliver</div>
-          <h2>ความพร้อมที่ช่วยให้ธุรกิจเดินหน้าได้อย่างมั่นใจ</h2>
-          <div className="flow" />
-          <div className="grid four">
+          <div className="eyebrow">Why Choose DCT</div>
+          <h2>ทำไมธุรกิจเลือกเรา</h2>
+          <p className="lead">
+            โครงสร้างการทำงานและมาตรฐานที่ออกแบบมาเพื่อสนับสนุนการเติบโตอย่างมั่นคงของธุรกิจอาหาร
+          </p>
+          <div className="feature-strip">
             {[
-              ['01', 'Food Safety', 'มองมาตรฐานและความสะอาดเป็นพื้นฐานของทุกขั้นตอน'],
-              ['02', 'Precision', 'ปรับรูปแบบการตัดแต่งและบรรจุภัณฑ์ให้ตรงสเปก'],
-              ['03', 'Cold Chain', 'ดูแลคุณภาพตลอดการจัดเก็บและการส่งมอบ'],
-              ['04', 'Reliability', 'วางแผนการส่งมอบอย่างเป็นระบบสำหรับลูกค้า B2B'],
-            ].map((x) => (
-              <div className="card" key={x[1]}>
-                <div className="num">{x[0]}</div>
-                <h3>{x[1]}</h3>
-                <p>{x[2]}</p>
+              {
+                num: '01',
+                title: 'คุณภาพสม่ำเสมอ',
+                desc: 'ควบคุมคุณภาพของวัตถุดิบและกระบวนการผลิต เพื่อส่งมอบสินค้าที่มีคุณภาพสม่ำเสมอทุกล็อต',
+              },
+              {
+                num: '02',
+                title: 'ปลอดภัย มั่นใจได้',
+                desc: 'ควบคุมกระบวนการผลิตภายใต้มาตรฐานด้านความปลอดภัยอาหารระดับสากล',
+              },
+              {
+                num: '03',
+                title: 'กำลังการผลิตเพียงพอ',
+                desc: 'รองรับความต้องการของธุรกิจ และการสั่งซื้อในปริมาณที่เหมาะสมได้อย่างต่อเนื่อง',
+              },
+              {
+                num: '04',
+                title: 'จัดส่งตรงเวลา',
+                desc: 'ระบบจัดเก็บและการขนส่งควบคุมอุณหภูมิ เพื่อรองรับการส่งมอบตรงตามเวลานัดหมาย',
+              },
+              {
+                num: '05',
+                title: 'บริการใส่ใจทุกความต้องการ',
+                desc: 'ให้บริการและประสานงานกับคู่ค้าอย่างใกล้ชิด เพื่อตอบโจทย์ของแต่ละธุรกิจ',
+              },
+            ].map((f) => (
+              <div className="feature-box" key={f.num}>
+                <div className="f-num">{f.num}</div>
+                <h4>{f.title}</h4>
+                <p>{f.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* SECTION 03 — กลุ่มลูกค้าของเรา (Interactive Industry Selector) */}
       <section className="section beige">
         <div className="wrap">
-          <div className="eyebrow">Product catalogue</div>
-          <h2>เลือกสินค้า พร้อมต่อยอดตามสเปกของคุณ</h2>
-          <div className="grid three">
-            {prods.slice(0, 3).map((p) => (
+          <div className="eyebrow">Target Industries</div>
+          <h2>กลุ่มลูกค้าของเรา</h2>
+          <p className="lead">
+            เรารองรับธุรกิจอาหารหลากหลายรูปแบบ ด้วยความเข้าใจในกระบวนการและความต้องการเฉพาะด้าน
+          </p>
+
+          <div className="industry-container">
+            <div className="industry-nav">
+              {industries.map((ind, i) => (
+                <button
+                  type="button"
+                  key={ind.id}
+                  className={`industry-btn ${activeIndustry === i ? 'active' : ''}`}
+                  onClick={() => setActiveIndustry(i)}
+                >
+                  <span>{ind.title}</span>
+                  <span>→</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="industry-panel">
+              <div
+                className="photo-preview"
+                style={{
+                  backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.45) 100%), url('${currentInd.image}')`,
+                }}
+              />
+              <h3 style={{ color: 'var(--red)', margin: '0 0 6px' }}>{currentInd.title}</h3>
+              <p style={{ fontWeight: 700, margin: '0 0 10px', color: 'var(--ink)' }}>{currentInd.subtitle}</p>
+              <p style={{ margin: '0 0 18px', color: '#6e584a', lineHeight: 1.7 }}>{currentInd.desc}</p>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {currentInd.tags.map((t) => (
+                  <span className="tag" key={t}>
+                    ✓ {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 04 — สินค้าแนะนำ (Featured Sales Tool & Promotion) */}
+      <section className="section white">
+        <div className="wrap">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
+            <div>
+              <div className="eyebrow">Product Catalogue</div>
+              <h2>สินค้าแนะนำ</h2>
+              <p className="lead">
+                วัตถุดิบเนื้อสุกรที่ตอบโจทย์การใช้งานของธุรกิจ พร้อมรูปแบบการตัดแต่งตามความต้องการ
+              </p>
+            </div>
+            <Link className="button alt" href="/products">
+              ดูแคตตาล็อกสินค้าทั้งหมด →
+            </Link>
+          </div>
+
+          <div className="grid four" style={{ marginTop: '36px' }}>
+            {prods.slice(0, 4).map((p) => (
               <div className="card product-card" key={p.id}>
                 <div className="product-image" style={{ backgroundImage: `url(${p.image})` }} />
                 <div className="inside">
-                  <h3>{p.name}</h3>
-                  <p className="small">{p.description}</p>
+                  <div className="num" style={{ fontSize: '11px' }}>{p.code}</div>
+                  <h3 style={{ fontSize: '18px', marginBottom: '6px' }}>{p.name}</h3>
+                  <p className="small" style={{ color: '#6e584a', marginBottom: '14px' }}>
+                    {p.description}
+                  </p>
                   <div className="actions">
-                    <AddButton product={p} />
+                    <Link className="button alt" href={`/products/${p.id}`} style={{ width: '100%', fontSize: '13px', padding: '9px 12px' }}>
+                      ดูรายละเอียดสเปก
+                    </Link>
+                    <div style={{ width: '100%' }}>
+                      <AddButton product={p} />
+                    </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-          <div className="actions" style={{ marginTop: '24px' }}>
-            <Link className="button alt" href="/products">
-              ดูสินค้าทั้งหมด
+
+          {/* Stock Promotion Module */}
+          <div className="promotion-banner-box">
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+                <span className="tag" style={{ background: 'var(--red)', color: '#fff' }}>
+                  🔥 Stock Promotion
+                </span>
+                <strong style={{ fontSize: '18px', color: 'var(--ink)' }}>สินค้าพร้อมขาย / Stock Promotion ประจำเดือน</strong>
+              </div>
+              <p style={{ margin: 0, color: '#6e584a', fontSize: '15px' }}>
+                สินค้าที่พร้อมส่งมอบในราคาพิเศษสำหรับลูกค้า B2B สั่งจองจำนวนตามรอบการผลิตได้ทันที
+              </p>
+            </div>
+            <Link className="button" href="/rfq" style={{ whiteSpace: 'nowrap' }}>
+              ขอใบเสนอราคาโปรโมชั่น
             </Link>
           </div>
         </div>
       </section>
 
-      <section className="section">
+      {/* SECTION 05 — เกี่ยวกับเรา (Split Screen Story) */}
+      <section className="section beige">
         <div className="wrap split">
+          <div>
+            <div className="eyebrow">About Duangcharoen</div>
+            <h2>เกี่ยวกับเรา</h2>
+            <p className="lead" style={{ fontWeight: 600, color: 'var(--ink)' }}>
+              บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด เป็นผู้เชี่ยวชาญด้านการแปรรูปและตัดแต่งเนื้อสุกรคุณภาพสูง พร้อมให้บริการคลังสินค้าควบคุมอุณหภูมิสำหรับอาหารสด อาหารแช่เย็น แช่แข็ง และอาหารแห้งครบวงจร
+            </p>
+            <p style={{ lineHeight: 1.8, color: '#5e483b', marginTop: '16px' }}>
+              เรามุ่งมั่นยกระดับห่วงโซ่อุปทานอาหาร (Food Supply Chain) ของไทย ด้วยการส่งมอบวัตถุดิบเนื้อสุกรที่สด สะอาด มีคุณภาพสม่ำเสมอ เพื่อตอบโจทย์ความต้องการของกลุ่มลูกค้าร้านอาหาร โรงงานแปรรูปอาหาร ซูเปอร์มาร์เก็ต และผู้ประกอบการ B2B ทั่วประเทศ
+            </p>
+            <div className="actions" style={{ marginTop: '28px' }}>
+              <Link className="button" href="/about">
+                อ่านข้อมูลเกี่ยวกับเราเพิ่มเติม
+              </Link>
+            </div>
+          </div>
           <div
             className="photo"
             style={{
-              backgroundImage: `url('${oemBg}')`,
+              backgroundImage: `url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1000&q=80')`,
+              boxShadow: '0 8px 30px rgba(0,0,0,0.08)',
             }}
           />
-          <div>
-            <div className="eyebrow">Custom Cut · OEM</div>
-            <h2>{profile.oem_title || 'สเปกที่ชัดเจน คือจุดเริ่มต้นของการทำงานที่ลื่นไหล'}</h2>
-            <p className="lead">
-              {profile.oem_description ||
-                'Custom Cut, Slice, Dice, Mince, Vacuum และ OEM สำหรับร้านอาหาร ครัวกลาง และผู้ผลิตอาหารที่ต้องการความสม่ำเสมอในทุกล็อต'}
-            </p>
-            <Link className="button" href="/services">
-              ดูบริการของเรา
+        </div>
+      </section>
+
+      {/* SECTION 06 — บริการของเรา (Capability Flow - No OEM) */}
+      <section className="section white">
+        <div className="wrap">
+          <div className="eyebrow">Our Capabilities</div>
+          <h2>บริการของเรา</h2>
+          <p className="lead">
+            โครงสร้างบริการที่ครอบคลุมตั้งแต่การตัดแต่ง คลังสินค้า บรรจุภัณฑ์ จนถึงการกระจายสินค้าแบบควบคุมอุณหภูมิ
+          </p>
+
+          <div className="capability-grid">
+            {[
+              {
+                step: 'CAPABILITY 01',
+                title: 'รับตัดแต่งตามความต้องการ',
+                titleEn: 'Custom Cutting',
+                desc: 'บริการตัดแต่งเนื้อสุกรตามขนาด รูปแบบ และ Specification ที่ต้องการ เช่น Slice, Dice, Mince, และ Portion Cut',
+                img: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=800&q=80',
+              },
+              {
+                step: 'CAPABILITY 02',
+                title: 'จัดเก็บในคลังสินค้ามาตรฐาน',
+                titleEn: 'Cold Storage',
+                desc: 'บริการคลังสินค้าควบคุมอุณหภูมิ รองรับการจัดเก็บอาหารสด อาหารแช่เย็น (0-4°C) แช่แข็ง (-18°C) และอาหารแห้ง',
+                img: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
+              },
+              {
+                step: 'CAPABILITY 03',
+                title: 'แพ็กสินค้าแบบต่าง ๆ',
+                titleEn: 'Packaging Solutions',
+                desc: 'รองรับรูปแบบบรรจุภัณฑ์ที่เหมาะกับการจัดเก็บและการใช้งานของลูกค้า เช่น Vacuum Packaging และ Bulk Pack',
+                img: '/products/pork-belly.webp',
+              },
+              {
+                step: 'CAPABILITY 04',
+                title: 'จัดส่งด้วยระบบควบคุมอุณหภูมิ',
+                titleEn: 'Cold Chain Logistics',
+                desc: 'ระบบขนส่งควบคุมอุณหภูมิ เพื่อรักษาคุณภาพและความสดใหม่ของสินค้าจากโรงงานถึงมือลูกค้าตรงเวลา',
+                img: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80',
+              },
+            ].map((c) => (
+              <div className="capability-card" key={c.step}>
+                <div className="capability-img" style={{ backgroundImage: `url('${c.img}')` }} />
+                <div className="capability-content">
+                  <div className="step-no">{c.step}</div>
+                  <h3>{c.title}</h3>
+                  <p>{c.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ textAlign: 'center', marginTop: '36px' }}>
+            <Link className="button alt" href="/services">
+              ดูรายละเอียดบริการทั้งหมด →
             </Link>
           </div>
         </div>
       </section>
 
-      <section className="section dark">
+      {/* SECTION 07 — มาตรฐานการผลิตที่คุณวางใจ (Quality & Standards) */}
+      <section className="section beige">
         <div className="wrap">
-          <div className="eyebrow">Supply chain</div>
-          <h2>ดูแลความพร้อม ตั้งแต่วัตถุดิบจนถึงคู่ค้าของเรา</h2>
-          <div className="steps">
-            {['Source', 'Process', 'Store', 'Deliver', 'Partner'].map((x, i) => (
-              <div className="step" key={x}>
-                <b>0{i + 1}</b>
-                <strong>{x}</strong>
-                <p className="small">
-                  {
-                    [
-                      'คัดสรรตามแนวทางที่ตกลง',
-                      'ตัดแต่งและควบคุมสเปก',
-                      'จัดเก็บตามเงื่อนไขสินค้า',
-                      'จัดส่งตามแผนงาน',
-                      'สนับสนุนการเติบโตของธุรกิจ',
-                    ][i]
-                  }
-                </p>
+          <div className="eyebrow">Quality & Standards</div>
+          <h2>มาตรฐานการผลิตที่คุณวางใจ</h2>
+          <p className="lead">
+            เราให้ความสำคัญกับความปลอดภัยด้านอาหารและคุณภาพในทุกขั้นตอน ตั้งแต่การคัดสรรวัตถุดิบ การตัดแต่ง การควบคุมอุณหภูมิ ไปจนถึงการจัดเก็บและส่งมอบ
+          </p>
+
+          <div className="quality-flow">
+            {[
+              { num: '01', title: 'Raw Material', desc: 'คัดสรรวัตถุดิบจากแหล่งฟาร์มที่ได้มาตรฐานและตรวจสอบย้อนกลับได้' },
+              { num: '02', title: 'Processing', desc: 'ตัดแต่งในห้องควบคุมอุณหภูมิและสุขอนามัยตามมาตรฐานความสะอาดสากล' },
+              { num: '03', title: 'Storage', desc: 'จัดเก็บภายใต้สภาวะอุณหภูมิที่เหมาะสม ทั้งห้องเย็น Chilled และ Frozen' },
+              { num: '04', title: 'Delivery', desc: 'การขนส่งควบคุมอุณหภูมิแบบ Cold Chain ตลอดเส้นทางจนถึงมือผู้รับ' },
+            ].map((q) => (
+              <div className="quality-step" key={q.num}>
+                <div className="q-num">STEP {q.num}</div>
+                <h4>{q.title}</h4>
+                <p>{q.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="cert-badges">
+            <div className="cert-badge">🏅 GHP (Good Hygiene Practices)</div>
+            <div className="cert-badge">🛡️ HACCP Standard</div>
+            <div className="cert-badge">🏢 ผ่านการรับรองจาก อย.</div>
+            <div className="cert-badge">🥩 ปศุสัตว์ OK</div>
+            <div className="cert-badge">🔍 Traceability ตรวจสอบย้อนกลับได้</div>
+            <Link className="button alt" href="/standards" style={{ marginLeft: 'auto', fontSize: '13px', padding: '8px 14px' }}>
+              ดูมาตรฐานการผลิตทั้งหมด →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 08 — Business Proof & Statistics (Burgundy Proof Band) */}
+      <section className="section burgundy" style={{ padding: '64px 0' }}>
+        <div className="wrap">
+          <div className="stats-band">
+            {[
+              { num: '30+', label: 'ปี — ประสบการณ์ในอุตสาหกรรม', tbc: 'TBC' },
+              { num: '1,000+', label: 'ราย — ลูกค้าธุรกิจที่ไว้วางใจ', tbc: 'TBC' },
+              { num: '300', unit: 'ตัน/เดือน', label: 'กำลังการผลิตและกระจายสินค้า', tbc: 'TBC' },
+              { num: '100+', label: 'คัน — รถห้องเย็นควบคุมอุณหภูมิ', tbc: 'TBC' },
+            ].map((s, idx) => (
+              <div className="stat-item" key={idx}>
+                <div className="stat-num">
+                  {s.num} {s.unit && <span style={{ fontSize: '22px' }}>{s.unit}</span>}
+                </div>
+                <div className="stat-label">{s.label}</div>
+                <div className="stat-tbc">สถานะ: {s.tbc}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section">
-        <div className="wrap">
-          <div className="eyebrow">Insights</div>
-          <h2>ข่าวสารและความรู้สำหรับธุรกิจอาหาร</h2>
-          <div className="grid three">
-            {articles.map((a) => (
-              <Link className="card" href={`/news/${a.slug}`} key={a.slug}>
-                <span className="tag">{a.category}</span>
-                <h3>{a.title}</h3>
-                <p>{a.excerpt}</p>
-                <p className="article-meta">{a.date}</p>
-              </Link>
-            ))}
+      {/* SECTION 09 — FINAL CTA (Partnership) */}
+      <section className="section white">
+        <div className="wrap" style={{ textAlign: 'center', maxWidth: '800px' }}>
+          <div className="eyebrow">Start Partnership</div>
+          <h2 style={{ fontSize: 'clamp(32px, 4vw, 46px)' }}>พร้อมเป็นส่วนหนึ่งในการเติบโตของธุรกิจคุณ</h2>
+          <p className="lead" style={{ margin: '16px auto 32px' }}>
+            ให้เราช่วยดูแลความต้องการด้านวัตถุดิบเนื้อสุกร การตัดแต่ง และการจัดส่ง เพื่อให้ธุรกิจของคุณทำงานได้อย่างต่อเนื่องและมีประสิทธิภาพสูงสุด
+          </p>
+          <div className="actions" style={{ justifyContent: 'center' }}>
+            <Link className="button" href="/contact" style={{ padding: '14px 28px', fontSize: '16px' }}>
+              ติดต่อฝ่ายขาย
+            </Link>
+            <Link className="button alt" href="/rfq" style={{ padding: '14px 28px', fontSize: '16px' }}>
+              ขอใบเสนอราคาออนไลน์
+            </Link>
           </div>
         </div>
       </section>

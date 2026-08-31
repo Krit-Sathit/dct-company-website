@@ -272,31 +272,31 @@ export function CmsSettings() {
 
             <div className="settings-col">
               <ImageUploader
-                label="🥩 รูปภาพส่วนบริการ Custom Cut & OEM (หน้าแรก)"
+                label="🥩 รูปภาพส่วนบริการของเรา (หน้าแรก)"
                 value={profile.oem_section_image_url || ''}
                 onChange={(url) => handleProfileChange('oem_section_image_url', url)}
                 folder="homepage"
-                helperText="รูปภาพประกอบส่วนบริการ Custom Cut & OEM ที่แสดงอยู่ตรงกลางหน้าแรก"
+                helperText="รูปภาพประกอบส่วนบริการของเรา ที่แสดงอยู่ตรงกลางหน้าแรก"
               />
 
               <label className="login-label">
-                หัวข้อส่วนบริการ Custom Cut & OEM
+                หัวข้อส่วนบริการของเรา
                 <input
                   className="field"
                   value={profile.oem_title}
                   onChange={(e) => handleProfileChange('oem_title', e.target.value)}
-                  placeholder="เช่น สเปกที่ชัดเจน คือจุดเริ่มต้นของการทำงานที่ลื่นไหล"
+                  placeholder="เช่น บริการที่รองรับความต้องการของธุรกิจ"
                 />
               </label>
 
               <label className="login-label">
-                คำบรรยายส่วนบริการ Custom Cut & OEM
+                คำบรรยายส่วนบริการของเรา
                 <textarea
                   className="field"
                   rows={3}
                   value={profile.oem_description}
                   onChange={(e) => handleProfileChange('oem_description', e.target.value)}
-                  placeholder="เช่น Custom Cut, Slice, Dice, Mince, Vacuum และ OEM สำหรับร้านอาหาร ครัวกลาง..."
+                  placeholder="เช่น Custom Cutting, Cold Storage, Packaging และ Cold Chain Logistics ครบวงจร..."
                 />
               </label>
 

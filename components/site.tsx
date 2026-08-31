@@ -11,6 +11,7 @@ type Cart = {
   add: (p: Product) => void;
   remove: (id: string) => void;
   update: (id: string, k: 'qty' | 'unit' | 'note', v: string | number) => void;
+  clear: () => void;
 };
 
 const CartContext = createContext<Cart | null>(null);
@@ -51,6 +52,7 @@ export function RFQProvider({ children }: { children: React.ReactNode }) {
       remove: (id: string) => setItems((x) => x.filter((i) => i.product.id !== id)),
       update: (id: string, k: 'qty' | 'unit' | 'note', v: string | number) =>
         setItems((x) => x.map((i) => (i.product.id === id ? { ...i, [k]: v } : i))),
+      clear: () => setItems([]),
     }),
     [items]
   );
@@ -104,13 +106,13 @@ export function Header() {
           <Link className="brand" href="/" onClick={() => setMobileMenuOpen(false)}>
             <img src="/logo-lockup.png" alt="บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด" />
           </Link>
-          
-          {/* Desktop Navigation */}
+
+          {/* Desktop Navigation (Official Master Copy v2.0) */}
           <nav className="links">
             <Link href="/about">เกี่ยวกับเรา</Link>
             <Link href="/products">สินค้า</Link>
-            <Link href="/services">บริการ OEM</Link>
-            <Link href="/standards">มาตรฐาน</Link>
+            <Link href="/services">บริการของเรา</Link>
+            <Link href="/standards">มาตรฐานการผลิต</Link>
             <Link href="/news">ข่าวสาร</Link>
             <Link href="/contact">ติดต่อเรา</Link>
             <Link className="cta" href="/rfq">
@@ -154,25 +156,22 @@ export function Header() {
 
         <nav className="mobile-drawer-links">
           <Link href="/" onClick={() => setMobileMenuOpen(false)}>
-            🏠 หน้าแรก
+            🏠 หน้าหลัก
           </Link>
           <Link href="/about" onClick={() => setMobileMenuOpen(false)}>
             ℹ️ เกี่ยวกับเรา
           </Link>
           <Link href="/products" onClick={() => setMobileMenuOpen(false)}>
-            🥩 แคตตาล็อกสินค้า
+            🥩 สินค้า
           </Link>
           <Link href="/services" onClick={() => setMobileMenuOpen(false)}>
-            ⚙️ บริการ OEM & ตัดแต่ง
+            ⚙️ บริการของเรา
           </Link>
           <Link href="/standards" onClick={() => setMobileMenuOpen(false)}>
-            🏅 มาตรฐานและกระบวนการ
+            🏅 มาตรฐานการผลิต
           </Link>
           <Link href="/news" onClick={() => setMobileMenuOpen(false)}>
-            📰 ข่าวสารและความรู้
-          </Link>
-          <Link href="/faq" onClick={() => setMobileMenuOpen(false)}>
-            ❓ คำถามที่พบบ่อย (FAQ)
+            📰 ข่าวสาร
           </Link>
           <Link href="/contact" onClick={() => setMobileMenuOpen(false)}>
             📍 ติดต่อเรา
@@ -186,7 +185,7 @@ export function Header() {
             onClick={() => setMobileMenuOpen(false)}
             style={{ width: '100%', marginBottom: '12px' }}
           >
-            📑 ขอใบเสนอราคาออนไลน์
+            📑 ขอใบเสนอราคา
           </Link>
           <Link
             href="/admin"
@@ -223,23 +222,27 @@ export function Footer() {
           <p className="small" style={{ marginTop: '12px' }}>
             <b>{contact.company_name_th}</b>
             <br />
-            Trusted B2B Food Supply Partner
+            {contact.company_name_en}
             <br />
-            มาตรฐานที่มั่นใจได้ สำหรับธุรกิจอาหารที่ต้องการความสม่ำเสมอ
+            แหล่งวัตถุดิบเนื้อสุกรสำหรับธุรกิจ พร้อมบริการตัดแต่ง จัดเก็บ และการจัดส่งที่ไว้ใจได้
           </p>
         </div>
         <div>
-          <b>สำรวจ</b>
+          <b>เมนู</b>
           <p className="small">
-            <Link href="/products">แคตตาล็อกสินค้า</Link>
+            <Link href="/">หน้าหลัก</Link>
             <br />
-            <Link href="/services">Custom Cut & OEM</Link>
+            <Link href="/about">เกี่ยวกับเรา</Link>
             <br />
-            <Link href="/standards">มาตรฐานและกระบวนการ</Link>
+            <Link href="/products">สินค้า</Link>
             <br />
-            <Link href="/news">ข่าวสารและความรู้</Link>
+            <Link href="/services">บริการของเรา</Link>
             <br />
-            <Link href="/faq">คำถามที่พบบ่อย</Link>
+            <Link href="/standards">มาตรฐานการผลิต</Link>
+            <br />
+            <Link href="/news">ข่าวสาร</Link>
+            <br />
+            <Link href="/contact">ติดต่อเรา</Link>
           </p>
         </div>
         <div>
@@ -254,6 +257,11 @@ export function Footer() {
             <br />
             <Link href="/contact" style={{ textDecoration: 'underline', color: '#e7d8c8' }}>ดูช่องทางติดต่อทั้งหมด →</Link>
           </p>
+          <div style={{ marginTop: '14px' }}>
+            <Link className="button alt" href="/rfq" style={{ borderColor: 'var(--gold)', color: 'var(--gold)', fontSize: '13px', padding: '8px 14px' }}>
+              ขอใบเสนอราคา
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

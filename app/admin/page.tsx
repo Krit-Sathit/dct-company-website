@@ -24,7 +24,7 @@ const tabs: Array<{ id: Tab; label: string; icon: string }> = [
   { id: 'contact', label: 'ข้อมูลติดต่อ & เว็บไซต์', icon: '📍' },
   { id: 'products', label: 'สินค้า', icon: '🥩' },
   { id: 'categories', label: 'หมวดหมู่', icon: '📁' },
-  { id: 'services', label: 'บริการ OEM', icon: '⚙️' },
+  { id: 'services', label: 'บริการของเรา', icon: '⚙️' },
   { id: 'certificates', label: 'ใบรับรอง', icon: '🏅' },
   { id: 'articles', label: 'ข่าวสาร', icon: '📰' },
   { id: 'faqs', label: 'FAQ', icon: '❓' },

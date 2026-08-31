@@ -73,20 +73,20 @@ export const resources: Record<string, Resource> = {
   },
   services: {
     table: 'services',
-    title: 'บริการ Custom Cut & OEM',
+    title: 'บริการของเรา (Our Services)',
     primary: 'title',
     fields: [
-      { key: 'title', label: 'ชื่อบริการ *', placeholder: 'เช่น Custom Cut, OEM Partnership' },
-      { key: 'slug', label: 'Slug *', placeholder: 'เช่น custom-cut' },
+      { key: 'title', label: 'ชื่อบริการ *', placeholder: 'เช่น Custom Cutting, Cold Storage' },
+      { key: 'slug', label: 'Slug *', placeholder: 'เช่น custom-cutting' },
       { key: 'description', label: 'รายละเอียดบริการ', type: 'textarea', placeholder: 'รายละเอียดขั้นตอนหรือความสามารถ' },
       { key: 'image_url', label: 'รูปภาพบริการ', type: 'image' },
       { key: 'active', label: 'เปิดใช้งานบริการนี้', type: 'checkbox' },
     ],
     defaultList: () => [
-      { id: 'srv-1', title: 'Custom Cut', slug: 'custom-cut', description: 'ตัดแต่งตามรูปแบบ ขนาด และสัดส่วนที่ธุรกิจของคุณต้องการ', active: true },
-      { id: 'srv-2', title: 'Slice / Dice / Mince', slug: 'slice-dice-mince', description: 'เตรียมรูปแบบสินค้าให้เหมาะกับกระบวนการและเมนู', active: true },
-      { id: 'srv-3', title: 'Vacuum Packaging', slug: 'vacuum-packaging', description: 'ออกแบบรูปแบบบรรจุภัณฑ์ตามการจัดเก็บและการใช้งาน', active: true },
-      { id: 'srv-4', title: 'OEM Partnership', slug: 'oem-partnership', description: 'ร่วมพัฒนาสินค้าและสเปกสำหรับธุรกิจของคุณ', active: true },
+      { id: 'srv-1', title: 'Custom Cutting', slug: 'custom-cutting', description: 'บริการตัดแต่งเนื้อสุกรตามสเปก Slice, Dice, Mince, และ Portion Cut', image_url: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=1000&q=80', active: true },
+      { id: 'srv-2', title: 'Cold Storage', slug: 'cold-storage', description: 'บริการคลังสินค้าควบคุมอุณหภูมิ Chilled (0-4°C) และ Frozen (-18°C)', image_url: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1000&q=80', active: true },
+      { id: 'srv-3', title: 'Packaging Solutions', slug: 'packaging', description: 'บริการบรรจุภัณฑ์สุญญากาศ (Vacuum) และ Bulk Packaging', image_url: '/products/pork-belly.webp', active: true },
+      { id: 'srv-4', title: 'Cold Chain Logistics', slug: 'cold-chain-logistics', description: 'บริการขนส่งกระจายสินค้าด้วยรถควบคุมอุณหภูมิตลอดเส้นทาง', image_url: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1000&q=80', active: true },
     ],
   },
   certificates: {
@@ -149,9 +149,9 @@ export const resources: Record<string, Resource> = {
       { key: 'active', label: 'เปิดแสดงผล', type: 'checkbox' },
     ],
     defaultList: () => [
-      { id: 'faq-1', question: 'DCT รับทำสินค้าตามสเปกหรือไม่?', answer: 'รองรับการหารือเรื่องรูปแบบการตัดแต่ง Slice, Dice, Mince, Vacuum และ OEM โดยรายละเอียดขึ้นกับสเปกและการยืนยันกับทีมขาย', sort_order: 1, active: true },
-      { id: 'faq-2', question: 'มีราคาสินค้าแสดงบนเว็บไซต์หรือไม่?', answer: 'เว็บไซต์นี้ไม่แสดงราคา ผู้ใช้สามารถเลือกสินค้าและส่งรายการขอใบเสนอราคาเพื่อรับข้อมูลที่เหมาะกับสเปกและปริมาณ', sort_order: 2, active: true },
-      { id: 'faq-3', question: 'ขอใบเสนอราคาได้หลายรายการหรือไม่?', answer: 'ได้ สามารถเพิ่มสินค้าหลายรายการ พร้อมระบุจำนวน หน่วย และหมายเหตุของแต่ละรายการ', sort_order: 3, active: true },
+      { id: 'faq-1', question: 'DCT รับทำสินค้าตัดแต่งตามสเปกหรือไม่?', answer: 'รองรับการตัดแต่งตามความต้องการ เช่น Slice, Dice, Mince, Vacuum Packaging และจัดเก็บในห้องเย็น โดยสามารถระบุสเปกในใบเสนอราคาได้ทันที', sort_order: 1, active: true },
+      { id: 'faq-2', question: 'มีราคาสินค้าแสดงบนเว็บไซต์หรือไม่?', answer: 'เนื่องจากราคาเนื้อสุกรขึ้นอยู่กับปริมาณ สเปกการตัดแต่ง และรอบการส่งมอบ ผู้ใช้สามารถส่งรายการขอใบเสนอราคา (RFQ) เพื่อรับข้อเสนอที่ดีที่สุดจากทีมฝ่ายขาย', sort_order: 2, active: true },
+      { id: 'faq-3', question: 'ขอใบเสนอราคาได้หลายรายการหรือไม่?', answer: 'ได้ สามารถเพิ่มสินค้าหลายรายการ พร้อมระบุจำนวน หน่วย และสเปกของแต่ละรายการผ่านระบบ RFQ Wizard', sort_order: 3, active: true },
     ],
   },
 };

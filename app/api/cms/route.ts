@@ -23,24 +23,25 @@ const cmsStore: Record<string, any[]> = {
     { id: 'cat-3', name: 'สินค้าตามสเปก', slug: 'custom-spec', description: 'สินค้าตามสเปก สำหรับธุรกิจอาหาร', sort_order: 3, active: true },
   ],
   services: [
-    { id: 'srv-1', title: 'Custom Cut & Portioning', slug: 'custom-cut', description: 'บริการตัดแต่งตามขนาด น้ำหนัก และรูปแบบที่ตกลงเพื่อลดขั้นตอนเตรียม', image_url: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=1000&q=80', active: true },
-    { id: 'srv-2', title: 'Vacuum & B2B Packing', slug: 'b2b-packing', description: 'บรรจุภัณฑ์สุญญากาศและแพ็กเกจสำหรับจัดเก็บและขนส่งอย่างเป็นระบบ', image_url: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1000&q=80', active: true },
-    { id: 'srv-3', title: 'Cold Chain Delivery', slug: 'cold-chain-delivery', description: 'บริหารการจัดส่งแบบควบคุมอุณหภูมิตามรอบเวลาที่นัดหมาย', image_url: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1000&q=80', active: true },
+    { id: 'srv-1', title: 'Custom Cutting', slug: 'custom-cutting', description: 'บริการตัดแต่งเนื้อสุกรตามสเปก Slice, Dice, Mince, และ Portion Cut', image_url: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=1000&q=80', active: true },
+    { id: 'srv-2', title: 'Cold Storage', slug: 'cold-storage', description: 'บริการคลังสินค้าควบคุมอุณหภูมิ Chilled (0-4°C) และ Frozen (-18°C)', image_url: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1000&q=80', active: true },
+    { id: 'srv-3', title: 'Packaging Solutions', slug: 'packaging', description: 'บริการบรรจุภัณฑ์สุญญากาศ (Vacuum) และ Bulk Packaging', image_url: '/products/pork-belly.webp', active: true },
+    { id: 'srv-4', title: 'Cold Chain Logistics', slug: 'cold-chain-logistics', description: 'บริการขนส่งกระจายสินค้าด้วยรถควบคุมอุณหภูมิตลอดเส้นทาง', image_url: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1000&q=80', active: true },
   ],
   certificates: [
-    { id: 'cert-1', name: 'GMP / HACCP Certified', description: 'มาตรฐานความปลอดภัยและสุขอนามัยในกระบวนการผลิตอาหาร', issued_date: '2024-01-01', expiry_date: '2027-01-01', active: true },
-    { id: 'cert-2', name: 'DLD Meat Standard', description: 'มาตรฐานสถานที่จำหน่ายและตัดแต่งเนื้อสัตว์ กรมปศุสัตว์', issued_date: '2024-01-01', expiry_date: '2027-01-01', active: true },
-    { id: 'cert-3', name: 'EST Standard Partner', description: 'โรงงานคู่ค้ามาตรฐานส่งออกเพื่อความปลอดภัยสูงสุด', issued_date: '2024-01-01', expiry_date: '2027-01-01', active: true },
+    { id: 'cert-1', name: 'GHP Certified', description: 'มาตรฐานสุขลักษณะที่ดีในกระบวนการผลิตอาหาร', issued_date: '2024-01-01', expiry_date: '2027-01-01', active: true },
+    { id: 'cert-2', name: 'HACCP Standard', description: 'มาตรฐานวิเคราะห์อันตรายและควบคุมจุดวิกฤต', issued_date: '2024-01-01', expiry_date: '2027-01-01', active: true },
+    { id: 'cert-3', name: 'อย. และ ปศุสัตว์ OK', description: 'มาตรฐานรับรองสถานที่จำหน่ายและตัดแต่งเนื้อสัตว์ กรมปศุสัตว์', issued_date: '2024-01-01', expiry_date: '2027-01-01', active: true },
   ],
   articles: [
-    { id: 'art-1', title: 'เริ่มจากสเปกที่ชัดเจน เพื่อความสม่ำเสมอของทุกจาน', slug: 'spec-first', excerpt: 'การกำหนดรูปแบบการตัดแต่ง ขนาด และบรรจุภัณฑ์ ช่วยให้ทีมปฏิบัติการทำงานได้แม่นยำขึ้น', content: 'การกำหนดรูปแบบการตัดแต่ง ขนาด และบรรจุภัณฑ์ ช่วยให้ทีมปฏิบัติการทำงานได้แม่นยำขึ้น', status: 'published', published_at: new Date().toISOString() },
-    { id: 'art-2', title: 'Cold Chain ที่ดี ช่วยรักษาคุณภาพวัตถุดิบอย่างไร', slug: 'cold-chain', excerpt: 'มองภาพการควบคุมอุณหภูมิตั้งแต่การจัดเก็บจนถึงการส่งมอบ', content: 'มองภาพการควบคุมอุณหภูมิตั้งแต่การจัดเก็บจนถึงการส่งมอบ', status: 'published', published_at: new Date().toISOString() },
-    { id: 'art-3', title: 'เตรียม OEM Brief อย่างไรให้ทีมผลิตเข้าใจตรงกัน', slug: 'oem-brief', excerpt: 'รายการข้อมูลพื้นฐานที่ช่วยให้การพัฒนาสินค้าตามสเปกเริ่มต้นได้อย่างเป็นระบบ', content: 'รายการข้อมูลพื้นฐานที่ช่วยให้การพัฒนาสินค้าตามสเปกเริ่มต้นได้อย่างเป็นระบบ', status: 'published', published_at: new Date().toISOString() },
+    { id: 'art-1', title: 'เทคนิคการเลือกซื้อเนื้อหมูสำหรับธุรกิจ B2B เพื่อคุมต้นทุนและคุณภาพ', slug: 'b2b-pork-selection', excerpt: 'การทำความเข้าใจสเปกชิ้นส่วน สัดส่วนเนื้อต่อไขมัน และบรรจุภัณฑ์ ช่วยให้ร้านอาหารและโรงงานลดของเสียและคุมกำไรได้แม่นยำขึ้น', content: 'การทำความเข้าใจสเปกชิ้นส่วน สัดส่วนเนื้อต่อไขมัน และบรรจุภัณฑ์ ช่วยให้ร้านอาหารและโรงงานลดของเสียและคุมกำไรได้แม่นยำขึ้น', status: 'published', published_at: new Date().toISOString() },
+    { id: 'art-2', title: 'การเก็บรักษาอาหารสดและการควบคุม Cold Chain ในห่วงโซ่อุปทาน', slug: 'cold-chain-integrity', excerpt: 'มองภาพการควบคุมอุณหภูมิตั้งแต่การตัดแต่ง คลังสินค้าห้องเย็น จนถึงการส่งมอบด้วยรถควบคุมอุณหภูมิ', content: 'มองภาพการควบคุมอุณหภูมิตั้งแต่การตัดแต่ง คลังสินค้าห้องเย็น จนถึงการส่งมอบด้วยรถควบคุมอุณหภูมิ', status: 'published', published_at: new Date().toISOString() },
+    { id: 'art-3', title: 'ความรู้เรื่องมาตรฐาน Food Safety: GHP, HACCP และ อย. สำหรับผู้ประกอบการ', slug: 'food-safety-standards', excerpt: 'มาตรฐานสากลด้านสุขอนามัยและความปลอดภัยที่โรงงานตัดแต่งเนื้อสัตว์ต้องมีเพื่อสร้างความมั่นใจให้คู่ค้า', content: 'มาตรฐานสากลด้านสุขอนามัยและความปลอดภัยที่โรงงานตัดแต่งเนื้อสัตว์ต้องมีเพื่อสร้างความมั่นใจให้คู่ค้า', status: 'published', published_at: new Date().toISOString() },
   ],
   faqs: [
-    { id: 'faq-1', question: 'DCT รับทำสินค้าตามสเปกหรือไม่?', answer: 'รองรับการหารือเรื่องรูปแบบการตัดแต่ง Slice, Dice, Mince, Vacuum และ OEM โดยรายละเอียดขึ้นกับสเปกและการยืนยันกับทีมขาย', sort_order: 1, active: true },
-    { id: 'faq-2', question: 'มีราคาสินค้าแสดงบนเว็บไซต์หรือไม่?', answer: 'เว็บไซต์นี้ไม่แสดงราคา ผู้ใช้สามารถเลือกสินค้าและส่งรายการขอใบเสนอราคาเพื่อรับข้อมูลที่เหมาะกับสเปกและปริมาณ', sort_order: 2, active: true },
-    { id: 'faq-3', question: 'ขอใบเสนอราคาได้หลายรายการหรือไม่?', answer: 'ได้ สามารถเพิ่มสินค้าหลายรายการ พร้อมระบุจำนวน หน่วย และหมายเหตุของแต่ละรายการ', sort_order: 3, active: true },
+    { id: 'faq-1', question: 'DCT รับทำสินค้าตัดแต่งตามสเปกหรือไม่?', answer: 'รองรับการตัดแต่งตามความต้องการ เช่น Slice, Dice, Mince, Vacuum Packaging และจัดเก็บในห้องเย็น โดยสามารถระบุสเปกในใบเสนอราคาได้ทันที', sort_order: 1, active: true },
+    { id: 'faq-2', question: 'มีราคาสินค้าแสดงบนเว็บไซต์หรือไม่?', answer: 'เนื่องจากราคาเนื้อสุกรขึ้นอยู่กับปริมาณ สเปกการตัดแต่ง และรอบการส่งมอบ ผู้ใช้สามารถส่งรายการขอใบเสนอราคา (RFQ) เพื่อรับข้อเสนอที่ดีที่สุดจากทีมฝ่ายขาย', sort_order: 2, active: true },
+    { id: 'faq-3', question: 'ขอใบเสนอราคาได้หลายรายการหรือไม่?', answer: 'ได้ สามารถเพิ่มสินค้าหลายรายการ พร้อมระบุจำนวน หน่วย และสเปกของแต่ละรายการผ่านระบบ RFQ Wizard', sort_order: 3, active: true },
   ],
 };
 
