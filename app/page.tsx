@@ -27,31 +27,15 @@ export default function Home() {
   const featuredProds = allProducts.slice(0, 4);
 
   return (
-    <div className="mockup-canvas">
-      <div className="wrap">
-        {/* =========================================================================
-            ROW 1: HERO SECTION (Matching Master Mockup)
-            ========================================================================= */}
-        <section className="mockup-hero-box">
-          <div className="mockup-hero-left">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-              <div style={{ position: 'relative', width: 50, height: 50, flexShrink: 0 }}>
-                <Image
-                  src="/logo.png"
-                  alt="DCT Logo"
-                  fill
-                  style={{ objectFit: 'contain' }}
-                  priority
-                />
-              </div>
-              <div>
-                <strong style={{ fontSize: '15px', color: 'var(--ink)', display: 'block' }}>
-                  ดวงเจริญ อินเตอร์เทรด จำกัด
-                </strong>
-                <span style={{ fontSize: '11px', color: '#8c7667', letterSpacing: '0.04em', fontWeight: 600 }}>
-                  DUANGCHAROEN INTERTRADE CO., LTD.
-                </span>
-              </div>
+    <>
+      {/* =========================================================================
+          ROW 1: FULL-WIDTH WARM HERO BANNER (No duplicate logo)
+          ========================================================================= */}
+      <section className="hero-master-v2">
+        <div className="wrap hero-master-grid">
+          <div className="hero-master-left">
+            <div className="eyebrow" style={{ color: 'var(--red)', fontWeight: 800, fontSize: '13px', letterSpacing: '0.08em', marginBottom: '8px' }}>
+              DUANGCHAROEN INTERTRADE CO., LTD.
             </div>
 
             <h1>แหล่งวัตถุดิบเนื้อหมูสำหรับธุรกิจ</h1>
@@ -63,7 +47,7 @@ export default function Home() {
               Reliable Pork Supply for Business
             </div>
 
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
               <Link className="pill-btn primary" href="/products">
                 ดูสินค้าและบริการ →
               </Link>
@@ -73,7 +57,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mockup-hero-right">
+          <div className="hero-master-right">
             <div
               className="hero-img-main"
               style={{
@@ -95,12 +79,18 @@ export default function Home() {
               />
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* =========================================================================
-            ROW 2: ทำไมธุรกิจเลือกเรา (58%) + กลุ่มลูกค้า (42%)
-            ========================================================================= */}
-        <section className="row-why-industry">
+      {/* =========================================================================
+          DASHBOARD CANVAS (Warm Luxury Cream & Sand Palette)
+          ========================================================================= */}
+      <div className="mockup-canvas">
+        <div className="wrap">
+          {/* =========================================================================
+              ROW 2: ทำไมธุรกิจเลือกเรา (58%) + กลุ่มลูกค้า (42%)
+              ========================================================================= */}
+          <section className="row-why-industry">
           {/* Left: ทำไมธุรกิจเลือกเรา */}
           <div className="mockup-card">
             <h3 className="sec-title">ทำไมธุรกิจเลือกเรา</h3>
@@ -359,5 +349,6 @@ export default function Home() {
         </section>
       </div>
     </div>
+    </>
   );
 }
