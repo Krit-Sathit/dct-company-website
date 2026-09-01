@@ -5,14 +5,15 @@ export type Product = {
   code: string;
   category: string;
   description: string;
-  type: string; // เนื้อสุกรสด (Chilled) / สุกรแช่แข็ง (Frozen)
-  cut: string; // รูปแบบการตัดแต่ง
-  thickness?: string; // ความหนา / ขนาดชิ้น
-  meatFatRatio?: string; // อัตราส่วนเนื้อต่อไขมัน
-  pack: string; // รูปแบบบรรจุภัณฑ์
-  storage: string;
-  shelfLife?: string; // อายุการเก็บรักษา
-  moq?: string; // ปริมาณสั่งซื้อขั้นต่ำ
+  type: string; // Product Type: Chilled (สดแช่เย็น 0-4°C) / Frozen (แช่แข็ง -18°C)
+  cutPart?: string; // Cut Part: ชิ้นส่วน
+  cut: string; // Cutting Options: รูปแบบการตัดแต่ง
+  thickness?: string; // Portion / Thickness: ความหนา / ขนาดชิ้น
+  meatFatRatio?: string; // Meat / Fat Ratio: อัตราส่วนเนื้อต่อไขมัน
+  pack: string; // Packaging: รูปแบบบรรจุภัณฑ์
+  storage: string; // Storage: การจัดเก็บ
+  shelfLife?: string; // Shelf Life: อายุการเก็บรักษา
+  moq?: string; // MOQ: ปริมาณสั่งซื้อขั้นต่ำ
   use: string;
   image: string;
 };
@@ -26,6 +27,7 @@ export const products: Product[] = [
     category: 'ชิ้นส่วนมาตรฐาน',
     description: 'สันคอหมูคัดเกรดพรีเมียม ลายไขมันแทรกสม่ำเสมอ เหมาะสำหรับเมนูย่าง ชาบู สเต๊ก หรือหมัก',
     type: 'สดแช่เย็น (Chilled: 0-4°C) / แช่แข็ง (Frozen: -18°C)',
+    cutPart: 'สันคอ (Pork Neck / Collar)',
     cut: 'Whole Cut / Slice (1.5-2.0 มม.) / Steak Portion',
     thickness: 'สไลซ์ 1.5 - 2 มม. หรือ ตัดสเต๊ก 1 - 1.5 นิ้ว (ตามสเปก)',
     meatFatRatio: '75 / 25 (ไขมันแทรกลายหินอ่อน)',
@@ -44,6 +46,7 @@ export const products: Product[] = [
     category: 'ชิ้นส่วนมาตรฐาน',
     description: 'เนื้อสันนอกตัดแต่งไร้มันส่วนเกิน เนื้อแน่นนุ่ม ควบคุมต้นทุนและคำนวณ Portion ต่อง่าย',
     type: 'สดแช่เย็น (Chilled) / แช่แข็ง (Frozen)',
+    cutPart: 'สันนอก (Pork Loin)',
     cut: 'Whole Roast / Portion Cut / Tonkatsu Cut / Dice',
     thickness: 'ตัดชิ้น 100-200 กรัม หรือสไลซ์ตามสเปก',
     meatFatRatio: '90 / 10 (เนื้อแดงเน้นคุณค่า)',
@@ -62,6 +65,7 @@ export const products: Product[] = [
     category: 'ชิ้นส่วนมาตรฐาน',
     description: 'สามชั้นคัดสัดส่วนชั้นเนื้อและไขมันสวยงาม เพื่อความสม่ำเสมอในทุกจานและทุกล็อตการผลิต',
     type: 'สดแช่เย็น (Chilled) / แช่แข็ง (Frozen)',
+    cutPart: 'สามชั้น (Pork Belly)',
     cut: 'Whole Slab / Slice (ชาบู/หมูกระทะ) / Cube (พะโล้)',
     thickness: 'สไลซ์บาง 1.2-1.8 มม. หรือ ชิ้นเต๋า 1-2 นิ้ว',
     meatFatRatio: '60 / 40 หรือ 50 / 50 (สัดส่วนชั้นสวย)',
@@ -80,6 +84,7 @@ export const products: Product[] = [
     category: 'ชิ้นส่วนมาตรฐาน',
     description: 'ซี่โครงหมูคัดเนื้อติดกระดูกสวยงาม เหมาะสำหรับเมนูอบ บาร์บีคิว ต้มซุป หรือตุ๋นยาจีน',
     type: 'สดแช่เย็น (Chilled) / แช่แข็ง (Frozen)',
+    cutPart: 'ซี่โครง (Pork Spare Ribs)',
     cut: 'Full Rack / Cut Pieces (หั่นท่อน 2-3 นิ้ว)',
     thickness: 'แผงเต็ม หรือ ตัดท่อนตามขนาดหม้อต้ม',
     meatFatRatio: 'เนื้อติดกระดูกมาตรฐาน',
@@ -98,6 +103,7 @@ export const products: Product[] = [
     category: 'ชิ้นส่วนแปรรูป / ตัดแต่งพิเศษ',
     description: 'เนื้อสุกรคัดสรรพร้อมตัดแต่ง Slice, Dice, Portion ตาม Specification เพื่อลดขั้นตอนในครัวกลาง',
     type: 'สดแช่เย็น (Chilled) / แช่แข็ง (Frozen)',
+    cutPart: 'เนื้อหมูตัดแต่ง (Trimmed Pork)',
     cut: 'Custom Trim / Dice / Strip / Portioning',
     thickness: 'ปรับขนาดและน้ำหนักต่องวดตามข้อตกลง',
     meatFatRatio: '80 / 20 หรือ 85 / 15',
@@ -116,6 +122,7 @@ export const products: Product[] = [
     category: 'ชิ้นส่วนแปรรูป / ตัดแต่งพิเศษ',
     description: 'กำหนดระดับความละเอียดของการบดและสัดส่วนเนื้อต่อไขมันตามกระบวนการผลิตของคุณ',
     type: 'สดแช่เย็น (Chilled) / แช่แข็ง (Frozen)',
+    cutPart: 'เนื้อหมูบด (Minced Pork)',
     cut: 'Coarse Mince (บดหยาบ) / Fine Mince (บดละเอียด)',
     thickness: 'ใบมีดบด 3 มม. / 5 มม. / 8 มม.',
     meatFatRatio: 'ระบุได้ตั้งแต่ 90/10, 80/20, ถึง 70/30',
@@ -169,7 +176,7 @@ export const articles = [
 รถขนส่งต้องติดตั้งระบบบันทึกอุณหภูมิ (Temperature Datalogger) แบบเรียลไทม์ และมีระบบการขนถ่าย (Loading & Unloading) ที่รวดเร็วเพื่อไม่ให้อุณหภูมิแกว่ง
 
 3. ความปลอดภัยและสุขอนามัย:
-การรักษาห่วงโซ่ความเย็นที่สมบูรณ์ช่วยยับยั้งการเจริญเติบโตของแบคทีเรีย ทำให้เนื้อสุกรคงความสด นุ่ม และปลอดภัยต่อผู้บริโภคสูงสุด`,
+การรักษาห่วงโซ่อุณหภูมิที่สมบูรณ์ช่วยยับยั้งการเจริญเติบโตของแบคทีเรีย ทำให้เนื้อสุกรคงความสด นุ่ม และปลอดภัยต่อผู้บริโภคสูงสุด`,
   },
   {
     slug: 'food-safety-standards',
