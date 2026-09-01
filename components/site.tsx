@@ -219,10 +219,10 @@ export function Footer() {
       <div className="wrap footer-mockup-grid">
         {/* Column 1: Brand & Tagline */}
         <div className="footer-col">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-            <img src="/logo.png" alt="DCT" style={{ width: 44, height: 44, objectFit: 'contain' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+            <img src="/dct-emblem.png" alt="DCT Emblem" style={{ width: 48, height: 48, objectFit: 'contain', flexShrink: 0 }} />
             <div>
-              <strong style={{ fontSize: '14px', color: 'var(--ink)', display: 'block' }}>
+              <strong style={{ fontSize: '14px', color: 'var(--ink)', display: 'block', lineHeight: 1.3 }}>
                 {contact.company_name_th || 'ดวงเจริญ อินเตอร์เทรด จำกัด'}
               </strong>
               <span style={{ fontSize: '10.5px', color: '#8c7667', fontWeight: 600 }}>
