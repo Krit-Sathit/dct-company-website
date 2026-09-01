@@ -130,12 +130,16 @@ export default function Home() {
         </section>
 
         {/* =========================================================================
-            ROW 3: สินค้าแนะนำ (45%) + เกี่ยวกับเรา (29%) + บริการของเรา (26%)
+            ROW 3: สินค้าแนะนำ (Full-Width Card across the banner width)
             ========================================================================= */}
-        <section className="row-products-about-services">
-          {/* Left: สินค้าแนะนำ */}
+        <section className="row-products-full">
           <div className="mockup-card">
-            <h3 className="sec-title">สินค้าแนะนำ</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <h3 className="sec-title" style={{ margin: 0 }}>สินค้าแนะนำ</h3>
+              <Link href="/products" style={{ fontSize: '13px', fontWeight: 700, color: 'var(--red)', textDecoration: 'none' }}>
+                ดูแคตตาล็อกทั้งหมด →
+              </Link>
+            </div>
             <div className="product-showcase-grid">
               {featuredProds.map((p) => (
                 <div className="mini-product-card" key={p.id}>
@@ -153,37 +157,42 @@ export default function Home() {
                 </div>
               ))}
 
-              {/* Stock Promotion Mini Box */}
+              {/* Stock Promotion Box */}
               <div className="promo-mini-box">
                 <div>
-                  <span className="tag" style={{ background: 'var(--red)', color: '#fff', fontSize: '10px', padding: '2px 6px', marginBottom: '6px' }}>
+                  <span className="tag" style={{ background: 'var(--red)', color: '#fff', fontSize: '11px', padding: '3px 8px', marginBottom: '8px' }}>
                     🔥 Stock Promotion
                   </span>
                   <h4>สินค้าพร้อมขาย</h4>
                   <p>สินค้าที่พร้อมส่งมอบทันทีในราคาพิเศษ ประจำเดือน</p>
                 </div>
-                <Link className="pill-btn primary" href="/rfq" style={{ fontSize: '11px', padding: '6px 12px', width: '100%' }}>
+                <Link className="pill-btn primary" href="/rfq" style={{ fontSize: '12px', padding: '8px 14px', width: '100%' }}>
                   ดูโปรโมชั่น →
                 </Link>
               </div>
             </div>
           </div>
+        </section>
 
-          {/* Middle: เกี่ยวกับเรา */}
+        {/* =========================================================================
+            ROW 4: เกี่ยวกับเรา (46%) + บริการของเรา (54%)
+            ========================================================================= */}
+        <section className="row-about-services">
+          {/* Left: เกี่ยวกับเรา */}
           <div className="mockup-card">
             <h3 className="sec-title">เกี่ยวกับเรา</h3>
             <p className="about-mockup-content">
               ดวงเจริญ อินเตอร์เทรด คือโรงงานตัดแต่งเนื้อหมูและจัดจำหน่ายวัตถุดิบเนื้อหมูสำหรับธุรกิจ ด้วยประสบการณ์กว่า 30 ปี เรามุ่งมั่นส่งมอบคุณภาพสินค้าที่ได้มาตรฐาน ปลอดภัย เพื่อให้ธุรกิจของคุณเติบโตอย่างมั่นคง
             </p>
             <div>
-              <Link className="pill-btn primary" href="/about" style={{ fontSize: '12px', padding: '7px 16px' }}>
+              <Link className="pill-btn primary" href="/about" style={{ fontSize: '13px', padding: '8px 18px' }}>
                 เกี่ยวกับเรา →
               </Link>
             </div>
             <div
               className="about-mockup-img"
               style={{
-                backgroundImage: `url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&q=80')`,
+                backgroundImage: `url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80')`,
               }}
             />
           </div>
@@ -193,35 +202,35 @@ export default function Home() {
             <h3 className="sec-title">บริการของเรา</h3>
             <div className="services-mockup-list">
               <div className="service-mockup-item">
-                <IconMeatCut size={22} color="#8B1E1E" />
+                <IconMeatCut size={24} color="#8B1E1E" />
                 <div>
                   <h5>รับผลิตตามความต้องการ</h5>
                   <p>ผลิตให้ตรงตามสูตรและสเปกของลูกค้า</p>
                 </div>
               </div>
               <div className="service-mockup-item">
-                <IconWarehouse size={22} color="#8B1E1E" />
+                <IconWarehouse size={24} color="#8B1E1E" />
                 <div>
                   <h5>จัดเตรียมสินค้ามาตรฐาน</h5>
                   <p>ตัดแต่งตามมาตรฐานพร้อมส่งมอบ</p>
                 </div>
               </div>
               <div className="service-mockup-item">
-                <IconPackage size={22} color="#8B1E1E" />
+                <IconPackage size={24} color="#8B1E1E" />
                 <div>
                   <h5>แพ็กและบรรจุภัณฑ์</h5>
                   <p>บรรจุภัณฑ์สุญญากาศ สะอาด ปลอดภัย</p>
                 </div>
               </div>
               <div className="service-mockup-item">
-                <IconLogistics size={22} color="#8B1E1E" />
+                <IconLogistics size={24} color="#8B1E1E" />
                 <div>
                   <h5>จัดส่งทั่วประเทศ</h5>
                   <p>รถห้องเย็นควบคุมอุณหภูมิ ตรงเวลา</p>
                 </div>
               </div>
               <div className="service-mockup-item">
-                <IconConsulting size={22} color="#8B1E1E" />
+                <IconConsulting size={24} color="#8B1E1E" />
                 <div>
                   <h5>ให้คำปรึกษาและดูแลอย่างใกล้ชิด</h5>
                   <p>ทีมงานพร้อมให้คำแนะนำและบริการ</p>
