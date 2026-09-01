@@ -278,7 +278,7 @@ export default function Home() {
                   </p>
                   <div className="actions">
                     <Link className="button alt" href={`/products/${p.id}`} style={{ width: '100%', fontSize: '13px', padding: '9px 12px' }}>
-                      ดูรายละเอียดสเปก
+                      ดูรายละเอียด
                     </Link>
                     <div style={{ width: '100%' }}>
                       <AddButton product={p} />
@@ -296,14 +296,14 @@ export default function Home() {
                 <span className="tag" style={{ background: 'var(--red)', color: '#fff' }}>
                   🔥 Stock Promotion
                 </span>
-                <strong style={{ fontSize: '18px', color: 'var(--ink)' }}>สินค้าพร้อมขาย / Stock Promotion ประจำเดือน</strong>
+                <strong style={{ fontSize: '18px', color: 'var(--ink)' }}>สินค้าพร้อมขาย / Stock Promotion</strong>
               </div>
               <p style={{ margin: 0, color: '#6e584a', fontSize: '15px' }}>
-                สินค้าที่พร้อมส่งมอบในราคาพิเศษสำหรับลูกค้า B2B สั่งจองจำนวนตามรอบการผลิตได้ทันที
+                สินค้าที่พร้อมส่งมอบในราคาพิเศษ ประจำเดือน
               </p>
             </div>
             <Link className="button" href="/rfq" style={{ whiteSpace: 'nowrap' }}>
-              ขอใบเสนอราคาโปรโมชั่น
+              ดูสินค้า
             </Link>
           </div>
         </div>
@@ -323,7 +323,7 @@ export default function Home() {
             </p>
             <div className="actions" style={{ marginTop: '28px' }}>
               <Link className="button" href="/about">
-                อ่านข้อมูลเกี่ยวกับเราเพิ่มเติม
+                เกี่ยวกับเรา
               </Link>
             </div>
           </div>
@@ -349,38 +349,34 @@ export default function Home() {
           <div className="capability-grid">
             {[
               {
-                step: 'CAPABILITY 01',
+                step: '01',
                 title: 'รับตัดแต่งตามความต้องการ',
-                titleEn: 'Custom Cutting',
-                desc: 'บริการตัดแต่งเนื้อสุกรตามขนาด รูปแบบ และ Specification ที่ต้องการ เช่น Slice, Dice, Mince, และ Portion Cut',
+                desc: 'บริการตัดแต่งเนื้อสุกรตามขนาด รูปแบบ และ Specification ที่ต้องการ',
                 img: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=800&q=80',
               },
               {
-                step: 'CAPABILITY 02',
+                step: '02',
                 title: 'จัดเก็บในคลังสินค้ามาตรฐาน',
-                titleEn: 'Cold Storage',
-                desc: 'บริการคลังสินค้าควบคุมอุณหภูมิ รองรับการจัดเก็บอาหารสด อาหารแช่เย็น (0-4°C) แช่แข็ง (-18°C) และอาหารแห้ง',
+                desc: 'บริการคลังสินค้าควบคุมอุณหภูมิ รองรับการจัดเก็บอาหารแช่เย็น แช่แข็ง และอาหารแห้ง',
                 img: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
               },
               {
-                step: 'CAPABILITY 03',
+                step: '03',
                 title: 'แพ็กสินค้าแบบต่าง ๆ',
-                titleEn: 'Packaging Solutions',
-                desc: 'รองรับรูปแบบบรรจุภัณฑ์ที่เหมาะกับการจัดเก็บและการใช้งานของลูกค้า เช่น Vacuum Packaging และ Bulk Pack',
+                desc: 'รองรับรูปแบบบรรจุภัณฑ์ที่เหมาะกับการจัดเก็บและการใช้งานของลูกค้า เช่น Vacuum Packaging',
                 img: '/products/pork-belly.webp',
               },
               {
-                step: 'CAPABILITY 04',
+                step: '04',
                 title: 'จัดส่งด้วยระบบควบคุมอุณหภูมิ',
-                titleEn: 'Cold Chain Logistics',
-                desc: 'ระบบขนส่งควบคุมอุณหภูมิ เพื่อรักษาคุณภาพและความสดใหม่ของสินค้าจากโรงงานถึงมือลูกค้าตรงเวลา',
+                desc: 'ระบบขนส่งควบคุมอุณหภูมิ เพื่อรักษาคุณภาพและความสดใหม่ของสินค้าจากโรงงานถึงมือลูกค้า',
                 img: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80',
               },
             ].map((c) => (
               <div className="capability-card" key={c.step}>
                 <div className="capability-img" style={{ backgroundImage: `url('${c.img}')` }} />
                 <div className="capability-content">
-                  <div className="step-no">{c.step}</div>
+                  <div className="step-no">CAPABILITY {c.step}</div>
                   <h3>{c.title}</h3>
                   <p>{c.desc}</p>
                 </div>
@@ -388,9 +384,13 @@ export default function Home() {
             ))}
           </div>
 
-          <div style={{ textAlign: 'center', marginTop: '36px' }}>
+          <div style={{ marginTop: '24px', background: '#fdf9f4', border: '1px solid #eadfd4', borderRadius: '6px', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+            <div>
+              <strong style={{ fontSize: '16px', color: 'var(--ink)' }}>05 — ให้คำปรึกษาและดูแลคู่ค้า</strong>
+              <p style={{ margin: '4px 0 0', color: '#6e584a', fontSize: '14px' }}>ให้บริการและประสานงานกับคู่ค้า เพื่อรองรับความต้องการของแต่ละธุรกิจ</p>
+            </div>
             <Link className="button alt" href="/services">
-              ดูรายละเอียดบริการทั้งหมด →
+              ดูบริการทั้งหมด
             </Link>
           </div>
         </div>
@@ -407,10 +407,10 @@ export default function Home() {
 
           <div className="quality-flow">
             {[
-              { num: '01', title: 'Raw Material', desc: 'คัดสรรวัตถุดิบจากแหล่งฟาร์มที่ได้มาตรฐานและตรวจสอบย้อนกลับได้' },
-              { num: '02', title: 'Processing', desc: 'ตัดแต่งในห้องควบคุมอุณหภูมิและสุขอนามัยตามมาตรฐานความสะอาดสากล' },
-              { num: '03', title: 'Storage', desc: 'จัดเก็บภายใต้สภาวะอุณหภูมิที่เหมาะสม ทั้งห้องเย็น Chilled และ Frozen' },
-              { num: '04', title: 'Delivery', desc: 'การขนส่งควบคุมอุณหภูมิแบบ Cold Chain ตลอดเส้นทางจนถึงมือผู้รับ' },
+              { num: '01', title: 'Raw Material', desc: 'การคัดสรรวัตถุดิบจากแหล่งที่สามารถตรวจสอบย้อนกลับได้' },
+              { num: '02', title: 'Processing', desc: 'การตัดแต่งในพื้นที่ที่ควบคุมอุณหภูมิและสุขอนามัย' },
+              { num: '03', title: 'Storage', desc: 'การจัดเก็บภายใต้เงื่อนไขอุณหภูมิที่เหมาะสม' },
+              { num: '04', title: 'Delivery', desc: 'การขนส่งควบคุมอุณหภูมิเพื่อรักษาคุณภาพจนถึงลูกค้า' },
             ].map((q) => (
               <div className="quality-step" key={q.num}>
                 <div className="q-num">STEP {q.num}</div>
@@ -421,13 +421,13 @@ export default function Home() {
           </div>
 
           <div className="cert-badges">
-            <div className="cert-badge">🏅 GHP (Good Hygiene Practices)</div>
-            <div className="cert-badge">🛡️ HACCP Standard</div>
-            <div className="cert-badge">🏢 ผ่านการรับรองจาก อย.</div>
-            <div className="cert-badge">🥩 ปศุสัตว์ OK</div>
-            <div className="cert-badge">🔍 Traceability ตรวจสอบย้อนกลับได้</div>
+            <div className="cert-badge">🏅 GHP — Good Hygiene Practices</div>
+            <div className="cert-badge">🛡️ HACCP — Hazard Analysis and Critical Control Points</div>
+            <div className="cert-badge">⚙️ ระบบควบคุมคุณภาพ — ตรวจสอบและควบคุมคุณภาพในทุกขั้นตอนการผลิต</div>
+            <div className="cert-badge">🔍 Traceability — ตรวจสอบย้อนกลับได้</div>
+            <div className="cert-badge">🏢 อย. / ปศุสัตว์ OK — รอเอกสารยืนยันจากบริษัท</div>
             <Link className="button alt" href="/standards" style={{ marginLeft: 'auto', fontSize: '13px', padding: '8px 14px' }}>
-              ดูมาตรฐานการผลิตทั้งหมด →
+              ดูมาตรฐานการผลิต
             </Link>
           </div>
         </div>
