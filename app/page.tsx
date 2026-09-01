@@ -308,7 +308,7 @@ export default function Home() {
         </section>
 
         {/* =========================================================================
-            ROW 5: FINAL CTA (พร้อมเป็นส่วนหนึ่งในการเติบโตของธุรกิจคุณ)
+            ROW 5: FINAL CTA (Matching Image 2 Seamless Handshake)
             ========================================================================= */}
         <section className="row-final-cta">
           <div className="cta-split-left">
@@ -318,16 +318,10 @@ export default function Home() {
             </p>
             <div>
               <Link className="pill-btn primary" href="/contact">
-                ติดต่อเรา →
+                ติดต่อฝ่ายขาย →
               </Link>
             </div>
           </div>
-          <div
-            className="cta-split-right"
-            style={{
-              backgroundImage: `url('https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80')`,
-            }}
-          />
         </section>
       </div>
     </div>
