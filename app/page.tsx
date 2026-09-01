@@ -29,15 +29,11 @@ export default function Home() {
   return (
     <>
       {/* =========================================================================
-          ROW 1: FULL-WIDTH WARM HERO BANNER (No duplicate logo)
+          ROW 1: FULL-WIDTH PANORAMIC HERO BANNER (Matching Image 2)
           ========================================================================= */}
       <section className="hero-master-v2">
-        <div className="wrap hero-master-grid">
+        <div className="wrap">
           <div className="hero-master-left">
-            <div className="eyebrow" style={{ color: 'var(--red)', fontWeight: 800, fontSize: '13px', letterSpacing: '0.08em', marginBottom: '8px' }}>
-              DUANGCHAROEN INTERTRADE CO., LTD.
-            </div>
-
             <h1>แหล่งวัตถุดิบเนื้อหมูสำหรับธุรกิจ</h1>
             <p className="hero-sub">
               ที่ต้องการคุณภาพสม่ำเสมอ ปริมาณเพียงพอ<br />
@@ -54,29 +50,6 @@ export default function Home() {
               <Link className="pill-btn outline" href="/rfq">
                 ขอใบเสนอราคา
               </Link>
-            </div>
-          </div>
-
-          <div className="hero-master-right">
-            <div
-              className="hero-img-main"
-              style={{
-                backgroundImage: `url('/hero-banner.webp')`,
-              }}
-            />
-            <div className="hero-img-thumbs">
-              <div
-                className="hero-thumb"
-                style={{
-                  backgroundImage: `url('https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=600&q=80')`,
-                }}
-              />
-              <div
-                className="hero-thumb"
-                style={{
-                  backgroundImage: `url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&q=80')`,
-                }}
-              />
             </div>
           </div>
         </div>

@@ -218,28 +218,29 @@ h3 { margin: 0 0 10px; color: var(--brown); }
   flex-direction: column;
 }
 
-/* Master Hero Banner (Full-Width & Warm) */
+/* Master Hero Banner (Full-Width Panoramic Background Matching Mockup Image 2) */
 .hero-master-v2 {
-  background: linear-gradient(135deg, #f7f1e6 0%, #ebd9c4 100%);
+  position: relative;
+  min-height: 480px;
+  background: linear-gradient(90deg, rgba(248, 243, 235, 0.98) 0%, rgba(248, 243, 235, 0.92) 36%, rgba(248, 243, 235, 0.3) 54%, rgba(248, 243, 235, 0) 70%), url('/hero-master.png') center right / cover no-repeat;
   border-bottom: 1px solid #dfd0be;
-  padding: 48px 0;
-}
-.hero-master-grid {
-  display: grid;
-  grid-template-columns: 44% 56%;
-  gap: 36px;
+  display: flex;
   align-items: center;
+  padding: 64px 0;
+}
+.hero-master-left {
+  max-width: 560px;
 }
 .hero-master-left h1 {
-  font-size: clamp(30px, 3.4vw, 46px);
+  font-size: clamp(32px, 3.8vw, 48px);
   color: var(--red);
-  margin: 12px 0 14px;
+  margin: 0 0 14px;
   line-height: 1.22;
   font-weight: 800;
   letter-spacing: -0.01em;
 }
 .hero-master-left .hero-sub {
-  font-size: 16.5px;
+  font-size: 17px;
   line-height: 1.75;
   color: #4a362a;
   margin: 0 0 16px;
@@ -249,30 +250,7 @@ h3 { margin: 0 0 10px; color: var(--brown); }
   font-weight: 700;
   color: #b88a22;
   letter-spacing: 0.04em;
-  margin-bottom: 26px;
-}
-.hero-master-right {
-  display: grid;
-  grid-template-columns: 1fr 140px;
-  gap: 10px;
-}
-.hero-img-main {
-  background-size: cover;
-  background-position: center;
-  border-radius: 8px;
-  min-height: 360px;
-  box-shadow: 0 6px 22px rgba(80, 50, 30, 0.12);
-}
-.hero-img-thumbs {
-  display: grid;
-  grid-template-rows: 1fr 1fr;
-  gap: 10px;
-}
-.hero-thumb {
-  background-size: cover;
-  background-position: center;
-  border-radius: 8px;
-  box-shadow: 0 4px 14px rgba(80, 50, 30, 0.08);
+  margin-bottom: 28px;
 }
 
 /* Row 2: Why Choose Us (58%) + Target Industries (42%) */
