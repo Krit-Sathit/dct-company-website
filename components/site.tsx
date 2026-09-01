@@ -215,53 +215,101 @@ export function Footer() {
   }, []);
 
   return (
-    <footer className="footer">
-      <div className="wrap footer-grid">
-        <div>
-          <img src="/logo-lockup.png" alt="DCT" />
-          <p className="small" style={{ marginTop: '12px' }}>
-            <b>{contact.company_name_th}</b>
-            <br />
-            {contact.company_name_en}
-            <br />
-            แหล่งวัตถุดิบเนื้อสุกรสำหรับธุรกิจ พร้อมบริการตัดแต่ง จัดเก็บ และการจัดส่งที่ไว้ใจได้
-          </p>
-        </div>
-        <div>
-          <b>เมนู</b>
-          <p className="small">
-            <Link href="/">หน้าหลัก</Link>
-            <br />
-            <Link href="/about">เกี่ยวกับเรา</Link>
-            <br />
-            <Link href="/products">สินค้า</Link>
-            <br />
-            <Link href="/services">บริการของเรา</Link>
-            <br />
-            <Link href="/standards">มาตรฐานการผลิต</Link>
-            <br />
-            <Link href="/news">ข่าวสาร</Link>
-            <br />
-            <Link href="/contact">ติดต่อเรา</Link>
-          </p>
-        </div>
-        <div>
-          <b>ติดต่อเรา</b>
-          <p className="small">
-            โทร: <a href={`tel:${contact.phone}`} style={{ color: '#e7d8c8' }}>{contact.phone}</a>
-            {contact.phone_secondary && <><br />มือถือ: <a href={`tel:${contact.phone_secondary}`} style={{ color: '#e7d8c8' }}>{contact.phone_secondary}</a></>}
-            <br />
-            อีเมล: <a href={`mailto:${contact.email}`} style={{ color: '#e7d8c8' }}>{contact.email}</a>
-            <br />
-            LINE: {contact.line_id || '-'}
-            <br />
-            <Link href="/contact" style={{ textDecoration: 'underline', color: '#e7d8c8' }}>ดูช่องทางติดต่อทั้งหมด →</Link>
-          </p>
-          <div style={{ marginTop: '14px' }}>
-            <Link className="button alt" href="/rfq" style={{ borderColor: 'var(--gold)', color: 'var(--gold)', fontSize: '13px', padding: '8px 14px' }}>
-              ขอใบเสนอราคา
-            </Link>
+    <footer className="footer-mockup">
+      <div className="wrap footer-mockup-grid">
+        {/* Column 1: Brand & Tagline */}
+        <div className="footer-col">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+            <img src="/logo.png" alt="DCT" style={{ width: 44, height: 44, objectFit: 'contain' }} />
+            <div>
+              <strong style={{ fontSize: '14px', color: 'var(--ink)', display: 'block' }}>
+                {contact.company_name_th || 'ดวงเจริญ อินเตอร์เทรด จำกัด'}
+              </strong>
+              <span style={{ fontSize: '10.5px', color: '#8c7667', fontWeight: 600 }}>
+                {contact.company_name_en || 'DUANGCHAROEN INTERTRADE CO., LTD.'}
+              </span>
+            </div>
           </div>
+          <p style={{ fontSize: '12px', lineHeight: 1.6, color: '#6e584a', margin: '0 0 14px' }}>
+            แหล่งวัตถุดิบเนื้อหมูสำหรับธุรกิจ ที่ต้องการคุณภาพสม่ำเสมอ ปริมาณเพียงพอ และการจัดส่งที่ไว้ใจได้
+          </p>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <span style={{ width: 28, height: 28, borderRadius: '50%', background: '#06C755', color: '#fff', display: 'grid', placeItems: 'center', fontSize: '12px', fontWeight: 800 }}>L</span>
+            <span style={{ width: 28, height: 28, borderRadius: '50%', background: '#1877F2', color: '#fff', display: 'grid', placeItems: 'center', fontSize: '12px', fontWeight: 800 }}>f</span>
+            <span style={{ width: 28, height: 28, borderRadius: '50%', background: '#FF0000', color: '#fff', display: 'grid', placeItems: 'center', fontSize: '11px', fontWeight: 800 }}>▶</span>
+          </div>
+        </div>
+
+        {/* Column 2: เมนูหลัก */}
+        <div className="footer-col">
+          <h4>เมนูหลัก</h4>
+          <ul>
+            <li><Link href="/">หน้าแรก</Link></li>
+            <li><Link href="/about">เกี่ยวกับเรา</Link></li>
+            <li><Link href="/products">สินค้า</Link></li>
+            <li><Link href="/services">บริการของเรา</Link></li>
+            <li><Link href="/standards">มาตรฐานการผลิต</Link></li>
+            <li><Link href="/news">ข่าวสาร</Link></li>
+            <li><Link href="/contact">ติดต่อเรา</Link></li>
+          </ul>
+        </div>
+
+        {/* Column 3: สินค้า */}
+        <div className="footer-col">
+          <h4>สินค้า</h4>
+          <ul>
+            <li><Link href="/products">เนื้อหมูสดแช่เย็น (Fresh)</Link></li>
+            <li><Link href="/products">เนื้อหมูแช่แข็ง (Frozen)</Link></li>
+            <li><Link href="/products/pork-neck">สันคอหมู</Link></li>
+            <li><Link href="/products/loin">สันนอกหมู</Link></li>
+            <li><Link href="/products/pork-belly">สามชั้นหมู</Link></li>
+            <li><Link href="/products/ribs">ซี่โครงหมู</Link></li>
+            <li><Link href="/rfq">สินค้าพร้อมขาย</Link></li>
+          </ul>
+        </div>
+
+        {/* Column 4: บริการของเรา */}
+        <div className="footer-col">
+          <h4>บริการของเรา</h4>
+          <ul>
+            <li><Link href="/services">รับผลิตตามความต้องการ</Link></li>
+            <li><Link href="/services">จัดเตรียมสินค้ามาตรฐาน</Link></li>
+            <li><Link href="/services">แพ็กและบรรจุภัณฑ์</Link></li>
+            <li><Link href="/services">จัดส่งทั่วประเทศ</Link></li>
+            <li><Link href="/services">ให้คำปรึกษาและดูแลอย่างใกล้ชิด</Link></li>
+          </ul>
+        </div>
+
+        {/* Column 5: ติดต่อเรา */}
+        <div className="footer-col">
+          <h4>ติดต่อเรา</h4>
+          <ul>
+            <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span>📞</span>
+              <a href={`tel:${contact.phone}`}>{contact.phone}</a>
+            </li>
+            <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span>✉️</span>
+              <a href={`mailto:${contact.email}`}>{contact.email}</a>
+            </li>
+            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
+              <span>📍</span>
+              <span style={{ fontSize: '11.5px', lineHeight: 1.4 }}>{contact.address}</span>
+            </li>
+            <li style={{ marginTop: '6px' }}>
+              <Link href="/admin" style={{ fontSize: '11px', color: '#9e8a7c', textDecoration: 'underline' }}>
+                🔒 ระบบผู้ดูแล (Admin CMS)
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div className="wrap" style={{ marginTop: '28px', paddingTop: '16px', borderTop: '1px solid #f0e6dc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', fontSize: '11.5px', color: '#9e8a7c' }}>
+        <div>© {new Date().getFullYear()} บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด. All rights reserved.</div>
+        <div style={{ display: 'flex', gap: '16px' }}>
+          <Link href="/standards" style={{ color: '#9e8a7c' }}>มาตรฐานความปลอดภัย</Link>
+          <Link href="/rfq" style={{ color: '#9e8a7c' }}>ขอใบเสนอราคา (B2B)</Link>
         </div>
       </div>
     </footer>
