@@ -36,60 +36,62 @@ export default function Contact() {
           <div className="eyebrow">Sales & Business Inquiry</div>
           <h2 style={{ fontSize: '26px', marginTop: '4px' }}>ข้อมูลติดต่อฝ่ายขาย</h2>
           
-          <div className="spec">
-            <span>ชื่อบริษัท</span>
-            <b>{contact.company_name_th}</b>
-          </div>
-          <div className="spec">
-            <span>ที่อยู่สำนักงาน</span>
-            <b>{contact.address}</b>
-          </div>
-          <div className="spec">
-            <span>โทรศัพท์ฝ่ายขาย</span>
-            <b>
-              <a href={`tel:${contact.phone}`} style={{ color: 'var(--red)' }}>
-                {contact.phone}
-              </a>
-              {contact.phone_secondary && (
-                <>
-                  {' · '}
-                  <a href={`tel:${contact.phone_secondary}`} style={{ color: 'var(--red)' }}>
-                    {contact.phone_secondary}
-                  </a>
-                </>
-              )}
-            </b>
-          </div>
-          <div className="spec">
-            <span>อีเมล</span>
-            <b>
-              <a href={`mailto:${contact.email}`} style={{ color: 'var(--red)' }}>
-                {contact.email}
-              </a>
-            </b>
-          </div>
-          <div className="spec">
-            <span>LINE Official</span>
-            <b>
-              {contact.line_id ? (
-                contact.line_id.startsWith('http') ? (
-                  <a href={contact.line_id} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--red)' }}>
-                    เพิ่มเพื่อน LINE
-                  </a>
-                ) : (
-                  <span>{contact.line_id}</span>
-                )
-              ) : (
-                '-'
-              )}
-            </b>
-          </div>
-          {contact.business_hours && (
+          <div className="spec-box">
             <div className="spec">
-              <span>เวลาทำการ</span>
-              <b>{contact.business_hours}</b>
+              <span>ชื่อบริษัท</span>
+              <b>{contact.company_name_th}</b>
             </div>
-          )}
+            <div className="spec">
+              <span>ที่อยู่สำนักงาน</span>
+              <b>{contact.address}</b>
+            </div>
+            <div className="spec">
+              <span>โทรศัพท์ฝ่ายขาย</span>
+              <b>
+                <a href={`tel:${contact.phone}`} style={{ color: 'var(--red)', textDecoration: 'none' }}>
+                  {contact.phone}
+                </a>
+                {contact.phone_secondary && (
+                  <>
+                    {' · '}
+                    <a href={`tel:${contact.phone_secondary}`} style={{ color: 'var(--red)', textDecoration: 'none' }}>
+                      {contact.phone_secondary}
+                    </a>
+                  </>
+                )}
+              </b>
+            </div>
+            <div className="spec">
+              <span>อีเมล</span>
+              <b>
+                <a href={`mailto:${contact.email}`} style={{ color: 'var(--red)', textDecoration: 'none' }}>
+                  {contact.email}
+                </a>
+              </b>
+            </div>
+            <div className="spec">
+              <span>LINE Official</span>
+              <b>
+                {contact.line_id ? (
+                  contact.line_id.startsWith('http') ? (
+                    <a href={contact.line_id} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--red)', textDecoration: 'none', fontWeight: 700 }}>
+                      เพิ่มเพื่อน LINE (@dctfood)
+                    </a>
+                  ) : (
+                    <span>{contact.line_id}</span>
+                  )
+                ) : (
+                  '-'
+                )}
+              </b>
+            </div>
+            {contact.business_hours && (
+              <div className="spec">
+                <span>เวลาทำการ</span>
+                <b>{contact.business_hours}</b>
+              </div>
+            )}
+          </div>
 
           <div className="actions" style={{ marginTop: '28px' }}>
             <Link className="button" href="/rfq">

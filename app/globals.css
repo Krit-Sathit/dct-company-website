@@ -144,6 +144,47 @@ h3 { margin: 0 0 10px; color: var(--brown); }
 .filter { width: auto; min-width: 170px; }
 .details { display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; }
 
+/* Clean Key-Value Spec Box Layout */
+.spec-box {
+  background: #fffdf9;
+  border: 1px solid #eadfd4;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 20px 0;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+}
+.spec {
+  padding: 12px 18px;
+  border-bottom: 1px solid #f0e6dc;
+  display: grid;
+  grid-template-columns: 175px 1fr;
+  align-items: baseline;
+  gap: 16px;
+  transition: background 0.15s ease;
+}
+.spec:last-child {
+  border-bottom: none;
+}
+.spec:nth-child(even) {
+  background: #fcf9f5;
+}
+.spec:hover {
+  background: #f8f1e9;
+}
+.spec span {
+  color: #7a6557;
+  font-weight: 700;
+  font-size: 13.5px;
+  letter-spacing: 0.02em;
+}
+.spec b {
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 14.5px;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
 /* Compact Floating Action Button for RFQ */
 .rfq-fab {
   position: fixed;

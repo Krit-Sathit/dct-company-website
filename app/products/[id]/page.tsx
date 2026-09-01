@@ -43,72 +43,74 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
           <h2 style={{ fontSize: '26px', marginBottom: '8px' }}>Product Detail — ข้อมูลจำเพาะทางเทคนิค</h2>
           <p className="lead" style={{ marginBottom: '24px', fontSize: '15px' }}>{p.description}</p>
 
-          {/* 1. Product Name */}
-          <div className="spec">
-            <span>Product Name</span>
-            <b>{p.name} {p.nameEn ? `(${p.nameEn})` : ''}</b>
-          </div>
-
-          {/* 2. Product Type */}
-          <div className="spec">
-            <span>Product Type</span>
-            <b>{p.type || 'Chilled (สดแช่เย็น 0-4°C) / Frozen (แช่แข็ง -18°C)'}</b>
-          </div>
-
-          {/* 3. Cut Part */}
-          <div className="spec">
-            <span>Cut Part</span>
-            <b>{p.cutPart || p.name}</b>
-          </div>
-
-          {/* 4. Cutting Options */}
-          <div className="spec">
-            <span>Cutting Options</span>
-            <b>{p.cut}</b>
-          </div>
-
-          {/* 5. Portion / Thickness */}
-          {p.thickness && (
+          <div className="spec-box">
+            {/* 1. Product Name */}
             <div className="spec">
-              <span>Portion / Thickness</span>
-              <b>{p.thickness}</b>
+              <span>Product Name</span>
+              <b>{p.name} {p.nameEn ? `(${p.nameEn})` : ''}</b>
             </div>
-          )}
 
-          {/* 6. Meat / Fat Ratio */}
-          {p.meatFatRatio && (
+            {/* 2. Product Type */}
             <div className="spec">
-              <span>Meat / Fat Ratio</span>
-              <b>{p.meatFatRatio}</b>
+              <span>Product Type</span>
+              <b>{p.type || 'Chilled (สดแช่เย็น 0-4°C) / Frozen (แช่แข็ง -18°C)'}</b>
             </div>
-          )}
 
-          {/* 7. Packaging */}
-          <div className="spec">
-            <span>Packaging</span>
-            <b>{p.pack}</b>
-          </div>
-
-          {/* 8. Shelf Life */}
-          {p.shelfLife && (
+            {/* 3. Cut Part */}
             <div className="spec">
-              <span>Shelf Life</span>
-              <b>{p.shelfLife}</b>
+              <span>Cut Part</span>
+              <b>{p.cutPart || p.name}</b>
             </div>
-          )}
 
-          {/* 9. MOQ */}
-          {p.moq && (
+            {/* 4. Cutting Options */}
             <div className="spec">
-              <span>MOQ</span>
-              <b>{p.moq}</b>
+              <span>Cutting Options</span>
+              <b>{p.cut}</b>
             </div>
-          )}
 
-          {/* 10. Storage & Use */}
-          <div className="spec">
-            <span>Storage & Use</span>
-            <b>{p.storage} · {p.use}</b>
+            {/* 5. Portion / Thickness */}
+            {p.thickness && (
+              <div className="spec">
+                <span>Portion / Thickness</span>
+                <b>{p.thickness}</b>
+              </div>
+            )}
+
+            {/* 6. Meat / Fat Ratio */}
+            {p.meatFatRatio && (
+              <div className="spec">
+                <span>Meat / Fat Ratio</span>
+                <b>{p.meatFatRatio}</b>
+              </div>
+            )}
+
+            {/* 7. Packaging */}
+            <div className="spec">
+              <span>Packaging</span>
+              <b>{p.pack}</b>
+            </div>
+
+            {/* 8. Shelf Life */}
+            {p.shelfLife && (
+              <div className="spec">
+                <span>Shelf Life</span>
+                <b>{p.shelfLife}</b>
+              </div>
+            )}
+
+            {/* 9. MOQ */}
+            {p.moq && (
+              <div className="spec">
+                <span>MOQ</span>
+                <b>{p.moq}</b>
+              </div>
+            )}
+
+            {/* 10. Storage & Use */}
+            <div className="spec">
+              <span>Storage & Use</span>
+              <b>{p.storage} · {p.use}</b>
+            </div>
           </div>
 
           {/* Dual CTAs from Master Copy v2.0 */}
