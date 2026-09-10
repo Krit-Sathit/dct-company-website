@@ -115,6 +115,11 @@ export function Header() {
             <Link href="/standards">มาตรฐานการผลิต</Link>
             <Link href="/news">ข่าวสาร</Link>
             <Link href="/contact">ติดต่อเรา</Link>
+            <div className="lang-switcher-pill" title="เลือกภาษา (Language)">
+              <span className="active">TH</span>
+              <span style={{ opacity: 0.35 }}>|</span>
+              <span className="inactive" title="English mode coming soon">EN</span>
+            </div>
             <Link className="cta" href="/rfq">
               ขอใบเสนอราคา
             </Link>
@@ -154,6 +159,15 @@ export function Header() {
           </button>
         </div>
 
+        <div style={{ marginTop: '14px', marginBottom: '6px' }}>
+          <div className="lang-switcher-pill" style={{ width: 'fit-content' }}>
+            <span style={{ color: '#8c7667' }}>ภาษา:</span>
+            <span className="active">TH</span>
+            <span style={{ opacity: 0.35 }}>|</span>
+            <span className="inactive" title="English mode coming soon">EN</span>
+          </div>
+        </div>
+
         <nav className="mobile-drawer-links">
           <Link href="/" onClick={() => setMobileMenuOpen(false)}>
             🏠 หน้าหลัก
@@ -183,23 +197,9 @@ export function Header() {
             className="button"
             href="/rfq"
             onClick={() => setMobileMenuOpen(false)}
-            style={{ width: '100%', marginBottom: '12px' }}
+            style={{ width: '100%' }}
           >
             📑 ขอใบเสนอราคา
-          </Link>
-          <Link
-            href="/admin"
-            onClick={() => setMobileMenuOpen(false)}
-            style={{
-              display: 'block',
-              textAlign: 'center',
-              fontSize: '13px',
-              color: '#806c60',
-              textDecoration: 'underline',
-              padding: '6px',
-            }}
-          >
-            🔒 ระบบผู้ดูแล (Admin CMS)
           </Link>
         </div>
       </aside>
@@ -296,20 +296,16 @@ export function Footer() {
               <span>📍</span>
               <span style={{ fontSize: '11.5px', lineHeight: 1.4 }}>{contact.address}</span>
             </li>
-            <li style={{ marginTop: '6px' }}>
-              <Link href="/admin" style={{ fontSize: '11px', color: '#9e8a7c', textDecoration: 'underline' }}>
-                🔒 ระบบผู้ดูแล (Admin CMS)
-              </Link>
-            </li>
           </ul>
         </div>
       </div>
 
       <div className="wrap" style={{ marginTop: '28px', paddingTop: '16px', borderTop: '1px solid #f0e6dc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', fontSize: '11.5px', color: '#9e8a7c' }}>
-        <div>© {new Date().getFullYear()} บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด. All rights reserved.</div>
+        <div>© {new Date().getFullYear()} บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด (DUANGCHAROEN INTERTRADE CO., LTD.). สงวนลิขสิทธิ์ทุกประการ.</div>
         <div style={{ display: 'flex', gap: '16px' }}>
           <Link href="/standards" style={{ color: '#9e8a7c' }}>มาตรฐานความปลอดภัย</Link>
           <Link href="/rfq" style={{ color: '#9e8a7c' }}>ขอใบเสนอราคา (B2B)</Link>
+          <Link href="/contact" style={{ color: '#9e8a7c' }}>ติดต่อฝ่ายขาย</Link>
         </div>
       </div>
     </footer>

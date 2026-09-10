@@ -6,3 +6,6 @@ node_modules/
 *.log
 pnpm-debug.log*
 npm-debug.log*
+review_website_dct.*
+review_xlsx_extracted/
+review_data_all.json

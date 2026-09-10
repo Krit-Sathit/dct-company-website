@@ -293,37 +293,198 @@ h3 { margin: 0 0 10px; color: var(--brown); }
   color: #6e5544;
   margin: 0;
 }
-.industry-items-grid {
+
+/* Full Width Why Choose Us */
+.why-features-grid.full-width {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
-  margin-top: 6px;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Slider Nav Buttons */
+.slider-nav-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #d8c29d;
+  background: #fdfbf7;
+  color: var(--ink);
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.slider-nav-btn:hover {
+  background: var(--red);
+  color: #ffffff;
+  border-color: var(--red);
+}
+
+/* Product Slider Container (Slide 2) */
+.product-slider-container {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding: 8px 4px 16px;
+  -webkit-overflow-scrolling: touch;
+}
+.product-slider-container::-webkit-scrollbar {
+  height: 6px;
+}
+.product-slider-container::-webkit-scrollbar-thumb {
+  background: #d8c29d;
+  border-radius: 3px;
+}
+
+/* Slider Product Card */
+.slider-product-card {
+  flex: 0 0 240px;
+  scroll-snap-align: start;
+  background: #f7efe2;
+  border: 1px solid #e6d8c5;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 14px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.slider-product-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--gold);
+  box-shadow: 0 8px 20px rgba(107, 70, 54, 0.12);
+}
+
+/* Hover Zoom Effect (Slide 2) */
+.img-zoom-wrapper {
+  overflow: hidden;
+  height: 150px;
+  position: relative;
+}
+.img-box.zoom-effect {
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.4s ease;
+}
+.slider-product-card:hover .img-box.zoom-effect {
+  transform: scale(1.08);
+}
+
+.slider-product-card .info-box {
+  padding: 12px 10px 0;
   text-align: center;
 }
-.industry-item-card {
+.slider-product-card h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 4px;
+}
+.slider-product-card .th-spec-desc {
+  font-size: 11.5px;
+  color: #7d6553;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+.slider-product-card .link-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--red);
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 50px;
+  background: #ede1d0;
+  border: 1px solid #dfcfbc;
+  transition: all 0.2s ease;
+}
+.slider-product-card:hover .link-text {
+  background: var(--red);
+  color: #ffffff;
+  border-color: var(--red);
+}
+
+/* Slider Promo Card */
+.slider-promo-card {
+  flex: 0 0 240px;
+  scroll-snap-align: start;
+}
+
+/* Service Compact Chip (Slide 4) */
+.service-compact-chip {
   background: #f7efe2;
   border: 1px solid #e6d8c5;
   border-radius: 6px;
-  padding: 14px 6px;
+  padding: 10px 12px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-.industry-item-card:hover {
-  background: #f0e4d0;
-  transform: translateY(-2px);
-}
-.industry-item-card h4 {
-  font-size: 12px;
+  gap: 8px;
+  font-size: 12.5px;
   font-weight: 700;
   color: var(--ink);
-  margin: 8px 0 2px;
+  transition: all 0.2s ease;
 }
-.industry-item-card span {
-  font-size: 10px;
-  color: #7d6553;
-  line-height: 1.3;
+.service-compact-chip:hover {
+  background: #f0e4d0;
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+
+/* Certificate Modal & Badges (Slide 5) */
+.standard-mini-badge.clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.standard-mini-badge.clickable:hover {
+  background: #f0e4d0;
+  border-color: var(--gold);
+  transform: translateX(4px);
+}
+.view-cert-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--red);
+  background: #ede1d0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.cert-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+  backdrop-filter: blur(3px);
+}
+.cert-modal-content {
+  background: #ffffff;
+  border-radius: 12px;
+  max-width: 520px;
+  width: 100%;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  animation: modalFadeIn 0.2s ease-out;
+}
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 /* Row 3: สินค้าแนะนำ (Full-Width Card across the banner width) */
@@ -677,6 +838,68 @@ h3 { margin: 0 0 10px; color: var(--brown); }
   font-size: 14.5px;
   line-height: 1.6;
   word-break: break-word;
+}
+
+/* Collapsible Spec Accordion for B2B specs */
+.spec-accordion {
+  margin-top: 18px;
+  border: 1px solid #eadfd4;
+  border-radius: 6px;
+  background: #fffdf9;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+.spec-accordion summary {
+  padding: 14px 18px;
+  font-weight: 700;
+  font-size: 14.5px;
+  color: var(--brown);
+  background: #fbf6ef;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.2s ease, color 0.2s ease;
+  list-style: none;
+}
+.spec-accordion summary::-webkit-details-marker {
+  display: none;
+}
+.spec-accordion summary:hover {
+  background: #f5ece0;
+  color: var(--red);
+}
+.spec-accordion[open] summary {
+  border-bottom: 1px solid #eadfd4;
+  background: #f5ece0;
+  color: var(--red);
+}
+.spec-accordion-body {
+  padding: 0;
+}
+
+/* Language Switcher Badge */
+.lang-switcher-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #f4ecdf;
+  border: 1px solid #e2d4c3;
+  color: var(--brown);
+}
+.lang-switcher-pill span.active {
+  color: var(--red);
+  font-weight: 800;
+}
+.lang-switcher-pill span.inactive {
+  color: #8c7667;
+  opacity: 0.8;
+  cursor: pointer;
 }
 
 /* Compact Floating Action Button for RFQ */

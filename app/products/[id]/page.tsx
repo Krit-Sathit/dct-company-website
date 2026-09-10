@@ -20,9 +20,16 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     <>
       <section className="page-hero">
         <div className="wrap">
+          {/* Breadcrumb Navigation */}
+          <div style={{ fontSize: '13px', color: '#8c7667', marginBottom: '14px', display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <Link href="/" style={{ color: 'var(--brown)', textDecoration: 'underline' }}>หน้าหลัก</Link>
+            <span>›</span>
+            <Link href="/products" style={{ color: 'var(--brown)', textDecoration: 'underline' }}>สินค้า</Link>
+            <span>›</span>
+            <span style={{ color: 'var(--red)', fontWeight: 700 }}>{p.name}</span>
+          </div>
           <div className="eyebrow">รหัสสินค้า (SKU): {p.code}</div>
           <h1>{p.name}</h1>
-          {p.nameEn && <div style={{ fontSize: '18px', color: 'var(--gold)', fontWeight: 700, marginTop: '4px' }}>{p.nameEn}</div>}
           <p className="lead">{p.description}</p>
         </div>
       </section>
@@ -38,86 +45,89 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         <div>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '12px' }}>
             <span className="tag">{p.category}</span>
-            <span className="tag" style={{ background: '#f5eedf', color: 'var(--gold)' }}>B2B Specification</span>
+            <span className="tag" style={{ background: '#f5eedf', color: 'var(--gold)' }}>มาตรฐาน B2B</span>
           </div>
-          <h2 style={{ fontSize: '26px', marginBottom: '8px' }}>Product Detail — ข้อมูลจำเพาะทางเทคนิค</h2>
+          <h2 style={{ fontSize: '26px', marginBottom: '8px' }}>รายละเอียดสินค้า</h2>
           <p className="lead" style={{ marginBottom: '24px', fontSize: '15px' }}>{p.description}</p>
 
+          {/* Primary 3 Rows in Pure Thai (Slide 8 Client Feedback) */}
           <div className="spec-box">
-            {/* 1. Product Name */}
+            {/* 1. ชื่อสินค้า */}
             <div className="spec">
-              <span>Product Name</span>
-              <b>{p.name} {p.nameEn ? `(${p.nameEn})` : ''}</b>
+              <span>ชื่อสินค้า</span>
+              <b>{p.name}</b>
             </div>
 
-            {/* 2. Product Type */}
+            {/* 2. ชิ้นส่วน / รูปแบบการตัดแต่ง */}
             <div className="spec">
-              <span>Product Type</span>
-              <b>{p.type || 'Chilled (สดแช่เย็น 0-4°C) / Frozen (แช่แข็ง -18°C)'}</b>
+              <span>ชิ้นส่วน / รูปแบบตัดแต่ง</span>
+              <b>{p.cutPart || p.name} — {p.cut}</b>
             </div>
 
-            {/* 3. Cut Part */}
+            {/* 3. เหมาะสำหรับ */}
             <div className="spec">
-              <span>Cut Part</span>
-              <b>{p.cutPart || p.name}</b>
-            </div>
-
-            {/* 4. Cutting Options */}
-            <div className="spec">
-              <span>Cutting Options</span>
-              <b>{p.cut}</b>
-            </div>
-
-            {/* 5. Portion / Thickness */}
-            {p.thickness && (
-              <div className="spec">
-                <span>Portion / Thickness</span>
-                <b>{p.thickness}</b>
-              </div>
-            )}
-
-            {/* 6. Meat / Fat Ratio */}
-            {p.meatFatRatio && (
-              <div className="spec">
-                <span>Meat / Fat Ratio</span>
-                <b>{p.meatFatRatio}</b>
-              </div>
-            )}
-
-            {/* 7. Packaging */}
-            <div className="spec">
-              <span>Packaging</span>
-              <b>{p.pack}</b>
-            </div>
-
-            {/* 8. Shelf Life */}
-            {p.shelfLife && (
-              <div className="spec">
-                <span>Shelf Life</span>
-                <b>{p.shelfLife}</b>
-              </div>
-            )}
-
-            {/* 9. MOQ */}
-            {p.moq && (
-              <div className="spec">
-                <span>MOQ</span>
-                <b>{p.moq}</b>
-              </div>
-            )}
-
-            {/* 10. Storage & Use */}
-            <div className="spec">
-              <span>Storage & Use</span>
-              <b>{p.storage} · {p.use}</b>
+              <span>เหมาะสำหรับ</span>
+              <b>{p.use}</b>
             </div>
           </div>
 
+          {/* Accordion for Technical B2B Specifications (Slide 8 & I025) */}
+          <details className="spec-accordion">
+            <summary>
+              <span>📋 ข้อมูลจำเพาะทางเทคนิคเพิ่มเติม (B2B Specifications)</span>
+              <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--gold)' }}>คลิกเพื่อดูรายละเอียด ▾</span>
+            </summary>
+            <div className="spec-accordion-body">
+              <div className="spec">
+                <span>ประเภทเนื้อ</span>
+                <b>{p.type || 'สดแช่เย็น (Chilled 0-4°C) / แช่แข็ง (Frozen -18°C)'}</b>
+              </div>
+
+              {p.thickness && (
+                <div className="spec">
+                  <span>ความหนา / ขนาดชิ้น</span>
+                  <b>{p.thickness}</b>
+                </div>
+              )}
+
+              {p.meatFatRatio && (
+                <div className="spec">
+                  <span>สัดส่วนเนื้อต่อไขมัน</span>
+                  <b>{p.meatFatRatio}</b>
+                </div>
+              )}
+
+              <div className="spec">
+                <span>รูปแบบบรรจุภัณฑ์</span>
+                <b>{p.pack}</b>
+              </div>
+
+              {p.shelfLife && (
+                <div className="spec">
+                  <span>อายุการเก็บรักษา</span>
+                  <b>{p.shelfLife}</b>
+                </div>
+              )}
+
+              {p.moq && (
+                <div className="spec">
+                  <span>ปริมาณสั่งซื้อขั้นต่ำ (MOQ)</span>
+                  <b>{p.moq}</b>
+                </div>
+              )}
+
+              <div className="spec">
+                <span>การจัดเก็บ</span>
+                <b>{p.storage}</b>
+              </div>
+            </div>
+          </details>
+
           {/* Dual CTAs from Master Copy v2.0 */}
-          <div className="actions" style={{ marginTop: '36px' }}>
+          <div className="actions" style={{ marginTop: '32px' }}>
             <AddButton product={p} />
-            <Link className="button alt" href="/contact">
-              ติดต่อฝ่ายขาย
+            <Link className="button alt" href="/rfq">
+              สรุปรายการขอใบเสนอราคา
             </Link>
           </div>
         </div>

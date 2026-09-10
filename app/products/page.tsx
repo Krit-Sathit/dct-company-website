@@ -181,59 +181,63 @@ export default function Products() {
           </div>
         )}
 
-        {/* Technical Specifications Guide Table */}
-        <div style={{ marginTop: '64px' }}>
-          <div className="eyebrow">Technical Specifications</div>
-          <h2>ตารางสเปกสินค้าและรายละเอียดทางเทคนิคสำหรับ B2B</h2>
-          <p className="lead">
-            ข้อมูลมาตรฐานสำหรับการสั่งตัดแต่งและกำหนด Specification เพื่อส่งต่อทีมจัดซื้อและโรงงานผลิต
-          </p>
+        {/* Technical Specifications Guide Table in Collapsible Accordion (I026) */}
+        <details className="spec-accordion" style={{ marginTop: '54px' }}>
+          <summary style={{ padding: '16px 20px', fontSize: '15px' }}>
+            <span>📋 คู่มือตารางสเปกและมาตรฐานการตัดแต่งสำหรับ B2B (Technical Specifications)</span>
+            <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--gold)' }}>คลิกเพื่อดูรายละเอียดสเปก ▾</span>
+          </summary>
+          <div style={{ padding: '22px 24px', background: '#fffdf9' }}>
+            <p className="lead" style={{ fontSize: '14.5px', marginBottom: '18px' }}>
+              ข้อมูลมาตรฐานสำหรับการสั่งตัดแต่งและกำหนด Specification เพื่อส่งต่อทีมจัดซื้อและโรงงานผลิต
+            </p>
 
-          <div className="tech-table-wrap">
-            <table className="tech-table">
-              <thead>
-                <tr>
-                  <th>ฟิลด์ข้อมูล (Field Name)</th>
-                  <th>รายละเอียดและตัวอย่างข้อมูล (Description Example)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="label">ประเภทเนื้อ (Type)</td>
-                  <td>เนื้อสุกรสด (Chilled 0-4°C) / สุกรแช่แข็ง (Frozen -18°C)</td>
-                </tr>
-                <tr>
-                  <td className="label">ส่วนประกอบ / ชิ้นส่วน (Cut Part)</td>
-                  <td>สันคอ (Pork Collar), สันนอก (Pork Loin), สามชั้น (Pork Belly), ซี่โครง (Spare Ribs), สันใน, สะโพก</td>
-                </tr>
-                <tr>
-                  <td className="label">รูปแบบการตัดแต่ง (Cutting Options)</td>
-                  <td>ชิ้นบล็อก (Whole Cut) / สไลซ์ (Slice) / หั่นเต๋า (Dice) / บด (Mince) / Portion Cut ตามขนาด</td>
-                </tr>
-                <tr>
-                  <td className="label">ความหนา / ขนาดชิ้น (Portion / Thickness)</td>
-                  <td>ความหนาสไลซ์ 1.2 - 2.0 มม. หรือ ขนาดหั่นเต๋า 1 นิ้ว / สเต๊กตามน้ำหนักต่อชิ้น (สั่งตัดตามสเปกได้)</td>
-                </tr>
-                <tr>
-                  <td className="label">อัตราส่วนเนื้อต่อไขมัน (Meat/Fat Ratio)</td>
-                  <td>เช่น 90/10, 80/20 หรือ 70/30 (สำคัญมากสำหรับโรงงานแปรรูป ไส้กรอก และร้านอาหาร)</td>
-                </tr>
-                <tr>
-                  <td className="label">รูปแบบบรรจุภัณฑ์ (Packaging)</td>
-                  <td>สุญญากาศ (Vacuum Sealed) / บรรจุถุง Bulk Pack 5-10 กก. / Custom Box</td>
-                </tr>
-                <tr>
-                  <td className="label">อายุการเก็บรักษา (Shelf Life)</td>
-                  <td>แช่เย็น (0 ถึง 4°C): 7-14 วัน / แช่แข็ง (-18°C): 6-12 เดือน</td>
-                </tr>
-                <tr>
-                  <td className="label">ปริมาณสั่งซื้อขั้นต่ำ (MOQ)</td>
-                  <td>ขั้นต่ำ 20 กิโลกรัม / 100 กิโลกรัม (หรือตามข้อตกลงรอบส่งมอบของคู่ค้า)</td>
-                </tr>
-              </tbody>
-            </table>
+            <div className="tech-table-wrap" style={{ margin: 0 }}>
+              <table className="tech-table">
+                <thead>
+                  <tr>
+                    <th>ฟิลด์ข้อมูล (Field Name)</th>
+                    <th>รายละเอียดและตัวอย่างข้อมูล (Description Example)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="label">ประเภทเนื้อ (Type)</td>
+                    <td>เนื้อสุกรสด (Chilled 0-4°C) / สุกรแช่แข็ง (Frozen -18°C)</td>
+                  </tr>
+                  <tr>
+                    <td className="label">ส่วนประกอบ / ชิ้นส่วน (Cut Part)</td>
+                    <td>สันคอ (Pork Collar), สันนอก (Pork Loin), สามชั้น (Pork Belly), ซี่โครง (Spare Ribs), สันใน, สะโพก</td>
+                  </tr>
+                  <tr>
+                    <td className="label">รูปแบบการตัดแต่ง (Cutting Options)</td>
+                    <td>ชิ้นบล็อก (Whole Cut) / สไลซ์ (Slice) / หั่นเต๋า (Dice) / บด (Mince) / Portion Cut ตามขนาด</td>
+                  </tr>
+                  <tr>
+                    <td className="label">ความหนา / ขนาดชิ้น (Portion / Thickness)</td>
+                    <td>ความหนาสไลซ์ 1.2 - 2.0 มม. หรือ ขนาดหั่นเต๋า 1 นิ้ว / สเต๊กตามน้ำหนักต่อชิ้น (สั่งตัดตามสเปกได้)</td>
+                  </tr>
+                  <tr>
+                    <td className="label">อัตราส่วนเนื้อต่อไขมัน (Meat/Fat Ratio)</td>
+                    <td>เช่น 90/10, 80/20 หรือ 70/30 (สำคัญมากสำหรับโรงงานแปรรูป ไส้กรอก และร้านอาหาร)</td>
+                  </tr>
+                  <tr>
+                    <td className="label">รูปแบบบรรจุภัณฑ์ (Packaging)</td>
+                    <td>สุญญากาศ (Vacuum Sealed) / บรรจุถุง Bulk Pack 5-10 กก. / Custom Box</td>
+                  </tr>
+                  <tr>
+                    <td className="label">อายุการเก็บรักษา (Shelf Life)</td>
+                    <td>แช่เย็น (0 ถึง 4°C): 7-14 วัน / แช่แข็ง (-18°C): 6-12 เดือน</td>
+                  </tr>
+                  <tr>
+                    <td className="label">ปริมาณสั่งซื้อขั้นต่ำ (MOQ)</td>
+                    <td>ขั้นต่ำ 20 กิโลกรัม / 100 กิโลกรัม (หรือตามข้อตกลงรอบส่งมอบของคู่ค้า)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        </details>
       </main>
     </>
   );
