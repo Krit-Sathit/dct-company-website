@@ -883,23 +883,39 @@ h3 { margin: 0 0 10px; color: var(--brown); }
 .lang-switcher-pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 5px 10px;
+  gap: 2px;
+  padding: 3px 4px;
   border-radius: 20px;
   background: #f4ecdf;
-  border: 1px solid #e2d4c3;
-  color: var(--brown);
+  border: 1px solid #dcc9b4;
 }
-.lang-switcher-pill span.active {
-  color: var(--red);
-  font-weight: 800;
-}
-.lang-switcher-pill span.inactive {
-  color: #8c7667;
-  opacity: 0.8;
+.lang-switcher-pill button {
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 14px;
   cursor: pointer;
+  transition: all 0.2s ease;
+  color: #7d6350;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.lang-switcher-pill button:hover {
+  color: var(--red);
+}
+.lang-switcher-pill button.active {
+  background: var(--red);
+  color: #ffffff;
+  font-weight: 800;
+  box-shadow: 0 2px 6px rgba(139, 30, 30, 0.25);
+}
+.lang-switcher-pill .divider {
+  font-size: 11px;
+  color: #a89484;
 }
 
 /* Compact Floating Action Button for RFQ */

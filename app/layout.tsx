@@ -5,6 +5,7 @@ import './product-card.css';
 import './contrast.css';
 import './admin.css';
 import { Header, Footer, RFQProvider } from '@/components/site';
+import { LanguageProvider } from '@/lib/language';
 const noto = Noto_Sans_Thai({ subsets: ['thai'], weight: ['400','500','600','700'], variable: '--font-thai' });
 export const metadata: Metadata = { title: { default: 'DCT | Trusted B2B Food Supply Partner', template: '%s | DCT' }, description: 'มาตรฐานที่มั่นใจได้ สำหรับธุรกิจอาหารที่ต้องการความสม่ำเสมอ', openGraph: { title: 'Duangcharoen Intertrade', description: 'Trusted B2B Food Supply Partner', type: 'website', locale: 'th_TH' } };
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="th"><body className={noto.variable}><RFQProvider><Header />{children}<Footer /></RFQProvider></body></html>; }
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="th"><body className={noto.variable}><LanguageProvider><RFQProvider><Header />{children}<Footer /></RFQProvider></LanguageProvider></body></html>; }

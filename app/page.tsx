@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { products as allProducts } from '@/lib/data';
+import { useLanguage } from '@/lib/language';
 import {
   IconRibbon,
   IconShield,
@@ -21,6 +22,7 @@ import {
 } from '@/components/icons';
 
 export default function Home() {
+  const { lang, t } = useLanguage();
   const featuredProds = allProducts.slice(0, 4);
 
   // Certificate Modal state (Slide 5)
@@ -50,24 +52,23 @@ export default function Home() {
     <>
       {/* =========================================================================
           ROW 1: FULL-WIDTH PANORAMIC HERO BANNER (Slide 1)
-          - Headline: "วัตถุดิบคุณภาพ พร้อมส่งต่อให้ธุรกิจของคุณ"
-          - Sub-headline: "เนื้อสุกรตัดแต่งตามสเปก พร้อมการจัดเก็บและจัดส่งที่ได้มาตรฐาน"
-          - ภาษาไทย 100% (ไม่มีภาษาอังกฤษปน)
+          - Headline: "วัตถุดิบคุณภาพ พร้อมส่งต่อให้ธุรกิจของคุณ" / English when EN
+          - Sub-headline: "เนื้อสุกรตัดแต่งตามสเปก พร้อมการจัดเก็บและจัดส่งที่ได้มาตรฐาน" / English when EN
           ========================================================================= */}
       <section className="hero-master-v2">
         <div className="wrap">
           <div className="hero-master-left">
-            <h1>วัตถุดิบคุณภาพ พร้อมส่งต่อให้ธุรกิจของคุณ</h1>
+            <h1>{t('hero_title')}</h1>
             <p className="hero-sub">
-              เนื้อสุกรตัดแต่งตามสเปก พร้อมการจัดเก็บและจัดส่งที่ได้มาตรฐาน
+              {t('hero_sub')}
             </p>
 
             <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginTop: '24px' }}>
               <Link className="pill-btn primary" href="/products">
-                ดูสินค้าและบริการ →
+                {t('hero_cta_products')}
               </Link>
               <Link className="pill-btn outline" href="/rfq">
-                ขอใบเสนอราคา
+                {t('hero_cta_rfq')}
               </Link>
             </div>
           </div>
@@ -83,15 +84,15 @@ export default function Home() {
               ROW 2: สินค้าแนะนำ (Slide 2)
               - ย้ายขึ้นมาเป็น Section ที่ 2 ทันที
               - สไลด์ภาพ / Carousel พร้อมปุ่มเลื่อนและ Hover Zoom เพิ่มความไดนามิก
-              - ภาษาไทย 100% ไม่ปนภาษาอังกฤษ
+              - ภาษาไทย 100% ไม่ปนภาษาอังกฤษ (สลับภาษาอังกฤษเมื่อกด EN)
               ========================================================================= */}
           <section className="row-products-full" style={{ marginTop: 0 }}>
             <div className="mockup-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '10px' }}>
                 <div>
-                  <h3 className="sec-title" style={{ margin: 0 }}>สินค้าแนะนำ</h3>
+                  <h3 className="sec-title" style={{ margin: 0 }}>{t('featured_title')}</h3>
                   <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#6e584a' }}>
-                    คัดสรรชิ้นส่วนสุกรคุณภาพ ตัดแต่งตามสเปกที่ตอบโจทย์ทุกกลุ่มธุรกิจ
+                    {t('featured_sub')}
                   </p>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -100,7 +101,7 @@ export default function Home() {
                       type="button"
                       onClick={() => scrollSlider('left')}
                       className="slider-nav-btn"
-                      aria-label="เลื่อนซ้าย"
+                      aria-label={lang === 'en' ? 'Scroll left' : 'เลื่อนซ้าย'}
                     >
                       ←
                     </button>
@@ -108,13 +109,13 @@ export default function Home() {
                       type="button"
                       onClick={() => scrollSlider('right')}
                       className="slider-nav-btn"
-                      aria-label="เลื่อนขวา"
+                      aria-label={lang === 'en' ? 'Scroll right' : 'เลื่อนขวา'}
                     >
                       →
                     </button>
                   </div>
                   <Link href="/products" style={{ fontSize: '13px', fontWeight: 700, color: 'var(--red)', textDecoration: 'none' }}>
-                    ดูแคตตาล็อกทั้งหมด →
+                    {t('view_all_catalogue')}
                   </Link>
                 </div>
               </div>
@@ -130,26 +131,26 @@ export default function Home() {
                       />
                     </div>
                     <div className="info-box">
-                      <h4>{p.name}</h4>
-                      <div className="th-spec-desc">{p.cut || 'ตัดแต่งมาตรฐานตามสเปก'}</div>
+                      <h4>{lang === 'en' ? (p.nameEn || p.name) : p.name}</h4>
+                      <div className="th-spec-desc">{lang === 'en' ? (p.cutEn || p.cut) : p.cut}</div>
                       <Link className="link-text" href={`/products/${p.id}`}>
-                        ดูรายละเอียด →
+                        {t('view_details')}
                       </Link>
                     </div>
                   </div>
                 ))}
 
-                {/* กล่องโปรโมชันประจำเดือน (ภาษาไทยล้วน) */}
+                {/* กล่องโปรโมชันประจำเดือน */}
                 <div className="promo-mini-box slider-promo-card">
                   <div>
                     <span className="tag" style={{ background: 'var(--red)', color: '#fff', fontSize: '11px', padding: '3px 8px', marginBottom: '8px' }}>
-                      🔥 โปรโมชันประจำเดือน
+                      {t('promo_badge')}
                     </span>
-                    <h4>สินค้าพร้อมส่ง</h4>
-                    <p>สินค้าที่พร้อมส่งมอบทันทีในราคาพิเศษ ประจำเดือนนี้</p>
+                    <h4>{t('promo_title')}</h4>
+                    <p>{t('promo_desc')}</p>
                   </div>
                   <Link className="pill-btn primary" href="/rfq" style={{ fontSize: '12px', padding: '8px 14px', width: '100%', textAlign: 'center' }}>
-                    ดูโปรโมชั่น →
+                    {t('promo_cta')}
                   </Link>
                 </div>
               </div>
@@ -160,65 +161,61 @@ export default function Home() {
               ROW 3: ทำไมธุรกิจเลือกเรา & ไฮไลท์จุดเด่นสถิติ (Slide 3)
               - ลบกลุ่มลูกค้าของเราออก
               - ทำไมธุรกิจเลือกเรายาวเต็มความกว้าง
-              - รวมตัวเลข 4 ตัวที่ยืนยันแล้ว:
-                • 30+ ปี ประสบการณ์ในอุตสาหกรรม
-                • 100+ ราย ลูกค้าธุรกิจทั่วประเทศ
-                • 200+ ตัน/ด. กำลังการผลิตเพิ่มทุกเดือน
-                • 150 ตัน ความจุห้องเย็นพร้อมควบคุมอุณหภูมิ
+              - รวมตัวเลข 4 ตัวที่ยืนยันแล้ว
               ========================================================================= */}
           <section style={{ marginTop: '20px' }}>
             <div className="mockup-card">
-              <h3 className="sec-title">ทำไมธุรกิจเลือกเรา</h3>
+              <h3 className="sec-title">{t('why_title')}</h3>
               <div className="why-features-grid full-width">
                 <div className="why-item-card">
                   <IconRibbon size={32} color="#8B1E1E" />
-                  <h4>คุณภาพสม่ำเสมอ</h4>
-                  <p>คัดสรรวัตถุดิบคุณภาพ ผ่านมาตรฐานการผลิตที่เชื่อถือได้ทุกล็อตสินค้า</p>
+                  <h4>{t('why_1_title')}</h4>
+                  <p>{t('why_1_desc')}</p>
                 </div>
                 <div className="why-item-card">
                   <IconShield size={32} color="#8B1E1E" />
-                  <h4>ปลอดภัย มั่นใจได้</h4>
-                  <p>ควบคุมคุณภาพทุกขั้นตอน ได้มาตรฐานสากล ตรวจสอบย้อนกลับได้</p>
+                  <h4>{t('why_2_title')}</h4>
+                  <p>{t('why_2_desc')}</p>
                 </div>
                 <div className="why-item-card">
                   <IconFactory size={32} color="#8B1E1E" />
-                  <h4>กำลังการผลิตเพียงพอ</h4>
-                  <p>รองรับความต้องการได้อย่างต่อเนื่อง ตามแผนธุรกิจของคุณ</p>
+                  <h4>{t('why_3_title')}</h4>
+                  <p>{t('why_3_desc')}</p>
                 </div>
                 <div className="why-item-card">
                   <IconTruck size={32} color="#8B1E1E" />
-                  <h4>จัดส่งตรงเวลา</h4>
-                  <p>ระบบขนส่งควบคุมอุณหภูมิ ตรงเวลา ครอบคลุมทั่วประเทศ</p>
+                  <h4>{t('why_4_title')}</h4>
+                  <p>{t('why_4_desc')}</p>
                 </div>
                 <div className="why-item-card">
                   <IconSupport size={32} color="#8B1E1E" />
-                  <h4>บริการใส่ใจทุกความต้องการ</h4>
-                  <p>ทีมงานมืออาชีพ พร้อมให้คำแนะนำและดูแลหลังการขายอย่างใกล้ชิด</p>
+                  <h4>{t('why_5_title')}</h4>
+                  <p>{t('why_5_desc')}</p>
                 </div>
               </div>
 
-              {/* ก้อนสถิติจุดเด่นสีแดงเบอร์กันดี รวมใน Section เดียวกันตามคอมเมนต์ */}
+              {/* ก้อนสถิติจุดเด่นสีแดงเบอร์กันดี รวมใน Section เดียวกัน */}
               <div className="stats-burgundy-card" style={{ marginTop: '16px' }}>
                 <div className="stats-mockup-grid">
                   <div className="stat-mockup-col">
                     <IconAwardGold size={32} color="#e5b85c" />
-                    <div className="stat-val">30+ ปี</div>
-                    <div className="stat-lbl">ประสบการณ์ในอุตสาหกรรม</div>
+                    <div className="stat-val">{t('stat_1_val')}</div>
+                    <div className="stat-lbl">{t('stat_1_lbl')}</div>
                   </div>
                   <div className="stat-mockup-col">
                     <IconUsersGold size={32} color="#e5b85c" />
-                    <div className="stat-val">100+ ราย</div>
-                    <div className="stat-lbl">ลูกค้าธุรกิจทั่วประเทศ</div>
+                    <div className="stat-val">{t('stat_2_val')}</div>
+                    <div className="stat-lbl">{t('stat_2_lbl')}</div>
                   </div>
                   <div className="stat-mockup-col">
                     <IconGlobeGold size={32} color="#e5b85c" />
-                    <div className="stat-val">200+ ตัน/ด.</div>
-                    <div className="stat-lbl">กำลังการผลิตเพิ่มทุกเดือน</div>
+                    <div className="stat-val">{t('stat_3_val')}</div>
+                    <div className="stat-lbl">{t('stat_3_lbl')}</div>
                   </div>
                   <div className="stat-mockup-col">
                     <IconTruckGold size={32} color="#e5b85c" />
-                    <div className="stat-val">150 ตัน</div>
-                    <div className="stat-lbl">ความจุห้องเย็นพร้อมควบคุมอุณหภูมิ</div>
+                    <div className="stat-val">{t('stat_4_val')}</div>
+                    <div className="stat-lbl">{t('stat_4_lbl')}</div>
                   </div>
                 </div>
               </div>
@@ -233,15 +230,15 @@ export default function Home() {
               ========================================================================= */}
           <section style={{ marginTop: '20px' }}>
             <div className="mockup-card">
-              <h3 className="sec-title">เกี่ยวกับเรา</h3>
+              <h3 className="sec-title">{t('about_title')}</h3>
               <div style={{ display: 'grid', gridTemplateColumns: '1.15fr 0.85fr', gap: '24px', alignItems: 'center' }}>
                 <div>
                   <p className="about-mockup-content" style={{ fontSize: '15px', lineHeight: 1.85 }}>
-                    <b>บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด</b> คือโรงงานตัดแต่งเนื้อสุกรและจัดจำหน่ายวัตถุดิบเนื้อหมูสำหรับธุรกิจครบวงจร ด้วยประสบการณ์กว่า 30 ปีในอุตสาหกรรมอาหาร เรามุ่งมั่นส่งมอบคุณภาพสินค้าที่ได้มาตรฐานระดับสากล ปลอดภัย ตรวจสอบย้อนกลับได้ และจัดส่งตรงเวลา เพื่อร่วมเป็นส่วนสำคัญในการเติบโตของธุรกิจคุณอย่างมั่นคง
+                    <b>{t('about_company')}</b> {t('about_desc')}
                   </p>
                   <div>
                     <Link className="pill-btn primary" href="/about" style={{ fontSize: '13px', padding: '9px 20px' }}>
-                      เกี่ยวกับเรา →
+                      {t('about_cta')}
                     </Link>
                   </div>
                 </div>
@@ -258,27 +255,29 @@ export default function Home() {
               {/* แถบไฮไลท์บริการ 4 ด้านข้างล่างเกี่ยวกับเรา (ตามคอมเมนต์ Slide 4) */}
               <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid #e8dfd5' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <span style={{ fontSize: '13px', fontWeight: 700, color: '#6e584a' }}>บริการครบวงจรเพื่อธุรกิจอาหาร:</span>
+                  <span style={{ fontSize: '13px', fontWeight: 700, color: '#6e584a' }}>
+                    {lang === 'en' ? 'Comprehensive Services for Food Businesses:' : 'บริการครบวงจรเพื่อธุรกิจอาหาร:'}
+                  </span>
                   <Link href="/services" style={{ fontSize: '12px', color: 'var(--red)', fontWeight: 700, textDecoration: 'none' }}>
-                    ดูบริการทั้งหมดของเรา →
+                    {lang === 'en' ? 'View All Services →' : 'ดูบริการทั้งหมดของเรา →'}
                   </Link>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
                   <div className="service-compact-chip">
                     <IconMeatCut size={18} color="#8B1E1E" />
-                    <span>ตัดแต่งตามสเปก</span>
+                    <span>{t('about_chip_cut')}</span>
                   </div>
                   <div className="service-compact-chip">
                     <IconWarehouse size={18} color="#8B1E1E" />
-                    <span>คลังสินค้าห้องเย็น</span>
+                    <span>{t('about_chip_cold')}</span>
                   </div>
                   <div className="service-compact-chip">
                     <IconPackage size={18} color="#8B1E1E" />
-                    <span>บรรจุภัณฑ์สุญญากาศ</span>
+                    <span>{t('about_chip_pack')}</span>
                   </div>
                   <div className="service-compact-chip">
                     <IconLogistics size={18} color="#8B1E1E" />
-                    <span>จัดส่งทั่วประเทศ</span>
+                    <span>{t('about_chip_delivery')}</span>
                   </div>
                 </div>
               </div>
@@ -292,8 +291,10 @@ export default function Home() {
           <section style={{ marginTop: '20px' }}>
             <div className="mockup-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <h3 className="sec-title" style={{ margin: 0 }}>มาตรฐานการผลิตที่คุณวางใจ</h3>
-                <span style={{ fontSize: '12px', color: '#7a6557' }}>*กดที่การ์ดเพื่อดูเอกสารรับรองตัวอย่าง</span>
+                <h3 className="sec-title" style={{ margin: 0 }}>{t('standards_title')}</h3>
+                <span style={{ fontSize: '12px', color: '#7a6557' }}>
+                  {lang === 'en' ? '*Click card to view certificate preview' : '*กดที่การ์ดเพื่อดูเอกสารรับรองตัวอย่าง'}
+                </span>
               </div>
               <div className="standards-content-split">
                 <div className="standards-badges-col">
@@ -302,11 +303,11 @@ export default function Home() {
                     onClick={() =>
                       setActiveCert({
                         name: 'GHPs',
-                        fullName: 'Good Hygiene Practices (มาตรฐานสุขลักษณะที่ดีในการผลิตอาหาร)',
+                        fullName: lang === 'en' ? 'Good Hygiene Practices (International Food Hygiene Standard)' : 'Good Hygiene Practices (มาตรฐานสุขลักษณะที่ดีในการผลิตอาหาร)',
                         certNo: 'GHP-DCT-2025/089',
-                        issuer: 'กรมปศุสัตว์ / สถาบันรับรองมาตรฐานสากล',
-                        expiry: '31 ธันวาคม 2570',
-                        desc: 'รับรองกระบวนการผลิต การจัดการสุขอนามัยของสถานที่ บุคลากร และเครื่องมือเครื่องจักรในโรงงานตัดแต่งเนื้อสุกร',
+                        issuer: lang === 'en' ? 'Department of Livestock Development / Certification Body' : 'กรมปศุสัตว์ / สถาบันรับรองมาตรฐานสากล',
+                        expiry: lang === 'en' ? '31 December 2027' : '31 ธันวาคม 2570',
+                        desc: lang === 'en' ? 'Certified pork cut and processing procedures, hygiene facilities, and personnel health protocols.' : 'รับรองกระบวนการผลิต การจัดการสุขอนามัยของสถานที่ บุคลากร และเครื่องมือเครื่องจักรในโรงงานตัดแต่งเนื้อสุกร',
                       })
                     }
                   >
@@ -315,7 +316,7 @@ export default function Home() {
                       <h5>GHPs</h5>
                       <p>Good Hygiene Practices</p>
                     </div>
-                    <span className="view-cert-badge">ดูเอกสาร →</span>
+                    <span className="view-cert-badge">{t('view_cert')}</span>
                   </div>
 
                   <div
@@ -323,11 +324,11 @@ export default function Home() {
                     onClick={() =>
                       setActiveCert({
                         name: 'HACCP',
-                        fullName: 'Hazard Analysis and Critical Control Point System',
+                        fullName: lang === 'en' ? 'Hazard Analysis and Critical Control Point System' : 'Hazard Analysis and Critical Control Point System (ระบบวิเคราะห์อันตรายและจุดวิกฤตที่ต้องควบคุม)',
                         certNo: 'HACCP-DCT-2025/112',
-                        issuer: 'กรมปศุสัตว์ / สถาบันรับรองมาตรฐานสากล',
-                        expiry: '31 ธันวาคม 2570',
-                        desc: 'รับรองระบบการวิเคราะห์อันตรายและจุดวิกฤตที่ต้องควบคุมในการผลิตเนื้อสุกร เพื่อความปลอดภัยต่อผู้บริโภค 100%',
+                        issuer: lang === 'en' ? 'Department of Livestock Development / Certification Body' : 'กรมปศุสัตว์ / สถาบันรับรองมาตรฐานสากล',
+                        expiry: lang === 'en' ? '31 December 2027' : '31 ธันวาคม 2570',
+                        desc: lang === 'en' ? 'Certified critical control point monitoring across cutting, chilling, and packing to guarantee 100% food safety.' : 'รับรองระบบการวิเคราะห์อันตรายและจุดวิกฤตที่ต้องควบคุมในการผลิตเนื้อสุกร เพื่อความปลอดภัยต่อผู้บริโภค 100%',
                       })
                     }
                   >
@@ -336,28 +337,28 @@ export default function Home() {
                       <h5>HACCP</h5>
                       <p>Hazard Analysis & Critical Control</p>
                     </div>
-                    <span className="view-cert-badge">ดูเอกสาร →</span>
+                    <span className="view-cert-badge">{t('view_cert')}</span>
                   </div>
 
                   <div
                     className="standard-mini-badge clickable"
                     onClick={() =>
                       setActiveCert({
-                        name: 'ระบบควบคุมคุณภาพ',
+                        name: lang === 'en' ? 'Quality Control System' : 'ระบบควบคุมคุณภาพ',
                         fullName: 'Quality Control & Traceability System',
                         certNo: 'QC-TRACE-DCT-2026',
-                        issuer: 'ฝ่ายประกันคุณภาพ บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด',
-                        expiry: 'ทบทวนและตรวจสอบประจำปี',
-                        desc: 'ระบบควบคุมอุณหภูมิ Cold Chain 24 ชม. และระบบตรวจสอบย้อนกลับ (Traceability) ได้ทุกชิ้นส่วนและทุกล็อตสินค้า',
+                        issuer: lang === 'en' ? 'QC Department, Duangcharoen Intertrade Co., Ltd.' : 'ฝ่ายประกันคุณภาพ บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด',
+                        expiry: lang === 'en' ? 'Annual Audit & Review' : 'ทบทวนและตรวจสอบประจำปี',
+                        desc: lang === 'en' ? '24-hour Cold Chain temperature monitoring and batch-level traceability for every cut piece.' : 'ระบบควบคุมอุณหภูมิ Cold Chain 24 ชม. และระบบตรวจสอบย้อนกลับ (Traceability) ได้ทุกชิ้นส่วนและทุกล็อตสินค้า',
                       })
                     }
                   >
                     <IconFactory size={24} color="#8B1E1E" />
                     <div style={{ flex: 1 }}>
-                      <h5>ระบบควบคุมคุณภาพ</h5>
-                      <p>ตรวจสอบย้อนกลับได้ทุกขั้นตอน</p>
+                      <h5>{lang === 'en' ? 'Quality Control System' : 'ระบบควบคุมคุณภาพ'}</h5>
+                      <p>{lang === 'en' ? '100% Traceability across all steps' : 'ตรวจสอบย้อนกลับได้ทุกขั้นตอน'}</p>
                     </div>
-                    <span className="view-cert-badge">ดูเอกสาร →</span>
+                    <span className="view-cert-badge">{t('view_cert')}</span>
                   </div>
                 </div>
 
@@ -376,13 +377,21 @@ export default function Home() {
               ========================================================================= */}
           <section className="row-final-cta">
             <div className="cta-split-left">
-              <h2>พร้อมเป็นส่วนหนึ่ง<br />ในการเติบโตของธุรกิจคุณ</h2>
+              <h2>
+                {lang === 'en' ? (
+                  <>Ready to Partner<br />in Growing Your Business</>
+                ) : (
+                  <>พร้อมเป็นส่วนหนึ่ง<br />ในการเติบโตของธุรกิจคุณ</>
+                )}
+              </h2>
               <p>
-                ให้เราช่วยดูแลคุณภาพและวัตถุดิบ เพื่อธุรกิจที่เติบโตอย่างยั่งยืน
+                {lang === 'en'
+                  ? 'Let us take care of raw material quality and reliability for your sustainable growth.'
+                  : 'ให้เราช่วยดูแลคุณภาพและวัตถุดิบ เพื่อธุรกิจที่เติบโตอย่างยั่งยืน'}
               </p>
               <div>
                 <Link className="pill-btn primary" href="/contact">
-                  ติดต่อฝ่ายขาย →
+                  {lang === 'en' ? 'Contact Sales →' : 'ติดต่อฝ่ายขาย →'}
                 </Link>
               </div>
             </div>
@@ -419,15 +428,15 @@ export default function Home() {
 
             <div style={{ background: '#fcf8f3', border: '1px solid #ebd8c6', borderRadius: '6px', padding: '14px', fontSize: '13px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ color: '#7a6557' }}>เลขที่ใบรับรอง:</span>
+                <span style={{ color: '#7a6557' }}>{t('cert_no')}:</span>
                 <b>{activeCert.certNo}</b>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ color: '#7a6557' }}>หน่วยงานผู้ออก:</span>
+                <span style={{ color: '#7a6557' }}>{t('cert_issuer')}:</span>
                 <b>{activeCert.issuer}</b>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#7a6557' }}>สถานะ / วันหมดอายุ:</span>
+                <span style={{ color: '#7a6557' }}>{t('cert_expiry')}:</span>
                 <b style={{ color: '#188038' }}>{activeCert.expiry}</b>
               </div>
             </div>
@@ -439,7 +448,7 @@ export default function Home() {
                 style={{ fontSize: '13px', padding: '8px 20px' }}
                 onClick={() => setActiveCert(null)}
               >
-                ปิดหน้าต่าง
+                {t('cert_close')}
               </button>
             </div>
           </div>

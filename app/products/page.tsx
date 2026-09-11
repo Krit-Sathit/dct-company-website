@@ -5,8 +5,10 @@ import Link from 'next/link';
 import { categories as defaultCategories, products as defaultProducts, Product } from '@/lib/data';
 import { AddButton } from '@/components/site';
 import { supabaseBrowser, isSupabaseConfigured } from '@/lib/supabase-browser';
+import { useLanguage } from '@/lib/language';
 
 export default function Products() {
+  const { lang, t } = useLanguage();
   const [q, setQ] = useState('');
   const [c, setC] = useState('ทั้งหมด');
   const [productList, setProductList] = useState<Product[]>(defaultProducts);
@@ -106,10 +108,12 @@ export default function Products() {
     <>
       <section className="page-hero">
         <div className="wrap">
-          <div className="eyebrow">B2B Product Catalogue · Master v2.0</div>
-          <h1>ผลิตภัณฑ์เนื้อสุกรสำหรับธุรกิจ</h1>
+          <div className="eyebrow">{lang === 'en' ? 'B2B Product Catalogue · Master v2.0' : 'B2B Product Catalogue · รายการสินค้า'}</div>
+          <h1>{lang === 'en' ? 'Pork Products for Businesses' : 'ผลิตภัณฑ์เนื้อสุกรสำหรับธุรกิจ'}</h1>
           <p className="lead">
-            วัตถุดิบเนื้อสุกรสำหรับการใช้งานหลากหลายรูปแบบ พร้อมทางเลือกในการตัดแต่งและควบคุมสเปกตามความต้องการ
+            {lang === 'en'
+              ? 'Premium pork raw materials for versatile culinary uses, with customizable cut options and strict specification control.'
+              : 'วัตถุดิบเนื้อสุกรสำหรับการใช้งานหลากหลายรูปแบบ พร้อมทางเลือกในการตัดแต่งและควบคุมสเปกตามความต้องการ'}
           </p>
         </div>
       </section>
@@ -119,7 +123,7 @@ export default function Products() {
         <div className="catalog-tools">
           <input
             className="field filter"
-            placeholder="🔍 ค้นหาชื่อ สเปก หรือรหัสสินค้า..."
+            placeholder={lang === 'en' ? '🔍 Search by name, SKU or specifications...' : '🔍 ค้นหาชื่อ สเปก หรือรหัสสินค้า...'}
             value={q}
             onChange={(e) => setQ(e.target.value)}
             style={{ flex: 1 }}
@@ -127,12 +131,12 @@ export default function Products() {
           <select className="field filter" value={c} onChange={(e) => setC(e.target.value)}>
             {catList.map((x) => (
               <option key={x} value={x}>
-                {x}
+                {x === 'ทั้งหมด' && lang === 'en' ? 'All Categories' : x}
               </option>
             ))}
           </select>
           <Link className="button alt" href="/rfq" style={{ whiteSpace: 'nowrap' }}>
-            📑 สรุปรายการขอใบเสนอราคา
+            {lang === 'en' ? '📑 View RFQ Cart' : '📑 สรุปรายการขอใบเสนอราคา'}
           </Link>
         </div>
 
@@ -148,23 +152,24 @@ export default function Products() {
               />
               <div className="inside">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <span className="tag">{p.category}</span>
+                  <span className="tag">{lang === 'en' ? (p.categoryEn || p.category) : p.category}</span>
                   <span className="num" style={{ fontSize: '11px' }}>{p.code}</span>
                 </div>
-                <h3 style={{ fontSize: '20px', margin: '4px 0 2px' }}>{p.name}</h3>
-                {p.nameEn && <div style={{ fontSize: '13px', color: 'var(--gold)', fontWeight: 600, marginBottom: '8px' }}>{p.nameEn}</div>}
+                <h3 style={{ fontSize: '20px', margin: '4px 0 2px' }}>
+                  {lang === 'en' ? (p.nameEn || p.name) : p.name}
+                </h3>
                 <p className="small" style={{ color: '#6e584a', marginBottom: '16px', lineHeight: 1.6 }}>
-                  {p.description}
+                  {lang === 'en' ? (p.descriptionEn || p.description) : p.description}
                 </p>
 
                 <div style={{ background: '#fdf9f4', border: '1px solid #f0e4d6', borderRadius: '4px', padding: '10px 12px', fontSize: '12px', marginBottom: '16px' }}>
-                  <div><b>รูปแบบ:</b> {p.cut}</div>
-                  <div><b>บรรจุ:</b> {p.pack}</div>
+                  <div><b>{lang === 'en' ? 'Cut Options:' : 'รูปแบบ:'}</b> {lang === 'en' ? (p.cutEn || p.cut) : p.cut}</div>
+                  <div><b>{lang === 'en' ? 'Packing:' : 'บรรจุ:'}</b> {lang === 'en' ? (p.packEn || p.pack) : p.pack}</div>
                 </div>
 
                 <div className="actions" style={{ marginTop: 'auto' }}>
                   <Link className="button alt" href={`/products/${p.id}`} style={{ width: '100%', fontSize: '13px', padding: '9px 12px' }}>
-                    ดูสเปกและข้อมูลเทคนิค
+                    {lang === 'en' ? 'View Specifications' : 'ดูสเปกและข้อมูลเทคนิค'}
                   </Link>
                   <div style={{ width: '100%' }}>
                     <AddButton product={p} />

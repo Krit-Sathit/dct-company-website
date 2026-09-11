@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { Product } from '@/lib/data';
 import { ContactSettings, defaultContactSettings, getContactSettings } from '@/lib/settings';
+import { useLanguage } from '@/lib/language';
 
 type CartLine = { product: Product; qty: number; unit: string; note: string };
 type Cart = {
@@ -77,6 +78,7 @@ export function RFQProvider({ children }: { children: React.ReactNode }) {
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { lang, setLang, t } = useLanguage();
 
   // Close drawer on escape key
   useEffect(() => {
@@ -104,24 +106,41 @@ export function Header() {
       <header className="top">
         <div className="wrap nav">
           <Link className="brand" href="/" onClick={() => setMobileMenuOpen(false)}>
-            <img src="/logo-lockup.png" alt="บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด" />
+            <img src="/logo-lockup.png" alt={t('brand_name')} />
           </Link>
 
-          {/* Desktop Navigation (Official Master Copy v2.0) */}
+          {/* Desktop Navigation */}
           <nav className="links">
-            <Link href="/about">เกี่ยวกับเรา</Link>
-            <Link href="/products">สินค้า</Link>
-            <Link href="/services">บริการของเรา</Link>
-            <Link href="/standards">มาตรฐานการผลิต</Link>
-            <Link href="/news">ข่าวสาร</Link>
-            <Link href="/contact">ติดต่อเรา</Link>
-            <div className="lang-switcher-pill" title="เลือกภาษา (Language)">
-              <span className="active">TH</span>
-              <span style={{ opacity: 0.35 }}>|</span>
-              <span className="inactive" title="English mode coming soon">EN</span>
+            <Link href="/about">{t('nav_about')}</Link>
+            <Link href="/products">{t('nav_products')}</Link>
+            <Link href="/services">{t('nav_services')}</Link>
+            <Link href="/standards">{t('nav_standards')}</Link>
+            <Link href="/news">{t('nav_news')}</Link>
+            <Link href="/contact">{t('nav_contact')}</Link>
+            
+            {/* Interactive Language Switcher */}
+            <div className="lang-switcher-pill" role="group" aria-label="Language Switcher">
+              <button
+                type="button"
+                className={lang === 'th' ? 'active' : 'inactive'}
+                onClick={() => setLang('th')}
+                title="เปลี่ยนเป็นภาษาไทย (TH)"
+              >
+                TH
+              </button>
+              <span className="divider" style={{ opacity: 0.35, userSelect: 'none' }}>|</span>
+              <button
+                type="button"
+                className={lang === 'en' ? 'active' : 'inactive'}
+                onClick={() => setLang('en')}
+                title="Switch to English (EN)"
+              >
+                EN
+              </button>
             </div>
+
             <Link className="cta" href="/rfq">
-              ขอใบเสนอราคา
+              {t('nav_rfq')}
             </Link>
           </nav>
 
@@ -161,34 +180,46 @@ export function Header() {
 
         <div style={{ marginTop: '14px', marginBottom: '6px' }}>
           <div className="lang-switcher-pill" style={{ width: 'fit-content' }}>
-            <span style={{ color: '#8c7667' }}>ภาษา:</span>
-            <span className="active">TH</span>
-            <span style={{ opacity: 0.35 }}>|</span>
-            <span className="inactive" title="English mode coming soon">EN</span>
+            <span style={{ color: '#8c7667', fontSize: '12px', marginRight: '4px' }}>{t('lang_label')}</span>
+            <button
+              type="button"
+              className={lang === 'th' ? 'active' : 'inactive'}
+              onClick={() => setLang('th')}
+            >
+              TH
+            </button>
+            <span style={{ opacity: 0.35, userSelect: 'none' }}>|</span>
+            <button
+              type="button"
+              className={lang === 'en' ? 'active' : 'inactive'}
+              onClick={() => setLang('en')}
+            >
+              EN
+            </button>
           </div>
         </div>
 
         <nav className="mobile-drawer-links">
           <Link href="/" onClick={() => setMobileMenuOpen(false)}>
-            🏠 หน้าหลัก
+            🏠 {t('nav_home')}
           </Link>
           <Link href="/about" onClick={() => setMobileMenuOpen(false)}>
-            ℹ️ เกี่ยวกับเรา
+            ℹ️ {t('nav_about')}
           </Link>
           <Link href="/products" onClick={() => setMobileMenuOpen(false)}>
-            🥩 สินค้า
+            🥩 {t('nav_products')}
           </Link>
           <Link href="/services" onClick={() => setMobileMenuOpen(false)}>
-            ⚙️ บริการของเรา
+            ⚙️ {t('nav_services')}
           </Link>
           <Link href="/standards" onClick={() => setMobileMenuOpen(false)}>
-            🏅 มาตรฐานการผลิต
+            🏅 {t('nav_standards')}
           </Link>
           <Link href="/news" onClick={() => setMobileMenuOpen(false)}>
-            📰 ข่าวสาร
+            📰 {t('nav_news')}
           </Link>
           <Link href="/contact" onClick={() => setMobileMenuOpen(false)}>
-            📍 ติดต่อเรา
+            📍 {t('nav_contact')}
           </Link>
         </nav>
 
@@ -199,7 +230,7 @@ export function Header() {
             onClick={() => setMobileMenuOpen(false)}
             style={{ width: '100%' }}
           >
-            📑 ขอใบเสนอราคา
+            📑 {t('nav_rfq')}
           </Link>
         </div>
       </aside>
@@ -209,6 +240,7 @@ export function Header() {
 
 export function Footer() {
   const [contact, setContact] = useState<ContactSettings>(defaultContactSettings);
+  const { lang, t } = useLanguage();
 
   useEffect(() => {
     getContactSettings().then((data) => setContact(data));
@@ -223,7 +255,7 @@ export function Footer() {
             <img src="/dct-emblem.png" alt="DCT Emblem" style={{ width: 48, height: 48, objectFit: 'contain', flexShrink: 0 }} />
             <div>
               <strong style={{ fontSize: '14px', color: 'var(--ink)', display: 'block', lineHeight: 1.3 }}>
-                {contact.company_name_th || 'ดวงเจริญ อินเตอร์เทรด จำกัด'}
+                {lang === 'en' ? (contact.company_name_en || 'DUANGCHAROEN INTERTRADE CO., LTD.') : (contact.company_name_th || 'ดวงเจริญ อินเตอร์เทรด จำกัด')}
               </strong>
               <span style={{ fontSize: '10.5px', color: '#8c7667', fontWeight: 600 }}>
                 {contact.company_name_en || 'DUANGCHAROEN INTERTRADE CO., LTD.'}
@@ -231,7 +263,7 @@ export function Footer() {
             </div>
           </div>
           <p style={{ fontSize: '12px', lineHeight: 1.6, color: '#6e584a', margin: '0 0 14px' }}>
-            แหล่งวัตถุดิบเนื้อหมูสำหรับธุรกิจ ที่ต้องการคุณภาพสม่ำเสมอ ปริมาณเพียงพอ และการจัดส่งที่ไว้ใจได้
+            {t('footer_tagline')}
           </p>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <span style={{ width: 28, height: 28, borderRadius: '50%', background: '#06C755', color: '#fff', display: 'grid', placeItems: 'center', fontSize: '12px', fontWeight: 800 }}>L</span>
@@ -242,47 +274,47 @@ export function Footer() {
 
         {/* Column 2: เมนูหลัก */}
         <div className="footer-col">
-          <h4>เมนูหลัก</h4>
+          <h4>{t('footer_main_menu')}</h4>
           <ul>
-            <li><Link href="/">หน้าแรก</Link></li>
-            <li><Link href="/about">เกี่ยวกับเรา</Link></li>
-            <li><Link href="/products">สินค้า</Link></li>
-            <li><Link href="/services">บริการของเรา</Link></li>
-            <li><Link href="/standards">มาตรฐานการผลิต</Link></li>
-            <li><Link href="/news">ข่าวสาร</Link></li>
-            <li><Link href="/contact">ติดต่อเรา</Link></li>
+            <li><Link href="/">{t('nav_home')}</Link></li>
+            <li><Link href="/about">{t('nav_about')}</Link></li>
+            <li><Link href="/products">{t('nav_products')}</Link></li>
+            <li><Link href="/services">{t('nav_services')}</Link></li>
+            <li><Link href="/standards">{t('nav_standards')}</Link></li>
+            <li><Link href="/news">{t('nav_news')}</Link></li>
+            <li><Link href="/contact">{t('nav_contact')}</Link></li>
           </ul>
         </div>
 
         {/* Column 3: สินค้า */}
         <div className="footer-col">
-          <h4>สินค้า</h4>
+          <h4>{t('footer_products')}</h4>
           <ul>
-            <li><Link href="/products">เนื้อหมูสดแช่เย็น (Fresh)</Link></li>
-            <li><Link href="/products">เนื้อหมูแช่แข็ง (Frozen)</Link></li>
-            <li><Link href="/products/pork-neck">สันคอหมู</Link></li>
-            <li><Link href="/products/loin">สันนอกหมู</Link></li>
-            <li><Link href="/products/pork-belly">สามชั้นหมู</Link></li>
-            <li><Link href="/products/ribs">ซี่โครงหมู</Link></li>
-            <li><Link href="/rfq">สินค้าพร้อมขาย</Link></li>
+            <li><Link href="/products">{t('footer_pork_fresh')}</Link></li>
+            <li><Link href="/products">{t('footer_pork_frozen')}</Link></li>
+            <li><Link href="/products/pork-neck">{lang === 'en' ? 'Pork Collar' : 'สันคอหมู'}</Link></li>
+            <li><Link href="/products/loin">{lang === 'en' ? 'Pork Loin' : 'สันนอกหมู'}</Link></li>
+            <li><Link href="/products/pork-belly">{lang === 'en' ? 'Pork Belly' : 'สามชั้นหมู'}</Link></li>
+            <li><Link href="/products/ribs">{lang === 'en' ? 'Pork Spare Ribs' : 'ซี่โครงหมู'}</Link></li>
+            <li><Link href="/rfq">{t('footer_ready_stock')}</Link></li>
           </ul>
         </div>
 
         {/* Column 4: บริการของเรา */}
         <div className="footer-col">
-          <h4>บริการของเรา</h4>
+          <h4>{t('footer_services')}</h4>
           <ul>
-            <li><Link href="/services">รับผลิตตามความต้องการ</Link></li>
-            <li><Link href="/services">จัดเตรียมสินค้ามาตรฐาน</Link></li>
-            <li><Link href="/services">แพ็กและบรรจุภัณฑ์</Link></li>
-            <li><Link href="/services">จัดส่งทั่วประเทศ</Link></li>
-            <li><Link href="/services">ให้คำปรึกษาและดูแลอย่างใกล้ชิด</Link></li>
+            <li><Link href="/services">{lang === 'en' ? 'Custom Cutting' : 'รับผลิตตามความต้องการ'}</Link></li>
+            <li><Link href="/services">{lang === 'en' ? 'Standard Wholesale' : 'จัดเตรียมสินค้ามาตรฐาน'}</Link></li>
+            <li><Link href="/services">{lang === 'en' ? 'Vacuum Packaging' : 'แพ็กและบรรจุภัณฑ์'}</Link></li>
+            <li><Link href="/services">{lang === 'en' ? 'Nationwide Cold Chain' : 'จัดส่งทั่วประเทศ'}</Link></li>
+            <li><Link href="/services">{lang === 'en' ? 'B2B Consultation' : 'ให้คำปรึกษาและดูแลอย่างใกล้ชิด'}</Link></li>
           </ul>
         </div>
 
         {/* Column 5: ติดต่อเรา */}
         <div className="footer-col">
-          <h4>ติดต่อเรา</h4>
+          <h4>{t('footer_contact')}</h4>
           <ul>
             <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span>📞</span>
@@ -301,11 +333,11 @@ export function Footer() {
       </div>
 
       <div className="wrap" style={{ marginTop: '28px', paddingTop: '16px', borderTop: '1px solid #f0e6dc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', fontSize: '11.5px', color: '#9e8a7c' }}>
-        <div>© {new Date().getFullYear()} บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด (DUANGCHAROEN INTERTRADE CO., LTD.). สงวนลิขสิทธิ์ทุกประการ.</div>
+        <div>© {new Date().getFullYear()} {lang === 'en' ? 'DUANGCHAROEN INTERTRADE CO., LTD.' : 'บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด'}. {t('footer_rights')}</div>
         <div style={{ display: 'flex', gap: '16px' }}>
-          <Link href="/standards" style={{ color: '#9e8a7c' }}>มาตรฐานความปลอดภัย</Link>
-          <Link href="/rfq" style={{ color: '#9e8a7c' }}>ขอใบเสนอราคา (B2B)</Link>
-          <Link href="/contact" style={{ color: '#9e8a7c' }}>ติดต่อฝ่ายขาย</Link>
+          <Link href="/standards" style={{ color: '#9e8a7c' }}>{t('footer_privacy')}</Link>
+          <Link href="/rfq" style={{ color: '#9e8a7c' }}>{t('nav_rfq')} (B2B)</Link>
+          <Link href="/contact" style={{ color: '#9e8a7c' }}>{t('footer_sales_contact')}</Link>
         </div>
       </div>
     </footer>
@@ -314,9 +346,10 @@ export function Footer() {
 
 export function AddButton({ product }: { product: Product }) {
   const { add } = useCart();
+  const { lang } = useLanguage();
   return (
     <button className="button" onClick={() => add(product)}>
-      + เพิ่มในรายการขอราคา
+      {lang === 'en' ? '+ Add to Quote Request' : '+ เพิ่มในรายการขอราคา'}
     </button>
   );
 }
