@@ -5,8 +5,10 @@ import Link from 'next/link';
 import { useCart } from '@/components/site';
 import { products as allProducts } from '@/lib/data';
 import { supabaseBrowser } from '@/lib/supabase-browser';
+import { useLanguage } from '@/lib/language';
 
 export default function RFQ() {
+  const { lang, t } = useLanguage();
   const { items, add, remove, update, clear } = useCart();
   const [currentStep, setCurrentStep] = useState(1); // Step 1: Unified Form, Step 2: Review & Submit
   const [submitting, setSubmitting] = useState(false);
@@ -360,69 +362,191 @@ export default function RFQ() {
 
                   {/* รายการสินค้าในตะกร้า + ปุ่มเปิด Modal (Slide 7) */}
                   <div style={{ marginBottom: '28px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                      <strong>รายการสินค้าที่เลือก ({items.length} รายการ)</strong>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+                      <strong style={{ fontSize: '15px' }}>
+                        {lang === 'en' ? `Selected Products (${items.length} items)` : `รายการสินค้าที่เลือก (${items.length} รายการ)`}
+                      </strong>
                       <button
                         type="button"
                         className="button alt"
                         style={{ fontSize: '13px', padding: '8px 16px', background: '#f5eee3', border: '1px solid #d8c29d', color: 'var(--red)', fontWeight: 700 }}
                         onClick={() => setShowCatalogModal(true)}
                       >
-                        + เพิ่มสินค้าจากแคตตาล็อก
+                        {lang === 'en' ? '+ Add from Catalogue' : '+ เพิ่มสินค้าจากแคตตาล็อก'}
                       </button>
                     </div>
 
                     {!items.length ? (
-                      <div className="notice" style={{ background: '#fdf9f4', border: '1px dashed #d8c29d', textAlign: 'center', padding: '20px' }}>
-                        ยังไม่มีสินค้าที่เลือกจากแคตตาล็อก — ท่านสามารถกดปุ่ม <b>+ เพิ่มสินค้าจากแคตตาล็อก</b> ด้านบน หรือระบุความต้องการในช่องหมายเหตุด้านล่างได้โดยตรง
+                      <div className="notice" style={{ background: '#fdf9f4', border: '1px dashed #d8c29d', textAlign: 'center', padding: '24px', borderRadius: '8px' }}>
+                        {lang === 'en'
+                          ? 'No products selected yet — please click "+ Add from Catalogue" above or describe your needs in the notes below.'
+                          : 'ยังไม่มีสินค้าที่เลือกจากแคตตาล็อก — ท่านสามารถกดปุ่ม "+ เพิ่มสินค้าจากแคตตาล็อก" ด้านบน หรือระบุความต้องการในช่องหมายเหตุด้านล่างได้โดยตรง'}
                       </div>
                     ) : (
-                      items.map((i) => (
-                        <div className="line" key={i.product.id} style={{ background: '#fdfbf7', padding: '12px 14px', borderRadius: '6px', marginBottom: '8px', border: '1px solid #eadfd4' }}>
-                          <div>
-                            <b>{i.product.name}</b>
-                            <span className="small" style={{ marginLeft: '8px', color: '#806c60' }}>({i.product.code})</span>
-                            <input
-                              className="field note"
-                              style={{ marginTop: '6px', fontSize: '12px', padding: '6px 10px', background: '#fff' }}
-                              placeholder="ระบุสเปก เช่น สไลซ์ 1.5 มม. หรือ มัน 20/80..."
-                              value={i.note}
-                              onChange={(e) => update(i.product.id, 'note', e.target.value)}
-                            />
-                          </div>
-                          <div>
-                            <input
-                              className="field"
-                              min="1"
-                              type="number"
-                              value={i.qty}
-                              onChange={(e) => update(i.product.id, 'qty', Math.max(1, +e.target.value))}
-                              style={{ padding: '6px 8px', width: '70px', background: '#fff' }}
-                            />
-                          </div>
-                          <div>
-                            <select
-                              className="field"
-                              value={i.unit}
-                              onChange={(e) => update(i.product.id, 'unit', e.target.value)}
-                              style={{ padding: '6px 8px', background: '#fff' }}
-                            >
-                              <option>กก.</option>
-                              <option>แพ็ก</option>
-                              <option>กล่อง</option>
-                              <option>ตัน</option>
-                            </select>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => remove(i.product.id)}
-                            style={{ border: 0, background: 'none', color: 'var(--red)', fontSize: '20px', cursor: 'pointer' }}
-                            title="ลบ"
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {items.map((i) => (
+                          <div
+                            key={i.product.id}
+                            style={{
+                              background: '#ffffff',
+                              padding: '12px 16px',
+                              borderRadius: '8px',
+                              border: '1px solid #e7ded4',
+                              boxShadow: '0 1px 4px rgba(0,0,0,0.03)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              gap: '16px',
+                              flexWrap: 'wrap',
+                            }}
                           >
-                            ✕
-                          </button>
-                        </div>
-                      ))
+                            {/* ซ้าย: รูปสินค้า + ข้อมูลสินค้า + สเปก */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: '1 1 320px', minWidth: '260px' }}>
+                              <img
+                                src={i.product.image}
+                                alt={lang === 'en' && i.product.nameEn ? i.product.nameEn : i.product.name}
+                                style={{
+                                  width: '64px',
+                                  height: '64px',
+                                  borderRadius: '6px',
+                                  objectFit: 'cover',
+                                  border: '1px solid #ebd8c6',
+                                  flexShrink: 0,
+                                  background: '#f9f6f0',
+                                }}
+                              />
+                              <div style={{ flex: 1 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                                  <b style={{ fontSize: '15px', color: '#2b221a' }}>
+                                    {lang === 'en' && i.product.nameEn ? i.product.nameEn : i.product.name}
+                                  </b>
+                                  <span
+                                    style={{
+                                      fontSize: '11px',
+                                      color: '#837061',
+                                      background: '#f5eee4',
+                                      padding: '2px 8px',
+                                      borderRadius: '4px',
+                                      fontWeight: 600,
+                                      border: '1px solid #eadfcb',
+                                    }}
+                                  >
+                                    {i.product.code}
+                                  </span>
+                                </div>
+                                <input
+                                  className="field note"
+                                  style={{
+                                    width: '100%',
+                                    marginTop: '0',
+                                    fontSize: '12px',
+                                    padding: '6px 10px',
+                                    background: '#faf8f5',
+                                    border: '1px solid #ded5c9',
+                                    borderRadius: '5px',
+                                    boxSizing: 'border-box',
+                                  }}
+                                  placeholder={
+                                    lang === 'en'
+                                      ? 'Specify specs e.g. sliced 1.5 mm, 80/20 lean, vac pac...'
+                                      : 'ระบุสเปก เช่น สไลซ์ 1.5 มม. / หมูบดมัน 20% / แพ็กสุญญากาศ...'
+                                  }
+                                  value={i.note || ''}
+                                  onChange={(e) => update(i.product.id, 'note', e.target.value)}
+                                />
+                              </div>
+                            </div>
+
+                            {/* ขวา: จำนวน + หน่วย + ปุ่มลบ (อยู่บรรทัดเดียวกันทั้งหมดอย่างเป็นระเบียบ) */}
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                flexShrink: 0,
+                                background: '#fdfbf8',
+                                padding: '6px 10px',
+                                borderRadius: '6px',
+                                border: '1px solid #eee5dc',
+                              }}
+                            >
+                              <span style={{ fontSize: '13px', color: '#685548', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                {lang === 'en' ? 'Qty:' : 'จำนวน:'}
+                              </span>
+                              <input
+                                type="number"
+                                min="1"
+                                value={i.qty}
+                                onChange={(e) => update(i.product.id, 'qty', Math.max(1, +e.target.value))}
+                                style={{
+                                  width: '64px',
+                                  padding: '6px 8px',
+                                  background: '#fff',
+                                  border: '1px solid #d8ccbe',
+                                  borderRadius: '4px',
+                                  textAlign: 'center',
+                                  fontWeight: 700,
+                                  fontSize: '14px',
+                                  color: '#2b221a',
+                                  outline: 'none',
+                                }}
+                              />
+                              <select
+                                value={i.unit}
+                                onChange={(e) => update(i.product.id, 'unit', e.target.value)}
+                                style={{
+                                  width: '78px',
+                                  padding: '6px 8px',
+                                  background: '#fff',
+                                  border: '1px solid #d8ccbe',
+                                  borderRadius: '4px',
+                                  fontSize: '13px',
+                                  fontWeight: 500,
+                                  color: '#2b221a',
+                                  cursor: 'pointer',
+                                  outline: 'none',
+                                }}
+                              >
+                                <option value="กก.">{lang === 'en' ? 'kg' : 'กก.'}</option>
+                                <option value="แพ็ก">{lang === 'en' ? 'pack' : 'แพ็ก'}</option>
+                                <option value="ลัง">{lang === 'en' ? 'box' : 'ลัง'}</option>
+                                <option value="ตัน">{lang === 'en' ? 'ton' : 'ตัน'}</option>
+                              </select>
+                              <button
+                                type="button"
+                                onClick={() => remove(i.product.id)}
+                                style={{
+                                  width: '32px',
+                                  height: '32px',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  border: '1px solid #fed7d7',
+                                  background: '#fff5f5',
+                                  color: '#c53030',
+                                  borderRadius: '6px',
+                                  fontSize: '16px',
+                                  cursor: 'pointer',
+                                  transition: 'all 0.15s ease',
+                                  marginLeft: '4px',
+                                  flexShrink: 0,
+                                }}
+                                title={lang === 'en' ? 'Remove item' : 'ลบรายการนี้'}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background = '#c53030';
+                                  e.currentTarget.style.color = '#fff';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background = '#fff5f5';
+                                  e.currentTarget.style.color = '#c53030';
+                                }}
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     )}
                   </div>
 
@@ -537,15 +661,54 @@ export default function RFQ() {
                     </div>
 
                     {items.length > 0 && (
-                      <div style={{ borderTop: '1px dashed #eadfd4', paddingTop: '12px' }}>
-                        <b>รายการสินค้าที่เลือก ({items.length} รายการ):</b>
-                        <ul style={{ margin: '8px 0 0', paddingLeft: '20px', fontSize: '14px' }}>
+                      <div style={{ borderTop: '1px dashed #eadfd4', paddingTop: '16px', marginTop: '14px' }}>
+                        <b style={{ fontSize: '15px' }}>
+                          {lang === 'en' ? `Selected Products (${items.length} items):` : `รายการสินค้าที่เลือก (${items.length} รายการ):`}
+                        </b>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
                           {items.map((i) => (
-                            <li key={i.product.id} style={{ marginBottom: '4px' }}>
-                              <b>{i.product.name}</b> ({i.product.code}) — {i.qty} {i.unit} {i.note ? `[สเปก: ${i.note}]` : ''}
-                            </li>
+                            <div
+                              key={i.product.id}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                background: '#ffffff',
+                                padding: '10px 14px',
+                                borderRadius: '6px',
+                                border: '1px solid #ebd8c6',
+                              }}
+                            >
+                              <img
+                                src={i.product.image}
+                                alt={lang === 'en' && i.product.nameEn ? i.product.nameEn : i.product.name}
+                                style={{
+                                  width: '46px',
+                                  height: '46px',
+                                  borderRadius: '5px',
+                                  objectFit: 'cover',
+                                  border: '1px solid #ebd8c6',
+                                  flexShrink: 0,
+                                  background: '#f9f6f0',
+                                }}
+                              />
+                              <div style={{ flex: 1 }}>
+                                <div style={{ fontWeight: 600, color: '#2b221a', fontSize: '14px' }}>
+                                  {lang === 'en' && i.product.nameEn ? i.product.nameEn : i.product.name}{' '}
+                                  <span style={{ color: '#856f61', fontSize: '12px', fontWeight: 500 }}>({i.product.code})</span>
+                                </div>
+                                {i.note && (
+                                  <div style={{ fontSize: '12px', color: '#685548', marginTop: '2px' }}>
+                                    {lang === 'en' ? 'Spec:' : 'สเปก:'} {i.note}
+                                  </div>
+                                )}
+                              </div>
+                              <div style={{ fontWeight: 700, fontSize: '15px', color: 'var(--red)', whiteSpace: 'nowrap' }}>
+                                {i.qty} {i.unit}
+                              </div>
+                            </div>
                           ))}
-                        </ul>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -578,7 +741,9 @@ export default function RFQ() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '12px', marginBottom: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '20px' }}>🥩</span>
-                <h3 style={{ margin: 0, fontSize: '17px', color: 'var(--red)' }}>เลือกสินค้าจากแคตตาล็อก</h3>
+                <h3 style={{ margin: 0, fontSize: '17px', color: 'var(--red)' }}>
+                  {lang === 'en' ? 'Select Products from Catalogue' : 'เลือกสินค้าจากแคตตาล็อก'}
+                </h3>
               </div>
               <button
                 type="button"
@@ -592,7 +757,7 @@ export default function RFQ() {
             <div style={{ marginBottom: '14px' }}>
               <input
                 className="field"
-                placeholder="🔍 พิมพ์ค้นหาชื่อสินค้า หรือรหัสสินค้า..."
+                placeholder={lang === 'en' ? '🔍 Search product name or code...' : '🔍 พิมพ์ค้นหาชื่อสินค้า หรือรหัสสินค้า...'}
                 value={catalogSearch}
                 onChange={(e) => setCatalogSearch(e.target.value)}
                 style={{ fontSize: '13px', padding: '8px 12px' }}
@@ -629,9 +794,11 @@ export default function RFQ() {
                         }}
                       />
                       <div>
-                        <strong style={{ fontSize: '14px', color: 'var(--ink)' }}>{prod.name}</strong>
+                        <strong style={{ fontSize: '14px', color: 'var(--ink)' }}>
+                          {lang === 'en' && prod.nameEn ? prod.nameEn : prod.name}
+                        </strong>
                         <div style={{ fontSize: '11px', color: '#888' }}>
-                          รหัส: {prod.code} · {prod.cutPart || prod.category}
+                          {lang === 'en' ? 'Code:' : 'รหัส:'} {prod.code} · {lang === 'en' ? (prod.cutPartEn || prod.categoryEn) : (prod.cutPart || prod.category)}
                         </div>
                       </div>
                     </div>
@@ -639,7 +806,7 @@ export default function RFQ() {
                     <div>
                       {alreadyAdded ? (
                         <span style={{ fontSize: '12px', color: '#188038', fontWeight: 700, padding: '4px 10px', background: '#e6f4ea', borderRadius: '4px' }}>
-                          ✓ เลือกแล้ว
+                          {lang === 'en' ? '✓ Selected' : '✓ เลือกแล้ว'}
                         </span>
                       ) : (
                         <button
@@ -648,7 +815,7 @@ export default function RFQ() {
                           style={{ fontSize: '12px', padding: '6px 12px', borderColor: 'var(--red)', color: 'var(--red)' }}
                           onClick={() => add(prod)}
                         >
-                          + เพิ่มรายการ
+                          {lang === 'en' ? '+ Add' : '+ เพิ่มรายการ'}
                         </button>
                       )}
                     </div>
@@ -659,15 +826,15 @@ export default function RFQ() {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #eee', paddingTop: '14px', marginTop: '14px' }}>
               <span style={{ fontSize: '13px', color: '#666' }}>
-                เลือกแล้ว <b>{items.length}</b> รายการ
+                {lang === 'en' ? `Selected ${items.length} item(s)` : `เลือกแล้ว ${items.length} รายการ`}
               </span>
               <button
                 type="button"
-                className="pill-btn primary"
+                className="button primary"
                 style={{ fontSize: '13px', padding: '8px 20px' }}
                 onClick={() => setShowCatalogModal(false)}
               >
-                เสร็จสิ้น / กลับสู่แบบฟอร์ม
+                {lang === 'en' ? 'Done' : 'เสร็จสิ้น'}
               </button>
             </div>
           </div>
