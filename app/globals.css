@@ -221,80 +221,57 @@ h3 { margin: 0 0 10px; color: var(--brown); }
 /* Master Hero Banner (Full-Width Panoramic Background Matching Mockup Image 2) */
 .hero-master-v2 {
   position: relative;
-  min-height: 480px;
+  width: 100%;
+  aspect-ratio: 1024 / 403;
   background: 
     linear-gradient(90deg, 
       rgba(248, 243, 235, 0.97) 0%, 
-      rgba(248, 243, 235, 0.92) 35%, 
-      rgba(248, 243, 235, 0.35) 55%, 
+      rgba(248, 243, 235, 0.92) 34%, 
+      rgba(248, 243, 235, 0.35) 54%, 
       rgba(248, 243, 235, 0) 72%
     ),
-    url('/hero-new.png') right center / cover no-repeat;
+    url('/hero-new.png?v=2') center center / 100% 100% no-repeat;
   border-bottom: 1px solid #dfd0be;
   display: flex;
   align-items: center;
-  padding: 56px 0;
 }
 .hero-master-left {
-  max-width: 560px;
+  max-width: 540px;
 }
 .hero-master-left h1 {
-  font-size: clamp(32px, 3.8vw, 46px);
+  font-size: clamp(26px, 3.2vw, 42px);
   color: var(--red);
-  margin: 0 0 14px;
+  margin: 0 0 12px;
   line-height: 1.25;
   font-weight: 800;
   letter-spacing: -0.01em;
 }
 .hero-master-left .hero-sub {
-  font-size: 17px;
-  line-height: 1.72;
+  font-size: clamp(14px, 1.35vw, 17px);
+  line-height: 1.65;
   color: #4a362a;
-  margin: 0 0 18px;
+  margin: 0 0 16px;
 }
 .hero-master-left .hero-tagline {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: #b88a22;
   letter-spacing: 0.04em;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 
-@media (min-width: 1600px) {
+@media (max-width: 768px) {
   .hero-master-v2 {
-    min-height: 520px;
-    padding: 64px 0;
-  }
-}
-
-@media (max-width: 900px) {
-  .hero-master-v2 {
-    min-height: 460px;
-    padding: 48px 0;
-    background: 
-      linear-gradient(90deg, 
-        rgba(248, 243, 235, 0.98) 0%, 
-        rgba(248, 243, 235, 0.94) 50%, 
-        rgba(248, 243, 235, 0.6) 75%, 
-        rgba(248, 243, 235, 0.15) 100%
-      ),
-      url('/hero-new.png') right center / cover no-repeat;
-  }
-}
-
-@media (max-width: 640px) {
-  .hero-master-v2 {
+    aspect-ratio: auto;
     min-height: 440px;
-    padding: 40px 0;
-    background-image: 
+    padding: 44px 0;
+    background: 
       linear-gradient(180deg, 
-        rgba(248, 243, 235, 0.97) 0%, 
-        rgba(248, 243, 235, 0.92) 65%, 
-        rgba(248, 243, 235, 0.75) 100%
+        rgba(248, 243, 235, 0.96) 0%, 
+        rgba(248, 243, 235, 0.9) 60%, 
+        rgba(248, 243, 235, 0.7) 100%
       ),
-      url('/hero-new.png');
-    background-position: center top, center center;
-    background-size: 100% 100%, cover;
+      url('/hero-new.png?v=2') center center / cover no-repeat;
   }
 }
 
