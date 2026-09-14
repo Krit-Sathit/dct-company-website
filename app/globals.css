@@ -221,30 +221,41 @@ h3 { margin: 0 0 10px; color: var(--brown); }
 /* Master Hero Banner (Full-Width Panoramic Background Matching Mockup Image 2) */
 .hero-master-v2 {
   position: relative;
-  min-height: 640px;
-  min-height: clamp(580px, 48vw, 760px);
-  background: linear-gradient(90deg, rgba(248, 243, 235, 0.98) 0%, rgba(248, 243, 235, 0.92) 36%, rgba(248, 243, 235, 0.32) 54%, rgba(248, 243, 235, 0) 72%), url('/hero-new.png') right center / cover no-repeat;
+  min-height: 480px;
+  background-color: #f8f3eb;
+  background-image: 
+    linear-gradient(90deg, 
+      #f8f3eb 0%, 
+      rgba(248, 243, 235, 0.98) 32%, 
+      rgba(248, 243, 235, 0.85) 48%, 
+      rgba(248, 243, 235, 0.2) 65%, 
+      rgba(248, 243, 235, 0) 80%
+    ),
+    url('/hero-new.png');
+  background-position: left center, right center;
+  background-size: 100% 100%, auto 100%;
+  background-repeat: no-repeat, no-repeat;
   border-bottom: 1px solid #dfd0be;
   display: flex;
   align-items: center;
-  padding: 84px 0;
+  padding: 56px 0;
 }
 .hero-master-left {
-  max-width: 580px;
+  max-width: 560px;
 }
 .hero-master-left h1 {
-  font-size: clamp(34px, 4vw, 50px);
+  font-size: clamp(32px, 3.8vw, 46px);
   color: var(--red);
-  margin: 0 0 16px;
-  line-height: 1.24;
+  margin: 0 0 14px;
+  line-height: 1.25;
   font-weight: 800;
   letter-spacing: -0.01em;
 }
 .hero-master-left .hero-sub {
-  font-size: 18px;
-  line-height: 1.75;
+  font-size: 17px;
+  line-height: 1.72;
   color: #4a362a;
-  margin: 0 0 20px;
+  margin: 0 0 18px;
 }
 .hero-master-left .hero-tagline {
   font-size: 16px;
@@ -256,24 +267,41 @@ h3 { margin: 0 0 10px; color: var(--brown); }
 
 @media (min-width: 1600px) {
   .hero-master-v2 {
-    min-height: 800px;
-    padding: 110px 0;
+    min-height: 520px;
+    padding: 64px 0;
   }
 }
 
 @media (max-width: 900px) {
   .hero-master-v2 {
-    min-height: 540px;
-    padding: 60px 0;
-    background: linear-gradient(90deg, rgba(248, 243, 235, 0.98) 0%, rgba(248, 243, 235, 0.94) 48%, rgba(248, 243, 235, 0.55) 75%, rgba(248, 243, 235, 0.15) 100%), url('/hero-new.png') right center / cover no-repeat;
+    min-height: 460px;
+    padding: 48px 0;
+    background-image: 
+      linear-gradient(90deg, 
+        rgba(248, 243, 235, 0.98) 0%, 
+        rgba(248, 243, 235, 0.94) 50%, 
+        rgba(248, 243, 235, 0.6) 75%, 
+        rgba(248, 243, 235, 0.15) 100%
+      ),
+      url('/hero-new.png');
+    background-position: left center, right center;
+    background-size: 100% 100%, cover;
   }
 }
 
 @media (max-width: 640px) {
   .hero-master-v2 {
-    min-height: 480px;
-    padding: 44px 0;
-    background: linear-gradient(180deg, rgba(248, 243, 235, 0.97) 0%, rgba(248, 243, 235, 0.92) 65%, rgba(248, 243, 235, 0.75) 100%), url('/hero-new.png') center center / cover no-repeat;
+    min-height: 440px;
+    padding: 40px 0;
+    background-image: 
+      linear-gradient(180deg, 
+        rgba(248, 243, 235, 0.97) 0%, 
+        rgba(248, 243, 235, 0.92) 65%, 
+        rgba(248, 243, 235, 0.75) 100%
+      ),
+      url('/hero-new.png');
+    background-position: center top, center center;
+    background-size: 100% 100%, cover;
   }
 }
 
