@@ -230,29 +230,32 @@ h3 { margin: 0 0 10px; color: var(--brown); }
       rgba(255, 252, 247, 0.06) 38%, 
       transparent 48%
     ),
-    url('/hero-new.png?v=4') center center / 100% 100% no-repeat;
+    url('/hero-new.png?v=5') center center / 100% 100% no-repeat;
   border-bottom: 1px solid #dfd0be;
   display: flex;
   align-items: flex-end;
-  padding-bottom: clamp(22px, 3.5vw, 46px);
+  padding-bottom: clamp(20px, 2.8vw, 36px);
+}
+.hero-master-v2 .wrap {
+  margin: 0 auto;
 }
 .hero-master-left {
   max-width: 540px;
 }
 .hero-master-left h1 {
-  font-size: clamp(26px, 3.2vw, 42px);
+  font-size: clamp(24px, 3vw, 40px);
   color: var(--red);
-  margin: 0 0 12px;
-  line-height: 1.25;
+  margin: 0 0 10px;
+  line-height: 1.22;
   font-weight: 800;
   letter-spacing: -0.01em;
   text-shadow: 0 1px 4px rgba(255, 255, 255, 0.95), 0 0 18px rgba(255, 255, 255, 0.9);
 }
 .hero-master-left .hero-sub {
-  font-size: clamp(14px, 1.35vw, 17px);
-  line-height: 1.65;
+  font-size: clamp(13.5px, 1.3vw, 16.5px);
+  line-height: 1.6;
   color: #2a1910;
-  margin: 0 0 16px;
+  margin: 0 0 14px;
   text-shadow: 0 1px 3px rgba(255, 255, 255, 0.95);
   font-weight: 600;
 }
@@ -268,6 +271,7 @@ h3 { margin: 0 0 10px; color: var(--brown); }
   .hero-master-v2 {
     aspect-ratio: auto;
     min-height: 440px;
+    align-items: center;
     padding: 44px 0;
     background: 
       linear-gradient(180deg, 
@@ -275,7 +279,10 @@ h3 { margin: 0 0 10px; color: var(--brown); }
         rgba(248, 243, 235, 0.75) 60%, 
         rgba(248, 243, 235, 0.5) 100%
       ),
-      url('/hero-new.png?v=3') center center / cover no-repeat;
+      url('/hero-new.png?v=5') center center / cover no-repeat;
+  }
+  .hero-master-v2 .wrap {
+    margin: auto;
   }
 }
 
