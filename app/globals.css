@@ -656,6 +656,12 @@ h3 { margin: 0 0 10px; color: var(--brown); }
 }
 
 /* Middle: About Us Box */
+.about-mockup-split {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 24px;
+  align-items: center;
+}
 .about-mockup-content {
   font-size: 13.5px;
   line-height: 1.8;
@@ -663,12 +669,17 @@ h3 { margin: 0 0 10px; color: var(--brown); }
   margin-bottom: 16px;
 }
 .about-mockup-img {
-  height: 200px;
+  height: 240px;
   background-size: cover;
   background-position: center;
   border-radius: 8px;
-  margin-top: 16px;
   box-shadow: 0 4px 14px rgba(80, 50, 30, 0.1);
+  border: 1px solid #ebd8c6;
+}
+.about-chips-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
 }
 
 /* Right: Services List */
@@ -908,6 +919,19 @@ h3 { margin: 0 0 10px; color: var(--brown); }
   .product-showcase-grid { grid-template-columns: 1fr 1fr; }
   .stats-mockup-grid { grid-template-columns: 1fr 1fr; }
   .footer-mockup-grid { grid-template-columns: 1fr; }
+  .about-mockup-split {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .about-mockup-img {
+    height: 210px;
+    width: 100%;
+    margin-top: 10px;
+  }
+  .about-chips-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -934,6 +958,10 @@ h3 { margin: 0 0 10px; color: var(--brown); }
   .product-showcase-grid { grid-template-columns: 1fr 1fr; }
   .stats-mockup-grid { grid-template-columns: 1fr 1fr; }
   .footer-mockup-grid { grid-template-columns: 1fr; }
+  .about-chips-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
 }
 .details { display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; }
 

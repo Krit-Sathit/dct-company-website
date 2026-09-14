@@ -231,9 +231,9 @@ export default function Home() {
           <section style={{ marginTop: '20px' }}>
             <div className="mockup-card">
               <h3 className="sec-title">{t('about_title')}</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1.15fr 0.85fr', gap: '24px', alignItems: 'center' }}>
+              <div className="about-mockup-split">
                 <div>
-                  <p className="about-mockup-content" style={{ fontSize: '15px', lineHeight: 1.85 }}>
+                  <p className="about-mockup-content" style={{ fontSize: '15px', lineHeight: 1.85, marginBottom: '16px' }}>
                     <b>{t('about_company')}</b> {t('about_desc')}
                   </p>
                   <div>
@@ -245,11 +245,38 @@ export default function Home() {
                 <div
                   className="about-mockup-img"
                   style={{
-                    backgroundImage: `url('/about-factory.jpg')`,
-                    height: '240px',
-                    margin: 0,
+                    backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.02) 50%, rgba(20,12,8,0.72) 100%), url('/about-factory.jpg')`,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-end',
+                    padding: '14px',
                   }}
-                />
+                >
+                  <div
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.92)',
+                      backdropFilter: 'blur(6px)',
+                      color: 'var(--ink)',
+                      padding: '7px 12px',
+                      borderRadius: '6px',
+                      fontSize: '11.5px',
+                      fontWeight: 700,
+                      border: '1px solid rgba(230, 216, 197, 0.8)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      alignSelf: 'flex-start',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                    }}
+                  >
+                    <span style={{ fontSize: '14px' }}>🏭</span>
+                    <span>
+                      {lang === 'en'
+                        ? 'DCT Factory & Cold Chain Facility'
+                        : 'อาคารโรงงานและสำนักงานมาตรฐาน DCT'}
+                    </span>
+                  </div>
+                </div>
               </div>
 
               {/* แถบไฮไลท์บริการ 4 ด้านข้างล่างเกี่ยวกับเรา (ตามคอมเมนต์ Slide 4) */}
@@ -262,7 +289,7 @@ export default function Home() {
                     {lang === 'en' ? 'View All Services →' : 'ดูบริการทั้งหมดของเรา →'}
                   </Link>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+                <div className="about-chips-grid">
                   <div className="service-compact-chip">
                     <IconMeatCut size={18} color="#8B1E1E" />
                     <span>{t('about_chip_cut')}</span>
