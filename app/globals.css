@@ -225,12 +225,12 @@ h3 { margin: 0 0 10px; color: var(--brown); }
   aspect-ratio: 1024 / 403;
   background: 
     linear-gradient(90deg, 
-      rgba(248, 243, 235, 0.97) 0%, 
-      rgba(248, 243, 235, 0.92) 34%, 
-      rgba(248, 243, 235, 0.35) 54%, 
-      rgba(248, 243, 235, 0) 72%
+      rgba(255, 252, 247, 0.55) 0%, 
+      rgba(255, 252, 247, 0.3) 24%, 
+      rgba(255, 252, 247, 0.06) 38%, 
+      transparent 48%
     ),
-    url('/hero-new.png?v=2') center center / 100% 100% no-repeat;
+    url('/hero-new.png?v=3') center center / 100% 100% no-repeat;
   border-bottom: 1px solid #dfd0be;
   display: flex;
   align-items: center;
@@ -245,12 +245,15 @@ h3 { margin: 0 0 10px; color: var(--brown); }
   line-height: 1.25;
   font-weight: 800;
   letter-spacing: -0.01em;
+  text-shadow: 0 1px 4px rgba(255, 255, 255, 0.95), 0 0 18px rgba(255, 255, 255, 0.9);
 }
 .hero-master-left .hero-sub {
   font-size: clamp(14px, 1.35vw, 17px);
   line-height: 1.65;
-  color: #4a362a;
+  color: #2a1910;
   margin: 0 0 16px;
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.95);
+  font-weight: 600;
 }
 .hero-master-left .hero-tagline {
   font-size: 15px;
@@ -267,11 +270,11 @@ h3 { margin: 0 0 10px; color: var(--brown); }
     padding: 44px 0;
     background: 
       linear-gradient(180deg, 
-        rgba(248, 243, 235, 0.96) 0%, 
-        rgba(248, 243, 235, 0.9) 60%, 
-        rgba(248, 243, 235, 0.7) 100%
+        rgba(248, 243, 235, 0.9) 0%, 
+        rgba(248, 243, 235, 0.75) 60%, 
+        rgba(248, 243, 235, 0.5) 100%
       ),
-      url('/hero-new.png?v=2') center center / cover no-repeat;
+      url('/hero-new.png?v=3') center center / cover no-repeat;
   }
 }
 
