@@ -245,38 +245,9 @@ export default function Home() {
                 <div
                   className="about-mockup-img"
                   style={{
-                    backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.02) 50%, rgba(20,12,8,0.72) 100%), url('/about-factory.jpg')`,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'flex-end',
-                    padding: '14px',
+                    backgroundImage: `url('/about-factory.jpg')`,
                   }}
-                >
-                  <div
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.92)',
-                      backdropFilter: 'blur(6px)',
-                      color: 'var(--ink)',
-                      padding: '7px 12px',
-                      borderRadius: '6px',
-                      fontSize: '11.5px',
-                      fontWeight: 700,
-                      border: '1px solid rgba(230, 216, 197, 0.8)',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      alignSelf: 'flex-start',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-                    }}
-                  >
-                    <span style={{ fontSize: '14px' }}>🏭</span>
-                    <span>
-                      {lang === 'en'
-                        ? 'DCT Factory & Cold Chain Facility'
-                        : 'อาคารโรงงานและสำนักงานมาตรฐาน DCT'}
-                    </span>
-                  </div>
-                </div>
+                />
               </div>
 
               {/* แถบไฮไลท์บริการ 4 ด้านข้างล่างเกี่ยวกับเรา (ตามคอมเมนต์ Slide 4) */}
