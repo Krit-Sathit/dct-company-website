@@ -221,29 +221,30 @@ h3 { margin: 0 0 10px; color: var(--brown); }
 /* Master Hero Banner (Full-Width Panoramic Background Matching Mockup Image 2) */
 .hero-master-v2 {
   position: relative;
-  min-height: 480px;
-  background: linear-gradient(90deg, rgba(248, 243, 235, 0.98) 0%, rgba(248, 243, 235, 0.92) 36%, rgba(248, 243, 235, 0.3) 54%, rgba(248, 243, 235, 0) 70%), url('/hero-new.png') center right / cover no-repeat;
+  min-height: 640px;
+  min-height: clamp(580px, 48vw, 760px);
+  background: linear-gradient(90deg, rgba(248, 243, 235, 0.98) 0%, rgba(248, 243, 235, 0.92) 36%, rgba(248, 243, 235, 0.32) 54%, rgba(248, 243, 235, 0) 72%), url('/hero-new.png') right center / cover no-repeat;
   border-bottom: 1px solid #dfd0be;
   display: flex;
   align-items: center;
-  padding: 64px 0;
+  padding: 84px 0;
 }
 .hero-master-left {
-  max-width: 560px;
+  max-width: 580px;
 }
 .hero-master-left h1 {
-  font-size: clamp(32px, 3.8vw, 48px);
+  font-size: clamp(34px, 4vw, 50px);
   color: var(--red);
-  margin: 0 0 14px;
-  line-height: 1.22;
+  margin: 0 0 16px;
+  line-height: 1.24;
   font-weight: 800;
   letter-spacing: -0.01em;
 }
 .hero-master-left .hero-sub {
-  font-size: 17px;
+  font-size: 18px;
   line-height: 1.75;
   color: #4a362a;
-  margin: 0 0 16px;
+  margin: 0 0 20px;
 }
 .hero-master-left .hero-tagline {
   font-size: 16px;
@@ -251,6 +252,29 @@ h3 { margin: 0 0 10px; color: var(--brown); }
   color: #b88a22;
   letter-spacing: 0.04em;
   margin-bottom: 28px;
+}
+
+@media (min-width: 1600px) {
+  .hero-master-v2 {
+    min-height: 800px;
+    padding: 110px 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-master-v2 {
+    min-height: 540px;
+    padding: 60px 0;
+    background: linear-gradient(90deg, rgba(248, 243, 235, 0.98) 0%, rgba(248, 243, 235, 0.94) 48%, rgba(248, 243, 235, 0.55) 75%, rgba(248, 243, 235, 0.15) 100%), url('/hero-new.png') right center / cover no-repeat;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-master-v2 {
+    min-height: 480px;
+    padding: 44px 0;
+    background: linear-gradient(180deg, rgba(248, 243, 235, 0.97) 0%, rgba(248, 243, 235, 0.92) 65%, rgba(248, 243, 235, 0.75) 100%), url('/hero-new.png') center center / cover no-repeat;
+  }
 }
 
 /* Row 2: Why Choose Us (58%) + Target Industries (42%) */
