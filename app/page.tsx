@@ -363,38 +363,9 @@ export default function Home() {
                 <div
                   className="standards-photo"
                   style={{
-                    backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.05) 50%, rgba(20,12,8,0.75) 100%), url('https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=1000&q=85')`,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'flex-end',
-                    padding: '16px',
+                    backgroundImage: `url('https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=1000&q=85')`,
                   }}
-                >
-                  <div
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.92)',
-                      backdropFilter: 'blur(6px)',
-                      color: 'var(--ink)',
-                      padding: '8px 14px',
-                      borderRadius: '6px',
-                      fontSize: '12px',
-                      fontWeight: 700,
-                      border: '1px solid rgba(230, 216, 197, 0.8)',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      alignSelf: 'flex-start',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-                    }}
-                  >
-                    <span style={{ fontSize: '15px' }}>🛡️</span>
-                    <span>
-                      {lang === 'en'
-                        ? 'Hygienic Cutting & Cold Chain Storage'
-                        : 'กระบวนการตัดแต่งถูกสุขอนามัย & ควบคุมอุณหภูมิ'}
-                    </span>
-                  </div>
-                </div>
+                />
               </div>
             </div>
           </section>
