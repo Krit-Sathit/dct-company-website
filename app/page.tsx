@@ -245,8 +245,8 @@ export default function Home() {
                 <div
                   className="about-mockup-img"
                   style={{
-                    backgroundImage: `url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80')`,
-                    height: '220px',
+                    backgroundImage: `url('/about-factory.jpg')`,
+                    height: '240px',
                     margin: 0,
                   }}
                 />
