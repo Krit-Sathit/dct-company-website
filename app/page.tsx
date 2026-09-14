@@ -63,7 +63,7 @@ export default function Home() {
               {t('hero_sub')}
             </p>
 
-            <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginTop: '24px' }}>
+            <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginTop: '18px' }}>
               <Link className="pill-btn primary" href="/products">
                 {t('hero_cta_products')}
               </Link>

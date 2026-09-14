@@ -230,10 +230,11 @@ h3 { margin: 0 0 10px; color: var(--brown); }
       rgba(255, 252, 247, 0.06) 38%, 
       transparent 48%
     ),
-    url('/hero-new.png?v=3') center center / 100% 100% no-repeat;
+    url('/hero-new.png?v=4') center center / 100% 100% no-repeat;
   border-bottom: 1px solid #dfd0be;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
+  padding-bottom: clamp(22px, 3.5vw, 46px);
 }
 .hero-master-left {
   max-width: 540px;
