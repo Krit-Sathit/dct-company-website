@@ -230,7 +230,7 @@ h3 { margin: 0 0 10px; color: var(--brown); }
       rgba(255, 252, 247, 0.06) 38%, 
       transparent 48%
     ),
-    url('/hero-new.png?v=5') center center / 100% 100% no-repeat;
+    url('/hero-new.png?v=6') center center / 100% 100% no-repeat;
   border-bottom: 1px solid #dfd0be;
   display: flex;
   align-items: flex-end;
@@ -266,23 +266,61 @@ h3 { margin: 0 0 10px; color: var(--brown); }
   letter-spacing: 0.04em;
   margin-bottom: 24px;
 }
+.hero-master-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
 
 @media (max-width: 768px) {
   .hero-master-v2 {
-    aspect-ratio: auto;
-    min-height: 440px;
-    align-items: center;
-    padding: 44px 0;
+    aspect-ratio: 1024 / 403;
+    min-height: unset;
+    align-items: flex-end;
+    padding-bottom: clamp(7px, 2vw, 14px);
     background: 
-      linear-gradient(180deg, 
-        rgba(248, 243, 235, 0.9) 0%, 
-        rgba(248, 243, 235, 0.75) 60%, 
-        rgba(248, 243, 235, 0.5) 100%
+      linear-gradient(90deg, 
+        rgba(255, 252, 247, 0.72) 0%, 
+        rgba(255, 252, 247, 0.45) 26%, 
+        rgba(255, 252, 247, 0.1) 46%, 
+        transparent 56%
       ),
-      url('/hero-new.png?v=5') center center / cover no-repeat;
+      url('/hero-new.png?v=6') center center / 100% 100% no-repeat;
   }
   .hero-master-v2 .wrap {
-    margin: auto;
+    width: calc(100% - 20px);
+    margin: 0 auto;
+  }
+  .hero-master-left {
+    max-width: min(60%, 250px);
+  }
+  .hero-master-left h1 {
+    font-size: clamp(11px, 3.2vw, 18px);
+    line-height: 1.18;
+    margin: 0 0 2px;
+    letter-spacing: -0.01em;
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.95), 0 0 10px rgba(255, 255, 255, 0.9);
+  }
+  .hero-master-left .hero-sub {
+    font-size: clamp(8px, 2.1vw, 12px);
+    line-height: 1.25;
+    margin: 0 0 4px;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.95);
+  }
+  .hero-master-actions {
+    display: flex;
+    gap: clamp(4px, 1.2vw, 8px);
+    margin-top: clamp(3px, 1vw, 6px);
+    flex-wrap: nowrap;
+  }
+  .hero-master-actions .pill-btn {
+    font-size: clamp(8px, 2vw, 11px);
+    padding: clamp(3px, 0.8vw, 5px) clamp(6px, 1.6vw, 12px);
+    border-radius: 999px;
+    white-space: nowrap;
+    gap: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
   }
 }
 
