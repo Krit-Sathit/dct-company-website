@@ -1,115 +1,259 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useLanguage } from '@/lib/language';
 
 export default function Services() {
-  const capabilities = [
+  const { lang } = useLanguage();
+  const [scrollProgress, setScrollProgress] = useState(25);
+  const [activeStep, setActiveStep] = useState(1);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const windowH = window.innerHeight;
+      const docH = document.documentElement.scrollHeight - windowH;
+      if (docH > 0) {
+        // Calculate progress normalized between 15% and 100%
+        const ratio = Math.min(Math.max(scrollY / (docH * 0.75), 0), 1);
+        const percent = Math.max(25, Math.round(ratio * 100));
+        setScrollProgress(percent);
+
+        if (percent >= 90) setActiveStep(4);
+        else if (percent >= 65) setActiveStep(3);
+        else if (percent >= 40) setActiveStep(2);
+        else setActiveStep(1);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToService = (id: string, stepIndex: number) => {
+    setActiveStep(stepIndex);
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
+  const servicesList = [
     {
+      id: 'service-01',
       num: '01',
-      title: 'Custom Cutting',
-      headline: 'บริการตัดแต่งเนื้อสุกรตามสเปก',
-      desc: 'รองรับการตัดแต่งเนื้อสุกรตามขนาด รูปแบบ และความต้องการเฉพาะของลูกค้า เพื่อลดขั้นตอนและเวลาการเตรียมในครัวกลางหรือโรงงานแปรรูป',
-      options: ['Slice: สไลซ์ความหนา 1.2 - 2.0 มม. สำหรับชาบู ปิ้งย่าง', 'Dice: หั่นเต๋าขนาด 1 - 2 นิ้ว สำหรับเมนูต้ม พะโล้ แกง', 'Mince: บดหยาบ/บดละเอียด ระบุสัดส่วนเนื้อต่อไขมันได้', 'Portion Cut: ตัดชิ้นสเต๊ก ชิ้นทงคัตสึ ควบคุมน้ำหนักต่อจาน'],
-      img: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=1000&q=80',
+      tag: '01 · Custom Cutting',
+      titleTh: 'ตัดแต่งตามสเปก',
+      titleEn: 'Custom Cutting',
+      subTag: null,
+      descTh: 'ตัดแต่งเนื้อสุกรตามรูปแบบที่เหมาะกับการใช้งานของแต่ละธุรกิจ',
+      descEn: 'Precision pork cutting tailored to meet the exact culinary and production needs of each business.',
+      ctaTh: 'สอบถามสเปก',
+      ctaEn: 'Inquire Cutting Specs',
+      ctaHref: '/rfq',
+      img: '/service-custom-cut.png',
+      alt: 'ตัดแต่งตามสเปก - Custom Cutting',
     },
     {
+      id: 'service-02',
       num: '02',
-      title: 'Cold Storage',
-      headline: 'บริการคลังสินค้าควบคุมอุณหภูมิ',
-      desc: 'บริการคลังสินค้าห้องเย็นมาตรฐานสากล รองรับการจัดเก็บวัตถุดิบอาหารสด อาหารแช่เย็น แช่แข็ง และอาหารแห้งอย่างเป็นระบบ',
-      options: ['Chilled Storage: ควบคุมอุณหภูมิ 0°C ถึง 4°C รักษาความสดของเนื้อสุกร', 'Frozen Storage: ควบคุมอุณหภูมิ -18°C ถึง -25°C สำหรับจัดเก็บระยะยาว', 'Dry Storage: คลังสินค้าสำหรับอาหารแห้งและบรรจุภัณฑ์', 'ระบบ FIFO / FEFO: บริหารสต็อกสินค้าเข้า-ออกอย่างแม่นยำ'],
-      img: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1000&q=80',
+      tag: '02 · Cold Storage',
+      titleTh: 'คลังสินค้าควบคุมอุณหภูมิ',
+      titleEn: 'Cold Storage',
+      subTag: 'CHILLED · FROZEN',
+      descTh: 'บริการจัดเก็บวัตถุดิบในสภาวะอุณหภูมิที่เหมาะสมกับสินค้า',
+      descEn: 'Temperature-controlled warehousing maintaining optimum conditions for chilled and frozen products.',
+      ctaTh: 'สอบถามบริการ',
+      ctaEn: 'Inquire Storage',
+      ctaHref: '/contact',
+      img: '/service-cold-storage.png',
+      alt: 'คลังสินค้าควบคุมอุณหภูมิ - Cold Storage',
     },
     {
+      id: 'service-03',
       num: '03',
-      title: 'Packaging Solutions',
-      headline: 'บริการบรรจุภัณฑ์มาตรฐานอุตสาหกรรม',
-      desc: 'รองรับรูปแบบบรรจุภัณฑ์ที่เหมาะสมกับการจัดเก็บ การขนส่ง และการนำไปใช้งานจริงของธุรกิจแต่ละประเภท',
-      options: ['Vacuum Packaging: บรรจุภัณฑ์สุญญากาศ ยืดอายุการเก็บรักษาและคงความสด', 'Bulk Packaging: ถุงขนาด 2 กก. / 5 กก. / 10 กก. สะดวกต่อโรงงานและครัวกลาง', 'Custom Pack: บรรจุตามจำนวนชิ้นหรือน้ำหนักที่ลูกค้ากำหนด', 'Food Grade Material: บรรจุภัณฑ์เกรดสัมผัสอาหารปลอดภัย 100%'],
-      img: '/products/pork-belly.webp',
+      tag: '03 · Packaging Solutions',
+      titleTh: 'บริการบรรจุภัณฑ์',
+      titleEn: 'Packaging Solutions',
+      subTag: null,
+      descTh: 'บรรจุวัตถุดิบในรูปแบบที่เหมาะกับสินค้าและการใช้งานของธุรกิจ',
+      descEn: 'Industrial packaging formats designed to best protect quality, extend shelf-life, and simplify kitchen usage.',
+      ctaTh: 'สอบถามรูปแบบการแพ็ก',
+      ctaEn: 'Inquire Packaging Options',
+      ctaHref: '/rfq',
+      img: '/service-packaging.png',
+      alt: 'บริการบรรจุภัณฑ์ - Packaging Solutions',
     },
     {
+      id: 'service-04',
       num: '04',
-      title: 'Cold Chain Logistics',
-      headline: 'บริการจัดส่งควบคุมอุณหภูมิ',
-      desc: 'ระบบขนส่งควบคุมอุณหภูมิจากโรงงานถึงมือลูกค้า เพื่อรักษาคุณภาพ ความสดใหม่ และความปลอดภัยของสินค้าตลอดเส้นทาง',
-      options: ['Refrigerated Fleet: กองรถห้องเย็นควบคุมอุณหภูมิตลอด 24 ชม.', 'Temperature Monitoring: ระบบบันทึกและตรวจสอบอุณหภูมิแบบเรียลไทม์', 'On-Time Delivery: วางแผนรอบการจัดส่งตรงตามเวลานัดหมาย', 'Coverage: รองรับการจัดส่งครอบคลุมทั่วประเทศ'],
-      img: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1000&q=80',
+      tag: '04 · Cold Chain Logistics',
+      titleTh: 'จัดส่งควบคุมอุณหภูมิ',
+      titleEn: 'Cold Chain Logistics',
+      subTag: 'TEMPERATURE CONTROL · BUSINESS DELIVERY',
+      descTh: 'ดูแลการจัดส่งวัตถุดิบด้วยระบบควบคุมอุณหภูมิที่เหมาะสม',
+      descEn: 'Dedicated refrigerated fleet delivering on-time with unbroken temperature monitoring from warehouse to your door.',
+      ctaTh: 'สอบถามการจัดส่ง',
+      ctaEn: 'Inquire Delivery Schedules',
+      ctaHref: '/contact',
+      img: '/service-delivery.png',
+      alt: 'จัดส่งควบคุมอุณหภูมิ - Cold Chain Logistics',
     },
   ];
 
   return (
     <>
+      {/* Slide 17: Hero Section */}
       <section className="page-hero">
         <div className="wrap">
-          <div className="eyebrow">OUR CAPABILITIES · MASTER V2.0</div>
-          <h1>บริการที่รองรับความต้องการของธุรกิจ</h1>
-          <p className="lead">
-            โครงสร้างบริการที่ครอบคลุมตั้งแต่การตัดแต่ง คลังสินค้า บรรจุภัณฑ์ จนถึงการกระจายสินค้าแบบควบคุมอุณหภูมิครบวงจร
+          <div className="eyebrow">
+            {lang === 'en' ? 'OUR SERVICES · DOUNGCHALERN INTER TRADE' : 'บริการของเรา · บริษัท ดวงเจริญอินเตอร์เทรด จำกัด'}
+          </div>
+          <h1>
+            {lang === 'en' ? 'Care for Raw Materials, From Origin to Your Business' : 'ดูแลวัตถุดิบ ตั้งแต่ต้นทางถึงมือคุณ'}
+          </h1>
+          <p className="lead" style={{ maxWidth: '780px' }}>
+            {lang === 'en'
+              ? 'Cutting, warehousing, packaging, and delivering systematically to ensure raw materials are perfectly ready for business operations.'
+              : 'ตัดแต่ง จัดเก็บ บรรจุ และจัดส่งอย่างเป็นระบบ เพื่อให้วัตถุดิบพร้อมสำหรับการใช้งานของธุรกิจ'}
           </p>
         </div>
       </section>
 
-      <main className="section white">
-        <div className="wrap" style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
-          {capabilities.map((cap, i) => {
-            const isEven = i % 2 === 1;
-            return (
-              <div
-                key={cap.num}
-                className="split"
-                style={{
-                  direction: isEven ? 'rtl' : 'ltr',
-                  alignItems: 'center',
-                }}
-              >
+      {/* Slide 17: Dynamic Drawing Process Stepper (CUT → PACK → STORE → DELIVER) */}
+      <section className="service-flow-section">
+        <div className="wrap">
+          <div className="service-flow-wrapper">
+            <div className="service-flow-track">
+              {/* Background gray line */}
+              <div className="service-flow-line-bg">
+                {/* Animated draw fill line */}
                 <div
-                  className="photo"
-                  style={{
-                    backgroundImage: `url('${cap.img}')`,
-                    boxShadow: '0 8px 30px rgba(0,0,0,0.08)',
-                    direction: 'ltr',
-                  }}
+                  className="service-flow-line-fill"
+                  style={{ width: `${scrollProgress}%` }}
                 />
-                <div style={{ direction: 'ltr' }}>
-                  <div className="num">CAPABILITY {cap.num} · {cap.title}</div>
-                  <h2 style={{ fontSize: '28px', marginTop: '6px' }}>{cap.headline}</h2>
-                  <p style={{ lineHeight: 1.8, color: '#5e483b', marginBottom: '20px' }}>{cap.desc}</p>
-                  
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {cap.options.map((opt) => (
-                      <div key={opt} style={{ display: 'flex', gap: '8px', fontSize: '14px', color: '#4a3328' }}>
-                        <span style={{ color: 'var(--red)', fontWeight: 'bold' }}>✓</span>
-                        <span>{opt}</span>
-                      </div>
-                    ))}
-                  </div>
+              </div>
 
-                  <div className="actions" style={{ marginTop: '28px' }}>
-                    <Link className="button" href="/rfq">
-                      ขอใบเสนอราคาบริการนี้
+              {/* Step 1: CUT */}
+              <div
+                className={`service-flow-step ${activeStep >= 1 ? 'active' : ''}`}
+                onClick={() => scrollToService('service-01', 1)}
+                role="button"
+                tabIndex={0}
+              >
+                <div className="service-flow-circle">01</div>
+                <div className="service-flow-title">CUT</div>
+                <div className="service-flow-desc">
+                  {lang === 'en' ? 'Custom Cut' : 'ตัดแต่งตามสเปก'}
+                </div>
+              </div>
+
+              {/* Step 2: PACK */}
+              <div
+                className={`service-flow-step ${activeStep >= 2 ? 'active' : ''}`}
+                onClick={() => scrollToService('service-03', 2)}
+                role="button"
+                tabIndex={0}
+              >
+                <div className="service-flow-circle">02</div>
+                <div className="service-flow-title">PACK</div>
+                <div className="service-flow-desc">
+                  {lang === 'en' ? 'Packaging' : 'บริการบรรจุภัณฑ์'}
+                </div>
+              </div>
+
+              {/* Step 3: STORE */}
+              <div
+                className={`service-flow-step ${activeStep >= 3 ? 'active' : ''}`}
+                onClick={() => scrollToService('service-02', 3)}
+                role="button"
+                tabIndex={0}
+              >
+                <div className="service-flow-circle">03</div>
+                <div className="service-flow-title">STORE</div>
+                <div className="service-flow-desc">
+                  {lang === 'en' ? 'Cold Storage' : 'คลังสินค้าควบคุมอุณหภูมิ'}
+                </div>
+              </div>
+
+              {/* Step 4: DELIVER */}
+              <div
+                className={`service-flow-step ${activeStep >= 4 ? 'active' : ''}`}
+                onClick={() => scrollToService('service-04', 4)}
+                role="button"
+                tabIndex={0}
+              >
+                <div className="service-flow-circle">04</div>
+                <div className="service-flow-title">DELIVER</div>
+                <div className="service-flow-desc">
+                  {lang === 'en' ? 'Cold Chain' : 'จัดส่งควบคุมอุณหภูมิ'}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Service Cards (Slide 18-21: Single-Side Layout, Concise Copy, New Images) */}
+      <main className="section white">
+        <div className="wrap">
+          <div className="service-cards-stack">
+            {servicesList.map((srv) => (
+              <div key={srv.id} id={srv.id} className="service-single-card">
+                <div className="service-card-media">
+                  <img src={srv.img} alt={srv.alt} />
+                </div>
+                <div className="service-card-content">
+                  <div className="service-badge-row">
+                    <span className="service-num-badge">{srv.num}</span>
+                    {srv.subTag && (
+                      <span className="service-tag-pill">{srv.subTag}</span>
+                    )}
+                  </div>
+                  <h2 className="service-card-title">
+                    {lang === 'en' ? srv.titleEn : srv.titleTh}
+                  </h2>
+                  <div className="service-card-subtitle">
+                    {lang === 'en' ? srv.titleTh : srv.titleEn}
+                  </div>
+                  <p className="service-card-desc">
+                    {lang === 'en' ? srv.descEn : srv.descTh}
+                  </p>
+                  <div className="service-card-actions">
+                    <Link className="pill-btn primary" href={srv.ctaHref}>
+                      {lang === 'en' ? srv.ctaEn : srv.ctaTh} →
                     </Link>
                   </div>
                 </div>
               </div>
-            );
-          })}
+            ))}
+          </div>
+
+          {/* Slide 22: Closing Call to Action Banner */}
+          <section className="services-closing-banner">
+            <h2>
+              {lang === 'en'
+                ? 'Have Specific Requirements for Your Business?'
+                : 'มีความต้องการเฉพาะสำหรับธุรกิจ ?'}
+            </h2>
+            <p>
+              {lang === 'en'
+                ? 'Inform us of your desired cuts, volume, or custom specifications. The DCT team is ready to discuss all details with you.'
+                : 'แจ้งสินค้า ปริมาณ หรือสเปกที่ต้องการ ทีมงาน DCT พร้อมพูดคุยรายละเอียดกับคุณ'}
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', flexWrap: 'wrap' }}>
+              <Link className="pill-btn primary" href="/rfq" style={{ background: 'var(--red)', color: '#fff', padding: '12px 32px', fontSize: '16px' }}>
+                {lang === 'en' ? 'Request a Quote →' : 'ขอใบเสนอราคา →'}
+              </Link>
+              <Link className="pill-btn outline" href="/contact" style={{ borderColor: 'rgba(255,255,255,0.4)', color: '#fff' }}>
+                {lang === 'en' ? 'Contact Sales' : 'ติดต่อฝ่ายขาย'}
+              </Link>
+            </div>
+          </section>
         </div>
       </main>
-
-      {/* Partnership & Consultation Bar */}
-      <section className="section beige">
-        <div className="wrap" style={{ textAlign: 'center', maxWidth: '760px', margin: '0 auto' }}>
-          <div className="eyebrow">Consultation & Planning</div>
-          <h2>ให้คำปรึกษาและดูแลคู่ค้าอย่างใกล้ชิด</h2>
-          <p className="lead" style={{ margin: '14px auto 28px' }}>
-            ทีมผู้เชี่ยวชาญของดวงเจริญ อินเตอร์เทรด พร้อมประสานงานและร่วมพัฒนาสเปกสินค้าให้ตรงตามรูปแบบการดำเนินงานของธุรกิจคุณ
-          </p>
-          <div className="actions" style={{ justifyContent: 'center' }}>
-            <Link className="button" href="/contact">
-              ติดต่อฝ่ายขายและพัฒนาธุรกิจ
-            </Link>
-          </div>
-        </div>
-      </section>
     </>
   );
 }

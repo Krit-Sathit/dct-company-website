@@ -255,10 +255,10 @@ export function Footer() {
             <img src="/dct-emblem.png" alt="DCT Emblem" style={{ width: 48, height: 48, objectFit: 'contain', flexShrink: 0 }} />
             <div>
               <strong style={{ fontSize: '14px', color: 'var(--ink)', display: 'block', lineHeight: 1.3 }}>
-                {lang === 'en' ? (contact.company_name_en || 'DUANGCHAROEN INTERTRADE CO., LTD.') : (contact.company_name_th || 'ดวงเจริญ อินเตอร์เทรด จำกัด')}
+                {lang === 'en' ? (contact.company_name_en || 'DOUNGCHALERN INTER TRADE CO., LTD.') : (contact.company_name_th || 'บริษัท ดวงเจริญอินเตอร์เทรด จำกัด')}
               </strong>
               <span style={{ fontSize: '10.5px', color: '#8c7667', fontWeight: 600 }}>
-                {contact.company_name_en || 'DUANGCHAROEN INTERTRADE CO., LTD.'}
+                {contact.company_name_en || 'DOUNGCHALERN INTER TRADE CO., LTD.'}
               </span>
             </div>
           </div>
@@ -304,10 +304,10 @@ export function Footer() {
         <div className="footer-col">
           <h4>{t('footer_services')}</h4>
           <ul>
-            <li><Link href="/services">{lang === 'en' ? 'Custom Cutting' : 'รับผลิตตามความต้องการ'}</Link></li>
-            <li><Link href="/services">{lang === 'en' ? 'Standard Wholesale' : 'จัดเตรียมสินค้ามาตรฐาน'}</Link></li>
-            <li><Link href="/services">{lang === 'en' ? 'Vacuum Packaging' : 'แพ็กและบรรจุภัณฑ์'}</Link></li>
-            <li><Link href="/services">{lang === 'en' ? 'Nationwide Cold Chain' : 'จัดส่งทั่วประเทศ'}</Link></li>
+            <li><Link href="/services">{lang === 'en' ? 'Custom Cutting' : 'ตัดแต่งตามสเปก'}</Link></li>
+            <li><Link href="/services">{lang === 'en' ? 'Cold Storage' : 'คลังสินค้าควบคุมอุณหภูมิ'}</Link></li>
+            <li><Link href="/services">{lang === 'en' ? 'Packaging Solutions' : 'บริการบรรจุภัณฑ์'}</Link></li>
+            <li><Link href="/services">{lang === 'en' ? 'Cold Chain Logistics' : 'จัดส่งควบคุมอุณหภูมิ'}</Link></li>
             <li><Link href="/services">{lang === 'en' ? 'B2B Consultation' : 'ให้คำปรึกษาและดูแลอย่างใกล้ชิด'}</Link></li>
           </ul>
         </div>
@@ -324,16 +324,25 @@ export function Footer() {
               <span>✉️</span>
               <a href={`mailto:${contact.email}`}>{contact.email}</a>
             </li>
+            <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span>🌐</span>
+              <a href="https://www.dcintertrade.com" target="_blank" rel="noopener noreferrer">{contact.website || 'www.dcintertrade.com'}</a>
+            </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
               <span>📍</span>
               <span style={{ fontSize: '11.5px', lineHeight: 1.4 }}>{contact.address}</span>
             </li>
+            {contact.registration_no && (
+              <li style={{ fontSize: '11px', color: '#8c7667', marginTop: '4px' }}>
+                {lang === 'en' ? 'Registration No: ' : 'เลขทะเบียน: '}{contact.registration_no}
+              </li>
+            )}
           </ul>
         </div>
       </div>
 
       <div className="wrap" style={{ marginTop: '28px', paddingTop: '16px', borderTop: '1px solid #f0e6dc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', fontSize: '11.5px', color: '#9e8a7c' }}>
-        <div>© {new Date().getFullYear()} {lang === 'en' ? 'DUANGCHAROEN INTERTRADE CO., LTD.' : 'บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด'}. {t('footer_rights')}</div>
+        <div>© {new Date().getFullYear()} {lang === 'en' ? 'DOUNGCHALERN INTER TRADE CO., LTD.' : 'บริษัท ดวงเจริญอินเตอร์เทรด จำกัด'}. {t('footer_rights')}</div>
         <div style={{ display: 'flex', gap: '16px' }}>
           <Link href="/standards" style={{ color: '#9e8a7c' }}>{t('footer_privacy')}</Link>
           <Link href="/rfq" style={{ color: '#9e8a7c' }}>{t('nav_rfq')} (B2B)</Link>

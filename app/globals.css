@@ -222,7 +222,7 @@ h3 { margin: 0 0 10px; color: var(--brown); }
 .hero-master-v2 {
   position: relative;
   min-height: 480px;
-  background: linear-gradient(90deg, rgba(248, 243, 235, 0.98) 0%, rgba(248, 243, 235, 0.92) 36%, rgba(248, 243, 235, 0.3) 54%, rgba(248, 243, 235, 0) 70%), url('/hero-master.png') center right / cover no-repeat;
+  background: linear-gradient(90deg, rgba(248, 243, 235, 0.98) 0%, rgba(248, 243, 235, 0.92) 36%, rgba(248, 243, 235, 0.3) 54%, rgba(248, 243, 235, 0) 70%), url('/hero-new.png') center right / cover no-repeat;
   border-bottom: 1px solid #dfd0be;
   display: flex;
   align-items: center;
@@ -1116,4 +1116,269 @@ h3 { margin: 0 0 10px; color: var(--brown); }
   .page-hero { padding: 60px 0 36px; }
   .rfq-wizard { padding: 20px; }
   .step-title { font-size: 11px; }
+}
+
+/* =========================================================================
+   SERVICES FLOW STEPPER & SINGLE-SIDE CARDS (Slide 17-22)
+   ========================================================================= */
+
+.service-flow-section {
+  background: #faf6f0;
+  border-bottom: 1px solid #e7ded2;
+  padding: 44px 0 40px;
+}
+
+.service-flow-wrapper {
+  max-width: 920px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.service-flow-track {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Animated connecting line */
+.service-flow-line-bg {
+  position: absolute;
+  top: 26px;
+  left: 5%;
+  right: 5%;
+  height: 3px;
+  background: #e2d3c3;
+  z-index: 1;
+  border-radius: 3px;
+}
+
+.service-flow-line-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--red) 0%, #d44343 50%, var(--gold) 100%);
+  border-radius: 3px;
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 0 8px rgba(139, 30, 30, 0.35);
+}
+
+.service-flow-step {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  padding: 0 8px;
+}
+
+.service-flow-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #dfd2c4;
+  color: #7a6557;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(107, 70, 54, 0.08);
+}
+
+.service-flow-step.active .service-flow-circle {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(139, 30, 30, 0.28);
+  transform: translateY(-2px);
+}
+
+.service-flow-step:hover .service-flow-circle {
+  border-color: var(--red);
+}
+
+.service-flow-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-top: 10px;
+  letter-spacing: 0.05em;
+}
+
+.service-flow-step.active .service-flow-title {
+  color: var(--red);
+}
+
+.service-flow-desc {
+  font-size: 12px;
+  color: #8a7364;
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+/* Service Single-Side Cards (Consistent Left-to-Right orientation) */
+.service-cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin: 48px 0;
+}
+
+.service-single-card {
+  display: grid;
+  grid-template-columns: 460px 1fr;
+  gap: 48px;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ebe2d8;
+  border-radius: 8px;
+  padding: 32px;
+  box-shadow: 0 6px 24px rgba(107, 70, 54, 0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.service-single-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(107, 70, 54, 0.1);
+}
+
+.service-card-media {
+  position: relative;
+  height: 320px;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  background: #f8f4ee;
+}
+
+.service-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.service-single-card:hover .service-card-media img {
+  transform: scale(1.03);
+}
+
+.service-card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.service-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.service-num-badge {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--red);
+  letter-spacing: 0.05em;
+  background: rgba(139, 30, 30, 0.08);
+  padding: 3px 10px;
+  border-radius: 4px;
+}
+
+.service-tag-pill {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #6a574a;
+  background: #f3ece3;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.service-card-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 0 0 4px;
+  line-height: 1.25;
+}
+
+.service-card-subtitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--red);
+  margin-bottom: 14px;
+  letter-spacing: 0.02em;
+}
+
+.service-card-desc {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #5a4537;
+  margin: 0 0 24px;
+}
+
+.service-card-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Closing CTA Banner (Slide 22) */
+.services-closing-banner {
+  background: linear-gradient(135deg, #441717 0%, #2f1010 100%);
+  border-radius: 8px;
+  padding: 56px 40px;
+  text-align: center;
+  color: #fff;
+  margin: 20px 0 60px;
+  box-shadow: 0 12px 40px rgba(47, 16, 16, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.services-closing-banner::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(184, 134, 11, 0.22) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.services-closing-banner h2 {
+  color: #fff;
+  font-size: 32px;
+  margin: 0 0 14px;
+  font-weight: 800;
+}
+
+.services-closing-banner p {
+  color: #eddcd0;
+  font-size: 17px;
+  max-width: 680px;
+  margin: 0 auto 30px;
+  line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+  .service-single-card {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 24px;
+  }
+  .service-card-media {
+    height: 240px;
+  }
+  .service-flow-track {
+    gap: 12px;
+  }
+  .service-flow-desc {
+    display: none;
+  }
 }

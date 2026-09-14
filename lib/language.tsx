@@ -6,8 +6,8 @@ export type Language = 'th' | 'en';
 
 export const translations = {
   th: {
-    brand_name: 'บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด',
-    brand_name_en: 'DUANGCHAROEN INTERTRADE CO., LTD.',
+    brand_name: 'บริษัท ดวงเจริญอินเตอร์เทรด จำกัด',
+    brand_name_en: 'DOUNGCHALERN INTER TRADE CO., LTD.',
     nav_home: 'หน้าหลัก',
     nav_about: 'เกี่ยวกับเรา',
     nav_products: 'สินค้า',
@@ -59,7 +59,7 @@ export const translations = {
 
     // About
     about_title: 'เกี่ยวกับเรา',
-    about_company: 'บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด',
+    about_company: 'บริษัท ดวงเจริญอินเตอร์เทรด จำกัด',
     about_desc:
       'เราคือผู้เชี่ยวชาญด้านการตัดแต่งและจัดจำหน่ายเนื้อสุกรสำหรับธุรกิจอาหาร ครัวกลาง ภัตตาคาร และโรงงานแปรรูป ด้วยประสบการณ์มากกว่า 30 ปี เรามุ่งมั่นส่งมอบเนื้อสุกรที่สด สะอาด ตรงตามสเปก และปลอดภัยตามมาตรฐานสากล GHPs และ HACCP พร้อมระบบจัดเก็บห้องเย็นและโลจิสติกส์ควบคุมอุณหภูมิที่ครอบคลุมทั่วประเทศ',
     about_chip_cut: 'ตัดแต่งตามสเปก',
@@ -92,8 +92,8 @@ export const translations = {
     footer_sales_contact: 'ติดต่อฝ่ายขาย',
   },
   en: {
-    brand_name: 'DUANGCHAROEN INTERTRADE CO., LTD.',
-    brand_name_en: 'DUANGCHAROEN INTERTRADE CO., LTD.',
+    brand_name: 'DOUNGCHALERN INTER TRADE CO., LTD.',
+    brand_name_en: 'DOUNGCHALERN INTER TRADE CO., LTD.',
     nav_home: 'Home',
     nav_about: 'About Us',
     nav_products: 'Products',
@@ -145,7 +145,7 @@ export const translations = {
 
     // About
     about_title: 'About Us',
-    about_company: 'Duangcharoen Intertrade Co., Ltd.',
+    about_company: 'DOUNGCHALERN INTER TRADE CO., LTD.',
     about_desc:
       'We are a trusted B2B meat cutting and wholesale partner with over 30 years of experience serving restaurants, central kitchens, hotel chains, and food processing plants. Certified under GHPs and HACCP standards, we operate state-of-the-art cold storage and temperature-controlled logistics to guarantee freshness and safety nationwide.',
     about_chip_cut: 'Custom Cutting',

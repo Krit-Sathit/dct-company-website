@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ContactSettings, defaultContactSettings, getContactSettings } from '@/lib/settings';
+import { useLanguage } from '@/lib/language';
 
 export default function Contact() {
   const [contact, setContact] = useState<ContactSettings>(defaultContactSettings);
+  const { lang, t } = useLanguage();
 
   useEffect(() => {
     async function load() {
@@ -15,18 +17,20 @@ export default function Contact() {
     void load();
   }, []);
 
-  const factoryImage =
-    contact.image_url ||
-    'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1000&q=80';
+  const factoryImage = contact.image_url || '/about-factory-new.png';
 
   return (
     <>
       <section className="page-hero">
         <div className="wrap">
-          <div className="eyebrow">CONTACT DUANGCHAROEN · MASTER V2.0</div>
-          <h1>ติดต่อเรา</h1>
+          <div className="eyebrow">
+            {lang === 'en' ? 'CONTACT US · DOUNGCHALERN INTER TRADE' : 'ข้อมูลติดต่อ · บริษัท ดวงเจริญอินเตอร์เทรด จำกัด'}
+          </div>
+          <h1>{lang === 'en' ? 'Contact Us' : 'ติดต่อเรา'}</h1>
           <p className="lead">
-            สอบถามสินค้า บริการ และความต้องการด้านวัตถุดิบสำหรับธุรกิจ ติดต่อทีมงานดวงเจริญ อินเตอร์เทรดได้โดยตรง
+            {lang === 'en'
+              ? 'Inquire about products, custom cutting specifications, and cold chain services. Our B2B specialists are ready to assist your business.'
+              : 'สอบถามสินค้า บริการตัดแต่งตามสเปก และระบบขนส่งควบคุมอุณหภูมิสำหรับธุรกิจ ติดต่อทีมงานดวงเจริญอินเตอร์เทรดได้โดยตรง'}
           </p>
         </div>
       </section>
@@ -34,38 +38,55 @@ export default function Contact() {
       <main className="wrap section split">
         <div className="card" style={{ padding: '36px' }}>
           <div className="eyebrow">Sales & Business Inquiry</div>
-          <h2 style={{ fontSize: '26px', marginTop: '4px' }}>ข้อมูลติดต่อฝ่ายขาย</h2>
-          
+          <h2 style={{ fontSize: '26px', marginTop: '4px' }}>
+            {lang === 'en' ? 'Official Business Contact' : 'ข้อมูลติดต่อฝ่ายขายและสำนักงาน'}
+          </h2>
+
           <div className="spec-box">
             <div className="spec">
-              <span>ชื่อบริษัท</span>
-              <b>{contact.company_name_th}</b>
+              <span>{lang === 'en' ? 'Company Name (TH)' : 'ชื่อบริษัท (ไทย)'}</span>
+              <b>{contact.company_name_th || 'บริษัท ดวงเจริญอินเตอร์เทรด จำกัด'}</b>
             </div>
             <div className="spec">
-              <span>ที่อยู่สำนักงาน</span>
-              <b>{contact.address}</b>
+              <span>{lang === 'en' ? 'Company Name (EN)' : 'ชื่อบริษัท (อังกฤษ)'}</span>
+              <b>{contact.company_name_en || 'DOUNGCHALERN INTER TRADE CO., LTD.'}</b>
             </div>
             <div className="spec">
-              <span>โทรศัพท์ฝ่ายขาย</span>
-              <b>
-                <a href={`tel:${contact.phone}`} style={{ color: 'var(--red)', textDecoration: 'none' }}>
-                  {contact.phone}
-                </a>
-                {contact.phone_secondary && (
-                  <>
-                    {' · '}
-                    <a href={`tel:${contact.phone_secondary}`} style={{ color: 'var(--red)', textDecoration: 'none' }}>
-                      {contact.phone_secondary}
-                    </a>
-                  </>
-                )}
+              <span>{lang === 'en' ? 'Registration No.' : 'เลขทะเบียนนิติบุคคล'}</span>
+              <b style={{ color: 'var(--red)', fontWeight: 700 }}>
+                {contact.registration_no || '0135564021737'}
               </b>
             </div>
             <div className="spec">
-              <span>อีเมล</span>
+              <span>{lang === 'en' ? 'Headquarters / Address' : 'ที่อยู่สำนักงาน'}</span>
+              <b>{contact.address || '49/203 หมู่ที่ 7 ตำบลคลองสอง อำเภอคลองหลวง จ. ปทุมธานี 12120'}</b>
+            </div>
+            <div className="spec">
+              <span>{lang === 'en' ? 'Sales Hotline' : 'เบอร์โทรศัพท์'}</span>
               <b>
-                <a href={`mailto:${contact.email}`} style={{ color: 'var(--red)', textDecoration: 'none' }}>
-                  {contact.email}
+                <a href={`tel:${contact.phone || '0825161718'}`} style={{ color: 'var(--red)', textDecoration: 'none' }}>
+                  {contact.phone || '082-516-1718'}
+                </a>
+              </b>
+            </div>
+            <div className="spec">
+              <span>{lang === 'en' ? 'Email' : 'อีเมล'}</span>
+              <b>
+                <a href={`mailto:${contact.email || 'doungchalern.dct@gmail.com'}`} style={{ color: 'var(--red)', textDecoration: 'none' }}>
+                  {contact.email || 'doungchalern.dct@gmail.com'}
+                </a>
+              </b>
+            </div>
+            <div className="spec">
+              <span>{lang === 'en' ? 'Official Website' : 'เว็บไซต์'}</span>
+              <b>
+                <a
+                  href={`https://${contact.website || 'www.dcintertrade.com'}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: 'var(--red)', textDecoration: 'none' }}
+                >
+                  {contact.website || 'www.dcintertrade.com'}
                 </a>
               </b>
             </div>
@@ -81,13 +102,13 @@ export default function Contact() {
                     <span>{contact.line_id}</span>
                   )
                 ) : (
-                  '-'
+                  '@dctfood'
                 )}
               </b>
             </div>
             {contact.business_hours && (
               <div className="spec">
-                <span>เวลาทำการ</span>
+                <span>{lang === 'en' ? 'Business Hours' : 'เวลาทำการ'}</span>
                 <b>{contact.business_hours}</b>
               </div>
             )}
@@ -95,7 +116,7 @@ export default function Contact() {
 
           <div className="actions" style={{ marginTop: '28px' }}>
             <Link className="button" href="/rfq">
-              📑 ขอใบเสนอราคาออนไลน์
+              {lang === 'en' ? '📑 Request a B2B Quote' : '📑 ขอใบเสนอราคาออนไลน์'}
             </Link>
             {contact.google_maps_url && (
               <a
@@ -104,7 +125,7 @@ export default function Contact() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                🗺️ ดูแผนที่โรงงาน / สำนักงาน
+                {lang === 'en' ? '🗺️ Google Maps' : '🗺️ ดูแผนที่โรงงาน / สำนักงาน'}
               </a>
             )}
           </div>

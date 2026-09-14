@@ -5,10 +5,12 @@ import { supabaseBrowser, isSupabaseConfigured } from '@/lib/supabase-browser';
 export type ContactSettings = {
   company_name_th: string;
   company_name_en: string;
+  registration_no?: string;
   address: string;
   phone: string;
   phone_secondary: string;
   email: string;
+  website?: string;
   line_id: string;
   business_hours: string;
   google_maps_url: string;
@@ -30,30 +32,32 @@ export type CompanyProfileSettings = {
 };
 
 export const defaultContactSettings: ContactSettings = {
-  company_name_th: 'บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด',
-  company_name_en: 'Duangcharoen Intertrade Co., Ltd.',
-  address: 'เลขที่ 88/8 หมู่ที่ 5 ตำบลบางบัวทอง อำเภอบางบัวทอง จังหวัดนนทบุรี 11110',
-  phone: '02-123-4567',
-  phone_secondary: '089-999-8888',
-  email: 'sales@duangcharoen.com',
+  company_name_th: 'บริษัท ดวงเจริญอินเตอร์เทรด จำกัด',
+  company_name_en: 'DOUNGCHALERN INTER TRADE CO., LTD.',
+  registration_no: '0135564021737',
+  address: '49/203 หมู่ที่ 7 ตำบลคลองสอง อำเภอคลองหลวง จ. ปทุมธานี 12120',
+  phone: '0825161718',
+  phone_secondary: '',
+  email: 'doungchalern.dct@gmail.com',
+  website: 'www.dcintertrade.com',
   line_id: '@dctfood',
   business_hours: 'จันทร์ - เสาร์: 08:00 - 17:00 น.',
   google_maps_url: 'https://maps.google.com',
-  facebook_url: 'https://facebook.com/duangcharoen',
-  image_url: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1000&q=80',
+  facebook_url: 'https://facebook.com/doungchalern',
+  image_url: '/about-factory-new.png',
 };
 
 export const defaultCompanyProfile: CompanyProfileSettings = {
-  tagline: 'DUANGCHAROEN INTERTRADE CO., LTD.',
-  headline: 'แหล่งวัตถุดิบเนื้อสุกรสำหรับธุรกิจ',
-  subheadline: 'ที่ต้องการคุณภาพสม่ำเสมอ ปริมาณเพียงพอ และการจัดส่งที่ไว้ใจได้',
-  about_summary: 'บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด เป็นผู้เชี่ยวชาญด้านการแปรรูปและตัดแต่งเนื้อสุกรคุณภาพสูง พร้อมให้บริการคลังสินค้าควบคุมอุณหภูมิสำหรับอาหารสด อาหารแช่เย็น แช่แข็ง และอาหารแห้งครบวงจร',
-  vision: 'มุ่งสู่การเป็นพันธมิตรชั้นนำด้านการตัดแต่งเนื้อสุกรและบริการคลังสินค้าควบคุมอุณหภูมิ ที่ได้รับความไว้วางใจสูงสุดในเรื่องคุณภาพ ความสะอาด และมาตรฐานความปลอดภัยทางอาหารระดับสากล',
+  tagline: 'DOUNGCHALERN INTER TRADE CO., LTD.',
+  headline: 'เบื้องหลังวัตถุดิบที่พร้อมสำหรับธุรกิจ',
+  subheadline: 'ดวงเจริญ อินเตอร์เทรด ดูแลตั้งแต่การคัดสรร ตัดแต่ง จัดเก็บ และจัดส่งวัตถุดิบเนื้อสุกร เพื่อให้คู่ค้าทำงานได้ง่ายขึ้นและมั่นใจในทุกการส่งมอบ',
+  about_summary: 'จากประสบการณ์ด้านการตัดแต่งเนื้อสุกรและการจัดการวัตถุดิบอาหาร DCT พัฒนาการทำงานให้ครอบคลุมตั้งแต่การตัดแต่งตามสเปก การจัดเก็บควบคุมอุณหภูมิไปจนถึงการจัดส่ง เพื่อช่วยให้คู่ค้าบริหารวัตถุดิบได้ง่ายและสม่ำเสมอมากขึ้น',
+  vision: 'เป็นคู่ค้าที่ธุรกิจไว้วางใจในทุกเรื่องของวัตถุดิบ ด้วยคุณภาพที่สม่ำเสมอ การทำงานที่ได้มาตรฐาน และการส่งมอบที่เชื่อถือได้',
   mission: 'ยึดมั่นในมาตรฐาน GHP, HACCP และ อย. เพื่อส่งมอบวัตถุดิบที่ปลอดภัย รักษาห่วงโซ่อุณหภูมิ และเติบโตไปพร้อมกับคู่ค้า B2B',
-  hero_image_url: '/hero-banner.webp',
-  oem_section_image_url: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=1000&q=80',
-  oem_title: 'บริการที่รองรับความต้องการของธุรกิจ',
-  oem_description: 'Custom Cutting, Cold Storage, Packaging และ Cold Chain Logistics ครบวงจรสำหรับร้านอาหาร ครัวกลาง และผู้ผลิตอาหารที่ต้องการความสม่ำเสมอในทุกล็อต',
+  hero_image_url: '/hero-new.png',
+  oem_section_image_url: '/service-custom-cut.png',
+  oem_title: 'ดูแลวัตถุดิบ ตั้งแต่ต้นทางถึงมือคุณ',
+  oem_description: 'ตัดแต่ง จัดเก็บ บรรจุ และจัดส่งอย่างเป็นระบบ เพื่อให้วัตถุดิบพร้อมสำหรับการใช้งานของธุรกิจ',
 };
 
 const CONTACT_KEY = 'dct_contact_settings';

@@ -121,7 +121,7 @@ export function IconCorporate({ size = 30, color = '#8B1E1E', className }: IconP
   );
 }
 
-// 11. Meat Cutting / Custom Cut Icon (รับผลิตตามความต้องการ)
+// 11. Meat Cutting / Custom Cut Icon (ตัดแต่งตามสเปก)
 export function IconMeatCut({ size = 26, color = '#8B1E1E', className }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className={className}>
