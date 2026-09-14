@@ -244,10 +244,10 @@ export default function Services() {
                 : 'แจ้งสินค้า ปริมาณ หรือสเปกที่ต้องการ ทีมงาน DCT พร้อมพูดคุยรายละเอียดกับคุณ'}
             </p>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', flexWrap: 'wrap' }}>
-              <Link className="pill-btn primary" href="/rfq" style={{ background: 'var(--red)', color: '#fff', padding: '12px 32px', fontSize: '16px' }}>
+              <Link className="banner-btn-primary" href="/rfq">
                 {lang === 'en' ? 'Request a Quote →' : 'ขอใบเสนอราคา →'}
               </Link>
-              <Link className="pill-btn outline" href="/contact" style={{ borderColor: 'rgba(255,255,255,0.4)', color: '#fff' }}>
+              <Link className="banner-btn-secondary" href="/contact">
                 {lang === 'en' ? 'Contact Sales' : 'ติดต่อฝ่ายขาย'}
               </Link>
             </div>

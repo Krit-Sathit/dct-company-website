@@ -1366,6 +1366,56 @@ h3 { margin: 0 0 10px; color: var(--brown); }
   line-height: 1.7;
 }
 
+.services-closing-banner .banner-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 15.5px;
+  text-decoration: none;
+  padding: 12px 32px;
+  background: var(--red);
+  color: #ffffff;
+  border: 1.5px solid var(--red);
+  transition: all 0.22s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+.services-closing-banner .banner-btn-primary:hover {
+  background: #a82424;
+  border-color: #a82424;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.services-closing-banner .banner-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 15.5px;
+  text-decoration: none;
+  padding: 12px 30px;
+  background: #ffffff;
+  color: var(--red);
+  border: 1.5px solid #ffffff;
+  transition: all 0.22s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.services-closing-banner .banner-btn-secondary:hover {
+  background: #fdf6ee;
+  color: var(--burgundy);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
 @media (max-width: 900px) {
   .service-single-card {
     grid-template-columns: 1fr;
