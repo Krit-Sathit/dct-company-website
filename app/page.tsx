@@ -168,29 +168,24 @@ export default function Home() {
               <h3 className="sec-title">{t('why_title')}</h3>
               <div className="why-features-grid full-width">
                 <div className="why-item-card">
-                  <IconRibbon size={32} color="#8B1E1E" />
+                  <IconRibbon size={42} color="#8B1E1E" />
                   <h4>{t('why_1_title')}</h4>
-                  <p>{t('why_1_desc')}</p>
                 </div>
                 <div className="why-item-card">
-                  <IconShield size={32} color="#8B1E1E" />
+                  <IconShield size={42} color="#8B1E1E" />
                   <h4>{t('why_2_title')}</h4>
-                  <p>{t('why_2_desc')}</p>
                 </div>
                 <div className="why-item-card">
-                  <IconFactory size={32} color="#8B1E1E" />
+                  <IconFactory size={42} color="#8B1E1E" />
                   <h4>{t('why_3_title')}</h4>
-                  <p>{t('why_3_desc')}</p>
                 </div>
                 <div className="why-item-card">
-                  <IconTruck size={32} color="#8B1E1E" />
+                  <IconTruck size={42} color="#8B1E1E" />
                   <h4>{t('why_4_title')}</h4>
-                  <p>{t('why_4_desc')}</p>
                 </div>
                 <div className="why-item-card">
-                  <IconSupport size={32} color="#8B1E1E" />
+                  <IconSupport size={42} color="#8B1E1E" />
                   <h4>{t('why_5_title')}</h4>
-                  <p>{t('why_5_desc')}</p>
                 </div>
               </div>
 
@@ -223,10 +218,10 @@ export default function Home() {
           </section>
 
           {/* =========================================================================
-              ROW 4: เกี่ยวกับเรา (Slide 4)
+              ROW 4: เกี่ยวกับเรา (Slide 4 & Slide 23)
               - เอาบริการกล่องใหญ่ออก
               - ขยายเกี่ยวกับเราให้กว้างเต็มตา
-              - ทำแถบไฮไลท์บริการ 4 ด้านด้านล่างพร้อมลิงก์ไปหน้าบริการเต็ม
+              - ทำแถบไฮไลท์บริการ 4 ด้านด้านล่างพร้อมลิงก์ไปหน้าบริการเต็ม (ขยายใหญ่ขึ้นตาม Slide 23)
               ========================================================================= */}
           <section style={{ marginTop: '20px' }}>
             <div className="mockup-card">
@@ -250,33 +245,57 @@ export default function Home() {
                 />
               </div>
 
-              {/* แถบไฮไลท์บริการ 4 ด้านข้างล่างเกี่ยวกับเรา (ตามคอมเมนต์ Slide 4) */}
-              <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid #e8dfd5' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <span style={{ fontSize: '13px', fontWeight: 700, color: '#6e584a' }}>
+              {/* แถบไฮไลท์บริการ 4 ด้านข้างล่างเกี่ยวกับเรา (ขยายใหญ่ขึ้นตาม Slide 23) */}
+              <div style={{ marginTop: '22px', paddingTop: '18px', borderTop: '1px solid #e8dfd5' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <span style={{ fontSize: '14px', fontWeight: 800, color: 'var(--ink)' }}>
                     {lang === 'en' ? 'Comprehensive Services for Food Businesses:' : 'บริการครบวงจรเพื่อธุรกิจอาหาร:'}
                   </span>
-                  <Link href="/services" style={{ fontSize: '12px', color: 'var(--red)', fontWeight: 700, textDecoration: 'none' }}>
+                  <Link href="/services" style={{ fontSize: '12.5px', color: 'var(--red)', fontWeight: 700, textDecoration: 'none' }}>
                     {lang === 'en' ? 'View All Services →' : 'ดูบริการทั้งหมดของเรา →'}
                   </Link>
                 </div>
-                <div className="about-chips-grid">
-                  <div className="service-compact-chip">
-                    <IconMeatCut size={18} color="#8B1E1E" />
-                    <span>{t('about_chip_cut')}</span>
-                  </div>
-                  <div className="service-compact-chip">
-                    <IconWarehouse size={18} color="#8B1E1E" />
-                    <span>{t('about_chip_cold')}</span>
-                  </div>
-                  <div className="service-compact-chip">
-                    <IconPackage size={18} color="#8B1E1E" />
-                    <span>{t('about_chip_pack')}</span>
-                  </div>
-                  <div className="service-compact-chip">
-                    <IconLogistics size={18} color="#8B1E1E" />
-                    <span>{t('about_chip_delivery')}</span>
-                  </div>
+                <div className="about-services-showcase-grid">
+                  <Link href="/services#service-01" className="service-showcase-card">
+                    <div className="service-showcase-top">
+                      <span className="service-showcase-num">01</span>
+                      <IconMeatCut size={24} color="#8B1E1E" />
+                    </div>
+                    <h4>{t('about_chip_cut')}</h4>
+                    <span className="service-showcase-sub">
+                      {lang === 'en' ? 'Custom Cutting' : 'ตัดแต่งตามสเปก'}
+                    </span>
+                  </Link>
+                  <Link href="/services#service-02" className="service-showcase-card">
+                    <div className="service-showcase-top">
+                      <span className="service-showcase-num">02</span>
+                      <IconPackage size={24} color="#8B1E1E" />
+                    </div>
+                    <h4>{t('about_chip_pack')}</h4>
+                    <span className="service-showcase-sub">
+                      {lang === 'en' ? 'Packaging Solutions' : 'บริการบรรจุภัณฑ์'}
+                    </span>
+                  </Link>
+                  <Link href="/services#service-03" className="service-showcase-card">
+                    <div className="service-showcase-top">
+                      <span className="service-showcase-num">03</span>
+                      <IconWarehouse size={24} color="#8B1E1E" />
+                    </div>
+                    <h4>{t('about_chip_cold')}</h4>
+                    <span className="service-showcase-sub">
+                      {lang === 'en' ? 'Cold Storage' : 'คลังสินค้าควบคุมอุณหภูมิ'}
+                    </span>
+                  </Link>
+                  <Link href="/services#service-04" className="service-showcase-card">
+                    <div className="service-showcase-top">
+                      <span className="service-showcase-num">04</span>
+                      <IconLogistics size={24} color="#8B1E1E" />
+                    </div>
+                    <h4>{t('about_chip_delivery')}</h4>
+                    <span className="service-showcase-sub">
+                      {lang === 'en' ? 'Cold Chain Logistics' : 'จัดส่งควบคุมอุณหภูมิ'}
+                    </span>
+                  </Link>
                 </div>
               </div>
             </div>

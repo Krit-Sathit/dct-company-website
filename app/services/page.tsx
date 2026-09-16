@@ -11,20 +11,20 @@ export default function Services() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const windowH = window.innerHeight;
-      const docH = document.documentElement.scrollHeight - windowH;
-      if (docH > 0) {
-        // Calculate progress normalized between 15% and 100%
-        const ratio = Math.min(Math.max(scrollY / (docH * 0.75), 0), 1);
-        const percent = Math.max(25, Math.round(ratio * 100));
-        setScrollProgress(percent);
+      const serviceIds = ['service-01', 'service-02', 'service-03', 'service-04'];
+      const positions = serviceIds.map((id) => {
+        const el = document.getElementById(id);
+        return el ? el.getBoundingClientRect().top : 99999;
+      });
 
-        if (percent >= 90) setActiveStep(4);
-        else if (percent >= 65) setActiveStep(3);
-        else if (percent >= 40) setActiveStep(2);
-        else setActiveStep(1);
+      let currentIdx = 0;
+      for (let i = 0; i < positions.length; i++) {
+        if (positions[i] <= 320) {
+          currentIdx = i;
+        }
       }
+      setActiveStep(currentIdx + 1);
+      setScrollProgress(25 + currentIdx * 25);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -36,7 +36,13 @@ export default function Services() {
     setActiveStep(stepIndex);
     const el = document.getElementById(id);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const navOffset = 90;
+      const elementPosition = el.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - navOffset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth',
+      });
     }
   };
 
@@ -59,22 +65,7 @@ export default function Services() {
     {
       id: 'service-02',
       num: '02',
-      tag: '02 · Cold Storage',
-      titleTh: 'คลังสินค้าควบคุมอุณหภูมิ',
-      titleEn: 'Cold Storage',
-      subTag: 'CHILLED · FROZEN',
-      descTh: 'บริการจัดเก็บวัตถุดิบในสภาวะอุณหภูมิที่เหมาะสมกับสินค้า',
-      descEn: 'Temperature-controlled warehousing maintaining optimum conditions for chilled and frozen products.',
-      ctaTh: 'สอบถามบริการ',
-      ctaEn: 'Inquire Storage',
-      ctaHref: '/contact',
-      img: '/service-cold-storage.png',
-      alt: 'คลังสินค้าควบคุมอุณหภูมิ - Cold Storage',
-    },
-    {
-      id: 'service-03',
-      num: '03',
-      tag: '03 · Packaging Solutions',
+      tag: '02 · Packaging Solutions',
       titleTh: 'บริการบรรจุภัณฑ์',
       titleEn: 'Packaging Solutions',
       subTag: null,
@@ -85,6 +76,21 @@ export default function Services() {
       ctaHref: '/rfq',
       img: '/service-packaging.png',
       alt: 'บริการบรรจุภัณฑ์ - Packaging Solutions',
+    },
+    {
+      id: 'service-03',
+      num: '03',
+      tag: '03 · Cold Storage',
+      titleTh: 'คลังสินค้าควบคุมอุณหภูมิ',
+      titleEn: 'Cold Storage',
+      subTag: 'CHILLED · FROZEN',
+      descTh: 'บริการจัดเก็บวัตถุดิบในสภาวะอุณหภูมิที่เหมาะสมกับสินค้า',
+      descEn: 'Temperature-controlled warehousing maintaining optimum conditions for chilled and frozen products.',
+      ctaTh: 'สอบถามบริการ',
+      ctaEn: 'Inquire Storage',
+      ctaHref: '/contact',
+      img: '/service-cold-storage.png',
+      alt: 'คลังสินค้าควบคุมอุณหภูมิ - Cold Storage',
     },
     {
       id: 'service-04',
@@ -153,7 +159,7 @@ export default function Services() {
               {/* Step 2: PACK */}
               <div
                 className={`service-flow-step ${activeStep >= 2 ? 'active' : ''}`}
-                onClick={() => scrollToService('service-03', 2)}
+                onClick={() => scrollToService('service-02', 2)}
                 role="button"
                 tabIndex={0}
               >
@@ -167,7 +173,7 @@ export default function Services() {
               {/* Step 3: STORE */}
               <div
                 className={`service-flow-step ${activeStep >= 3 ? 'active' : ''}`}
-                onClick={() => scrollToService('service-02', 3)}
+                onClick={() => scrollToService('service-03', 3)}
                 role="button"
                 tabIndex={0}
               >

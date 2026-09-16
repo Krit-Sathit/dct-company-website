@@ -340,29 +340,27 @@ h3 { margin: 0 0 10px; color: var(--brown); }
 .why-item-card {
   background: #f7efe2;
   border: 1px solid #e6d8c5;
-  border-radius: 6px;
-  padding: 16px 10px;
+  border-radius: 8px;
+  padding: 24px 16px;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: transform 0.2s ease, background 0.2s ease;
+  justify-content: center;
+  gap: 14px;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 .why-item-card:hover {
   background: #f0e4d0;
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(139, 30, 30, 0.07);
 }
 .why-item-card h4 {
-  font-size: 13.5px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 800;
   color: var(--ink);
-  margin: 10px 0 6px;
-}
-.why-item-card p {
-  font-size: 11px;
-  line-height: 1.5;
-  color: #6e5544;
   margin: 0;
+  line-height: 1.35;
 }
 
 /* Full Width Why Choose Us */
@@ -676,10 +674,53 @@ h3 { margin: 0 0 10px; color: var(--brown); }
   box-shadow: 0 4px 14px rgba(80, 50, 30, 0.1);
   border: 1px solid #ebd8c6;
 }
-.about-chips-grid {
+.about-services-showcase-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 8px;
+}
+.service-showcase-card {
+  background: #f7efe2;
+  border: 1px solid #e6d8c5;
+  border-radius: 8px;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.22s ease;
+  position: relative;
+}
+.service-showcase-card:hover {
+  background: #f0e4d0;
+  border-color: var(--gold);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(139, 30, 30, 0.08);
+}
+.service-showcase-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.service-showcase-num {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+}
+.service-showcase-card h4 {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.35;
+}
+.service-showcase-sub {
+  font-size: 11.5px;
+  color: #7a6353;
+  font-weight: 600;
 }
 
 /* Right: Services List */
@@ -900,20 +941,13 @@ h3 { margin: 0 0 10px; color: var(--brown); }
   .why-features-grid.full-width .why-item-card:last-child {
     grid-column: 1 / -1;
   }
-  .why-features-grid.full-width .why-item-card:last-child p {
-    max-width: 340px;
-    margin: 0 auto;
-  }
   .why-item-card {
-    padding: 16px 12px;
+    padding: 18px 12px;
+    gap: 10px;
   }
   .why-item-card h4 {
-    font-size: 13.5px;
-    margin: 8px 0 4px;
-  }
-  .why-item-card p {
-    font-size: 11.5px;
-    line-height: 1.45;
+    font-size: 14.5px;
+    margin: 0;
   }
   .industry-items-grid { grid-template-columns: repeat(2, 1fr); }
   .product-showcase-grid { grid-template-columns: 1fr 1fr; }
@@ -928,9 +962,16 @@ h3 { margin: 0 0 10px; color: var(--brown); }
     width: 100%;
     margin-top: 10px;
   }
-  .about-chips-grid {
+  .about-services-showcase-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .service-showcase-card {
+    padding: 14px 12px;
     gap: 8px;
+  }
+  .service-showcase-card h4 {
+    font-size: 13.5px;
   }
 }
 
@@ -944,21 +985,18 @@ h3 { margin: 0 0 10px; color: var(--brown); }
     grid-column: 1 / -1;
   }
   .why-item-card {
-    padding: 14px 10px;
+    padding: 16px 10px;
+    gap: 8px;
   }
   .why-item-card h4 {
-    font-size: 13px;
-    margin: 8px 0 4px;
-  }
-  .why-item-card p {
-    font-size: 11px;
-    line-height: 1.4;
+    font-size: 13.5px;
+    margin: 0;
   }
   .industry-items-grid { grid-template-columns: repeat(2, 1fr); }
   .product-showcase-grid { grid-template-columns: 1fr 1fr; }
   .stats-mockup-grid { grid-template-columns: 1fr 1fr; }
   .footer-mockup-grid { grid-template-columns: 1fr; }
-  .about-chips-grid {
+  .about-services-showcase-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
   }
@@ -1389,6 +1427,7 @@ h3 { margin: 0 0 10px; color: var(--brown); }
   padding: 32px;
   box-shadow: 0 6px 24px rgba(107, 70, 54, 0.06);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  scroll-margin-top: 100px;
 }
 
 .service-single-card:hover {
