@@ -51,12 +51,14 @@ export default function Contact() {
               <span>{lang === 'en' ? 'Company Name (EN)' : 'ชื่อบริษัท (อังกฤษ)'}</span>
               <b>{contact.company_name_en || 'DOUNGCHALERN INTER TRADE CO., LTD.'}</b>
             </div>
-            <div className="spec">
-              <span>{lang === 'en' ? 'Registration No.' : 'เลขทะเบียนนิติบุคคล'}</span>
-              <b style={{ color: 'var(--red)', fontWeight: 700 }}>
-                {contact.registration_no || '0135564021737'}
-              </b>
-            </div>
+            {contact.registration_no && (
+              <div className="spec">
+                <span>{lang === 'en' ? 'Registration No.' : 'เลขทะเบียนนิติบุคคล'}</span>
+                <b style={{ color: 'var(--red)', fontWeight: 700 }}>
+                  {contact.registration_no}
+                </b>
+              </div>
+            )}
             <div className="spec">
               <span>{lang === 'en' ? 'Headquarters / Address' : 'ที่อยู่สำนักงาน'}</span>
               <b>{contact.address || '49/203 หมู่ที่ 7 ตำบลคลองสอง อำเภอคลองหลวง จ. ปทุมธานี 12120'}</b>
@@ -90,22 +92,20 @@ export default function Contact() {
                 </a>
               </b>
             </div>
-            <div className="spec">
-              <span>LINE Official</span>
-              <b>
-                {contact.line_id ? (
-                  contact.line_id.startsWith('http') ? (
+            {contact.line_id && (
+              <div className="spec">
+                <span>LINE Official</span>
+                <b>
+                  {contact.line_id.startsWith('http') ? (
                     <a href={contact.line_id} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--red)', textDecoration: 'none', fontWeight: 700 }}>
-                      เพิ่มเพื่อน LINE (@dctfood)
+                      เพิ่มเพื่อน LINE ({contact.line_id})
                     </a>
                   ) : (
                     <span>{contact.line_id}</span>
-                  )
-                ) : (
-                  '@dctfood'
-                )}
-              </b>
-            </div>
+                  )}
+                </b>
+              </div>
+            )}
             {contact.business_hours && (
               <div className="spec">
                 <span>{lang === 'en' ? 'Business Hours' : 'เวลาทำการ'}</span>
