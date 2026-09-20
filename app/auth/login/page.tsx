@@ -97,14 +97,6 @@ export default function AdminLogin() {
       <section className="card login-card">
         <div className="eyebrow">DCT CMS</div>
         <h1>เข้าสู่ระบบผู้ดูแล</h1>
-        <p className="lead">{message}</p>
-
-        <div className="notice notice-info" style={{ marginBottom: '18px', fontSize: '13px', lineHeight: 1.6 }}>
-          💡 <b>ข้อมูลเข้าใช้งานระบบผู้ดูแล (Master Admin):</b><br />
-          • อีเมล: <code>admin@dcintertrade.com</code><br />
-          • รหัสผ่าน: <code>dct2026</code>
-        </div>
-
         <form onSubmit={submit}>
           <label className="login-label">
             อีเมล
@@ -113,7 +105,7 @@ export default function AdminLogin() {
               type="text"
               name="email"
               autoComplete="email"
-              defaultValue="admin@dcintertrade.com"
+              placeholder="อีเมลผู้ดูแลระบบ"
               required
             />
           </label>
@@ -124,7 +116,7 @@ export default function AdminLogin() {
               type="password"
               name="password"
               autoComplete="current-password"
-              defaultValue="dct2026"
+              placeholder="รหัสผ่าน"
               required
             />
           </label>
