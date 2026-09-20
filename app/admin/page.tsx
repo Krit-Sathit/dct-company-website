@@ -46,11 +46,57 @@ export default function Admin() {
   });
 
   useEffect(() => {
+    let localEmail = '';
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('dct_admin_auth');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed?.email) {
+            localEmail = parsed.email;
+          }
+        }
+      } catch {}
+    }
+
     const configured = isSupabaseConfigured();
     setIsConfigured(configured);
 
+    if (localEmail) {
+      setEmail(localEmail);
+      setChecking(false);
+
+      if (configured) {
+        try {
+          const client = supabaseBrowser();
+          Promise.all([
+            client.from('products').select('*', { count: 'exact', head: true }),
+            client.from('categories').select('*', { count: 'exact', head: true }),
+            client.from('services').select('*', { count: 'exact', head: true }),
+            client.from('articles').select('*', { count: 'exact', head: true }),
+            client.from('rfqs').select('*', { count: 'exact', head: true }),
+          ]).then(([
+            { count: prodCount },
+            { count: catCount },
+            { count: srvCount },
+            { count: artCount },
+            { count: rfqCount },
+          ]) => {
+            setStats({
+              products: prodCount || 6,
+              categories: catCount || 3,
+              services: srvCount || 4,
+              articles: artCount || 3,
+              rfqs: rfqCount || 0,
+            });
+          }).catch(() => {});
+        } catch {}
+      }
+      return;
+    }
+
     if (!configured) {
-      setEmail('admin@duangcharoen.com');
+      setEmail('admin@dcintertrade.com');
       setChecking(false);
       return;
     }
@@ -97,8 +143,15 @@ export default function Admin() {
   }, [router]);
 
   async function signOut() {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('dct_admin_auth');
+      } catch {}
+    }
     if (isConfigured) {
-      await supabaseBrowser().auth.signOut();
+      try {
+        await supabaseBrowser().auth.signOut();
+      } catch {}
     }
     router.replace('/auth/login');
   }

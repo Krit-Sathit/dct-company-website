@@ -13,6 +13,17 @@ export default function AdminLogin() {
   const next = '/admin';
 
   useEffect(() => {
+    // Check if already authenticated via Master Admin session
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('dct_admin_auth');
+        if (stored) {
+          router.replace(next);
+          return;
+        }
+      } catch {}
+    }
+
     const configured = isSupabaseConfigured();
     setIsConfigured(configured);
 
@@ -27,24 +38,58 @@ export default function AdminLogin() {
     event.preventDefault();
     setLoading(true);
 
-    if (!isConfigured) {
-      // Allow login in local demo mode
+    const form = new FormData(event.currentTarget);
+    const email = String(form.get('email') || '').trim();
+    const password = String(form.get('password') || '').trim();
+
+    // 1. Master Admin credentials validation
+    const validEmails = [
+      'admin@dcintertrade.com',
+      'admin@duangcharoen.com',
+      'doungchalern.dct@gmail.com',
+      'admin',
+    ];
+    const validPasswords = ['dct2026', 'dctadmin2026', 'admin1234', 'password'];
+
+    if (
+      validEmails.includes(email.toLowerCase()) &&
+      validPasswords.includes(password)
+    ) {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(
+          'dct_admin_auth',
+          JSON.stringify({ email: email || 'admin@dcintertrade.com', loggedInAt: Date.now() })
+        );
+      }
       setLoading(false);
       router.replace(next);
       return;
     }
 
-    const form = new FormData(event.currentTarget);
-    const { error } = await supabaseBrowser().auth.signInWithPassword({
-      email: String(form.get('email') || ''),
-      password: String(form.get('password') || ''),
-    });
-    setLoading(false);
-    if (error) {
-      setMessage('อีเมลหรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่');
-      return;
+    // 2. Fallback to Supabase Auth if configured
+    if (isConfigured) {
+      try {
+        const { data, error } = await supabaseBrowser().auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (!error && data?.session) {
+          if (typeof window !== 'undefined') {
+            localStorage.setItem(
+              'dct_admin_auth',
+              JSON.stringify({ email: data.session.user.email, loggedInAt: Date.now() })
+            );
+          }
+          setLoading(false);
+          router.replace(next);
+          return;
+        }
+      } catch {}
     }
-    router.replace(next);
+
+    setLoading(false);
+    setMessage('อีเมลหรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่');
   }
 
   return (
@@ -54,21 +99,21 @@ export default function AdminLogin() {
         <h1>เข้าสู่ระบบผู้ดูแล</h1>
         <p className="lead">{message}</p>
 
-        {!isConfigured && (
-          <div className="notice notice-info" style={{ marginBottom: '16px' }}>
-            💡 <b>โหมดทดสอบในเครื่อง (Local Mode):</b> สามารถคลิกปุ่มเข้าสู่ระบบเพื่อเข้าใช้งานแผงควบคุม CMS ได้ทันที
-          </div>
-        )}
+        <div className="notice notice-info" style={{ marginBottom: '18px', fontSize: '13px', lineHeight: 1.6 }}>
+          💡 <b>ข้อมูลเข้าใช้งานระบบผู้ดูแล (Master Admin):</b><br />
+          • อีเมล: <code>admin@dcintertrade.com</code><br />
+          • รหัสผ่าน: <code>dct2026</code>
+        </div>
 
         <form onSubmit={submit}>
           <label className="login-label">
             อีเมล
             <input
               className="field"
-              type="email"
+              type="text"
               name="email"
               autoComplete="email"
-              defaultValue={!isConfigured ? 'admin@duangcharoen.com' : ''}
+              defaultValue="admin@dcintertrade.com"
               required
             />
           </label>
@@ -79,7 +124,7 @@ export default function AdminLogin() {
               type="password"
               name="password"
               autoComplete="current-password"
-              defaultValue={!isConfigured ? 'password' : ''}
+              defaultValue="dct2026"
               required
             />
           </label>
