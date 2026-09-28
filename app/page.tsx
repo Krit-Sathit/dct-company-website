@@ -382,7 +382,7 @@ export default function Home() {
                 <div
                   className="standards-photo"
                   style={{
-                    backgroundImage: `url('https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=1000&q=85')`,
+                    backgroundImage: `url('/standards-factory.jpg')`,
                   }}
                 />
               </div>
