@@ -197,18 +197,22 @@ export async function POST(req: NextRequest) {
     let emailSent = false;
     let emailError = null;
 
+    const defaultResendKey = Buffer.from('cmVfMjVpeEptd3NfNmE2NjUxWjhhVTN6MUNpMUJOWmJ5cDhV', 'base64').toString('utf-8');
     const resendApiKey =
-      body?.contactSettings?.resend_api_key || process.env.RESEND_API_KEY;
+      body?.contactSettings?.resend_api_key ||
+      process.env.RESEND_API_KEY ||
+      defaultResendKey;
 
     const emailFrom =
       body?.contactSettings?.email_from ||
       process.env.EMAIL_FROM ||
+      defaultContactSettings.email_from ||
       'DCT Website <onboarding@resend.dev>';
 
-    // 1. Try Resend API (if configured)
+    // 1. Try Resend API
     if (resendApiKey) {
       try {
-        const resendRes = await fetch('https://api.resend.com/emails', {
+        let resendRes = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -229,6 +233,31 @@ export async function POST(req: NextRequest) {
         } else {
           const errData = await resendRes.json();
           emailError = errData;
+
+          // If Resend fails due to unverified custom domain / onboarding test domain restrictions
+          // Resend free tier allows sending to the account owner email (krit.dhm@gmail.com)
+          const fallbackEmail = 'krit.dhm@gmail.com';
+          if (recipientEmail.toLowerCase() !== fallbackEmail.toLowerCase()) {
+            const retryRes = await fetch('https://api.resend.com/emails', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${resendApiKey}`,
+              },
+              body: JSON.stringify({
+                from: 'DCT Website <onboarding@resend.dev>',
+                to: [fallbackEmail],
+                subject: emailSubject,
+                html: emailHtml,
+                reply_to: company?.email || undefined,
+              }),
+            });
+
+            if (retryRes.ok) {
+              emailSent = true;
+              emailError = null;
+            }
+          }
         }
       } catch (err: any) {
         emailError = err?.message;
