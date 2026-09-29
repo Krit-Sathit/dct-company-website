@@ -197,17 +197,25 @@ export async function POST(req: NextRequest) {
     let emailSent = false;
     let emailError = null;
 
+    const resendApiKey =
+      body?.contactSettings?.resend_api_key || process.env.RESEND_API_KEY;
+
+    const emailFrom =
+      body?.contactSettings?.email_from ||
+      process.env.EMAIL_FROM ||
+      'DCT Website <onboarding@resend.dev>';
+
     // 1. Try Resend API (if configured)
-    if (process.env.RESEND_API_KEY) {
+    if (resendApiKey) {
       try {
         const resendRes = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+            Authorization: `Bearer ${resendApiKey}`,
           },
           body: JSON.stringify({
-            from: process.env.EMAIL_FROM || 'DCT Website <sales@dcintertrade.com>',
+            from: emailFrom,
             to: [recipientEmail],
             cc: ccEmails.length > 0 ? ccEmails : undefined,
             subject: emailSubject,

@@ -11,6 +11,8 @@ export type ContactSettings = {
   phone_secondary: string;
   email: string;
   email_cc?: string;
+  resend_api_key?: string;
+  email_from?: string;
   website?: string;
   line_id: string;
   business_hours: string;
@@ -41,6 +43,8 @@ export const defaultContactSettings: ContactSettings = {
   phone_secondary: '',
   email: 'sales@dcintertrade.com',
   email_cc: '',
+  resend_api_key: '',
+  email_from: '',
   website: 'www.dcintertrade.com',
   line_id: '',
   business_hours: 'จันทร์ - เสาร์: 08:00 - 17:00 น.',

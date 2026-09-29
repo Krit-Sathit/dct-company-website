@@ -195,6 +195,38 @@ export function CmsSettings() {
                   placeholder="เช่น @dctfood หรือ https://line.me/ti/p/..."
                 />
               </label>
+
+              <div style={{ marginTop: '16px', padding: '14px', background: '#faf4ec', borderRadius: '6px', border: '1px solid #ebd8c6' }}>
+                <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#8B1E1E', marginBottom: '8px' }}>
+                  🔑 ตั้งค่าระบบส่งอีเมลอัตโนมัติ (Resend API)
+                </div>
+                <label className="login-label" style={{ marginBottom: '10px' }}>
+                  Resend API Key
+                  <input
+                    className="field"
+                    type="password"
+                    value={contact.resend_api_key || ''}
+                    onChange={(e) => handleContactChange('resend_api_key', e.target.value)}
+                    placeholder="เช่น re_123456789..."
+                  />
+                  <span style={{ fontSize: '11.5px', color: '#7a6557', marginTop: '3px', display: 'block', fontWeight: 'normal' }}>
+                    สร้างได้จากเมนู API keys ใน Resend (นำคีย์ <code>re_...</code> มาใส่ที่นี่เพื่อเปิดใช้ระบบส่งอีเมลทันที)
+                  </span>
+                </label>
+
+                <label className="login-label" style={{ marginBottom: 0 }}>
+                  อีเมลผู้ส่ง (Sender Email / From)
+                  <input
+                    className="field"
+                    value={contact.email_from || ''}
+                    onChange={(e) => handleContactChange('email_from', e.target.value)}
+                    placeholder="เช่น onboarding@resend.dev หรือ DCT <sales@dcintertrade.com>"
+                  />
+                  <span style={{ fontSize: '11.5px', color: '#7a6557', marginTop: '3px', display: 'block', fontWeight: 'normal' }}>
+                    หากยังไม่ได้ผูกโดเมนใน Resend ให้ใช้ <code>onboarding@resend.dev</code> (ส่งเข้าอีเมลบัญชีเจ้าของ Resend ได้ทันที)
+                  </span>
+                </label>
+              </div>
             </div>
 
             <div className="settings-col">
