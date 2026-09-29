@@ -15,6 +15,7 @@ export default function RFQ() {
   const [submitting, setSubmitting] = useState(false);
   const [doneRef, setDoneRef] = useState('');
   const [showCatalogModal, setShowCatalogModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [catalogSearch, setCatalogSearch] = useState('');
 
   // Form State
@@ -40,17 +41,20 @@ export default function RFQ() {
     pdpaConsent: false,
   });
 
-  const nextStep = () => {
+  const handleOpenConfirm = () => {
     if (!companyData.companyName || !companyData.contactName || !companyData.phone || !companyData.email) {
       alert('กรุณากรอกข้อมูลบริษัท ชื่อผู้ติดต่อ เบอร์โทรศัพท์ และอีเมลให้ครบถ้วน');
       return;
     }
     if (!specData.pdpaConsent) {
-      alert('กรุณาทำเครื่องหมายยินยอมให้นำข้อมูลไปใช้เพื่อติดต่อและจัดทำใบเสนอราคา');
+      alert('กรุณาทำเครื่องหมายยินยอมให้นำข้อมูลไปใช้เพื่อติดต่อและจัดทำใบเสนอราคา (PDPA)');
       return;
     }
-    setCurrentStep(2);
-    window.scrollTo({ top: 120, behavior: 'smooth' });
+    setShowConfirmModal(true);
+  };
+
+  const nextStep = () => {
+    handleOpenConfirm();
   };
 
   const prevStep = () => {
@@ -136,6 +140,7 @@ export default function RFQ() {
       localStorage.setItem('dct-rfq-submissions', JSON.stringify([submissionPayload, ...saved]));
     }
 
+    setShowConfirmModal(false);
     setDoneRef(ref);
     clear();
     setSubmitting(false);
@@ -851,6 +856,129 @@ export default function RFQ() {
                 onClick={() => setShowCatalogModal(false)}
               >
                 {lang === 'en' ? 'Done' : 'เสร็จสิ้น'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          MODAL: กล่อง Pop up ยืนยันการส่งคำขอใบเสนอราคาตรงกลางหน้าจอ
+          ========================================================================= */}
+      {showConfirmModal && (
+        <div
+          className="cert-modal-backdrop"
+          onClick={() => !submitting && setShowConfirmModal(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0, 0, 0, 0.68)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+            backdropFilter: 'blur(4px)',
+          }}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              padding: '28px 30px',
+              borderRadius: '12px',
+              maxWidth: '580px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              position: 'relative',
+              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.3)',
+              border: '1px solid #ebd8c6',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #8B1E1E', paddingBottom: '12px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '24px' }}>📑</span>
+                <h3 style={{ margin: 0, color: '#8B1E1E', fontSize: '19px', fontWeight: 'bold' }}>
+                  {lang === 'en' ? 'Confirm Quote Request' : 'ยืนยันการส่งคำขอใบเสนอราคา'}
+                </h3>
+              </div>
+              {!submitting && (
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmModal(false)}
+                  style={{ background: 'none', border: 'none', fontSize: '22px', cursor: 'pointer', color: '#888' }}
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
+            {/* Modal Description */}
+            <p style={{ fontSize: '14px', color: '#555', marginTop: 0, marginBottom: '16px', lineHeight: 1.6 }}>
+              {lang === 'en'
+                ? 'Please review your details before confirming your quotation request to DCT Sales Team:'
+                : 'โปรดตรวจสอบความถูกต้องของข้อมูลก่อนกดยืนยันส่งให้ทีมฝ่ายขาย DCT:'}
+            </p>
+
+            {/* Summary Box */}
+            <div style={{ background: '#fdfbf7', border: '1px solid #eadfd4', borderRadius: '8px', padding: '16px', marginBottom: '18px', fontSize: '13.5px', lineHeight: 1.8 }}>
+              <div>🏢 <b>{lang === 'en' ? 'Company:' : 'ชื่อบริษัท/ร้านค้า:'}</b> {companyData.companyName}</div>
+              <div>👤 <b>{lang === 'en' ? 'Contact Person:' : 'ชื่อผู้ติดต่อ:'}</b> {companyData.contactName} {companyData.position ? `(${companyData.position})` : ''}</div>
+              <div>📞 <b>{lang === 'en' ? 'Phone:' : 'เบอร์โทรศัพท์:'}</b> <span style={{ color: '#8B1E1E', fontWeight: 'bold' }}>{companyData.phone}</span></div>
+              <div>✉️ <b>{lang === 'en' ? 'Email:' : 'อีเมล:'}</b> {companyData.email}</div>
+              {companyData.lineId && <div>💬 <b>LINE ID:</b> {companyData.lineId}</div>}
+              {specData.deliveryLocation && <div>🚚 <b>{lang === 'en' ? 'Delivery Location:' : 'สถานที่ส่งมอบ:'}</b> {specData.deliveryLocation}</div>}
+              {specData.orderFrequency && <div>🔄 <b>{lang === 'en' ? 'Frequency:' : 'ความถี่:'}</b> {specData.orderFrequency}</div>}
+              {specData.additionalNotes && <div>📝 <b>{lang === 'en' ? 'Notes:' : 'หมายเหตุ:'}</b> {specData.additionalNotes}</div>}
+
+              {/* Selected items list */}
+              <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed #ded4c8' }}>
+                <b style={{ fontSize: '14px', color: '#8B1E1E' }}>
+                  🥩 {lang === 'en' ? `Selected Products (${items.length} items):` : `รายการสินค้าที่เลือก (${items.length} รายการ):`}
+                </b>
+                {items.length === 0 ? (
+                  <div style={{ color: '#888', fontStyle: 'italic', marginTop: '4px' }}>
+                    {lang === 'en' ? 'No items selected (detailed in notes)' : 'ไม่ได้เลือกจากแคตตาล็อก (ระบุในหมายเหตุ)'}
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
+                    {items.map((i, idx) => (
+                      <div key={i.product.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px', background: '#fff', padding: '6px 10px', borderRadius: '4px', border: '1px solid #ebd8c6' }}>
+                        <span>
+                          <b>{idx + 1}. {lang === 'en' && i.product.nameEn ? i.product.nameEn : i.product.name}</b>
+                          {i.note && <span style={{ color: '#777', fontSize: '12px' }}> ({i.note})</span>}
+                        </span>
+                        <b style={{ color: '#8B1E1E', whiteSpace: 'nowrap', marginLeft: '10px' }}>
+                          {i.qty} {i.unit}
+                        </b>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '20px', paddingTop: '16px', borderTop: '1px solid #eee' }}>
+              <button
+                type="button"
+                className="button secondary"
+                onClick={() => setShowConfirmModal(false)}
+                disabled={submitting}
+                style={{ minWidth: '110px', fontSize: '14px', padding: '10px 18px' }}
+              >
+                {lang === 'en' ? '✕ Cancel' : '✕ ยกเลิก'}
+              </button>
+              <button
+                type="button"
+                className="button"
+                onClick={handleSubmit}
+                disabled={submitting}
+                style={{ minWidth: '170px', fontSize: '14px', padding: '10px 22px', background: '#8B1E1E', color: '#fff', fontWeight: 'bold' }}
+              >
+                {submitting ? (lang === 'en' ? '⏳ Sending…' : '⏳ กำลังส่งข้อมูล…') : (lang === 'en' ? '✓ Confirm & Send' : '✓ ยืนยันส่งข้อมูล')}
               </button>
             </div>
           </div>
