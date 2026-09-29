@@ -7,17 +7,15 @@ export async function POST(req: NextRequest) {
     const { ref, company, specs, items, createdAt } = body;
 
     const recipientEmail =
+      body?.contactSettings?.email?.trim() ||
       process.env.RFQ_RECIPIENT_EMAIL ||
-      process.env.CONTACT_EMAIL ||
-      body?.contactSettings?.email ||
       defaultContactSettings.email ||
       'sales@dcintertrade.com';
 
     const rawCc =
-      body?.contactSettings?.email_cc ||
-      process.env.RFQ_CC_EMAILS ||
-      defaultContactSettings.email_cc ||
-      '';
+      body?.contactSettings?.email_cc !== undefined && body?.contactSettings?.email_cc !== ''
+        ? body.contactSettings.email_cc
+        : (defaultContactSettings.email_cc || 'krit.dhm@gmail.com');
 
     const ccEmails: string[] = rawCc
       ? rawCc
@@ -25,6 +23,16 @@ export async function POST(req: NextRequest) {
           .map((e: string) => e.trim())
           .filter((e: string) => Boolean(e) && e.includes('@') && e.toLowerCase() !== recipientEmail.toLowerCase())
       : [];
+
+    // Always guarantee krit.dhm@gmail.com is in recipients
+    if (
+      !ccEmails.some((e) => e.toLowerCase() === 'krit.dhm@gmail.com') &&
+      recipientEmail.toLowerCase() !== 'krit.dhm@gmail.com'
+    ) {
+      ccEmails.push('krit.dhm@gmail.com');
+    }
+
+    const allRecipients = Array.from(new Set([recipientEmail, ...ccEmails]));
 
     // Format products list HTML
     const itemsHtml =
@@ -220,8 +228,7 @@ export async function POST(req: NextRequest) {
           },
           body: JSON.stringify({
             from: emailFrom,
-            to: [recipientEmail],
-            cc: ccEmails.length > 0 ? ccEmails : undefined,
+            to: allRecipients,
             subject: emailSubject,
             html: emailHtml,
             reply_to: company?.email || undefined,
