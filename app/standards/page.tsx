@@ -1,6 +1,86 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { supabaseBrowser, isSupabaseConfigured } from '@/lib/supabase-browser';
+
+type CertificateItem = {
+  id?: string;
+  name: string;
+  description?: string;
+  document_url?: string;
+  active?: boolean;
+};
+
+const defaultCerts: CertificateItem[] = [
+  {
+    name: 'GHP Certified',
+    description: 'มาตรฐานสุขลักษณะที่ดีในกระบวนการผลิตอาหาร การจัดการสิ่งแวดล้อม และสุขอนามัยส่วนบุคคลของผู้ปฏิบัติงาน',
+    document_url: '',
+    active: true,
+  },
+  {
+    name: 'HACCP Standard',
+    description: 'ระบบการจัดการความปลอดภัยของอาหาร วิเคราะห์อันตรายและควบคุมจุดวิกฤตตลอดห่วงโซ่การผลิต',
+    document_url: '',
+    active: true,
+  },
+  {
+    name: 'อย. และ ปศุสัตว์ OK',
+    description: 'การรับรองมาตรฐานสถานที่ผลิตและตัดแต่งเนื้อสัตว์จาก อย. และกรมปศุสัตว์ ปลอดสารเร่งเนื้อแดง',
+    document_url: '',
+    active: true,
+  },
+];
 
 export default function Standards() {
+  const [certs, setCerts] = useState<CertificateItem[]>(defaultCerts);
+  const [previewDoc, setPreviewDoc] = useState<{ name: string; url: string } | null>(null);
+
+  useEffect(() => {
+    async function loadCertificates() {
+      let loaded: CertificateItem[] = [];
+
+      // 1. Try Supabase
+      if (isSupabaseConfigured()) {
+        try {
+          const client = supabaseBrowser();
+          const { data, error } = await client
+            .from('certificates')
+            .select('*')
+            .eq('active', true);
+
+          if (!error && data && data.length > 0) {
+            loaded = data;
+          }
+        } catch {
+          // ignore
+        }
+      }
+
+      // 2. Try LocalStorage CMS cache
+      if (loaded.length === 0 && typeof window !== 'undefined') {
+        try {
+          const cached = localStorage.getItem('dct_cms_certificates');
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              loaded = parsed.filter((c: any) => c.active !== false);
+            }
+          }
+        } catch {
+          // ignore
+        }
+      }
+
+      if (loaded.length > 0) {
+        setCerts(loaded);
+      }
+    }
+
+    void loadCertificates();
+  }, []);
+
   const processes = [
     {
       num: '01',
@@ -25,29 +105,6 @@ export default function Standards() {
       title: 'Delivery',
       headline: 'การขนส่งแบบ Cold Chain',
       desc: 'กระจายสินค้าด้วยรถห้องเย็นปรับอุณหภูมิ เพื่อรักษาคุณภาพ ความสด และสุขอนามัยจนถึงมือลูกค้า',
-    },
-  ];
-
-  const certs = [
-    {
-      title: 'GHP',
-      subtitle: 'Good Hygiene Practices',
-      desc: 'มาตรฐานสุขลักษณะที่ดีในกระบวนการผลิตอาหาร การจัดการสิ่งแวดล้อม และสุขอนามัยส่วนบุคคลของผู้ปฏิบัติงาน',
-    },
-    {
-      title: 'HACCP',
-      subtitle: 'Hazard Analysis and Critical Control Points',
-      desc: 'ระบบการจัดการความปลอดภัยของอาหาร วิเคราะห์อันตรายและควบคุมจุดวิกฤตตลอดห่วงโซ่การผลิต',
-    },
-    {
-      title: 'อย.',
-      subtitle: 'Food and Drug Administration',
-      desc: 'การรับรองมาตรฐานสถานที่ผลิตและตัดแต่งเนื้อสัตว์จากสำนักงานคณะกรรมการอาหารและยา กระทรวงสาธารณสุข',
-    },
-    {
-      title: 'ปศุสัตว์ OK',
-      subtitle: 'Department of Livestock Development',
-      desc: 'มาตรฐานสถานที่จำหน่ายและตัดแต่งเนื้อสัตว์ปลอดภัย ไร้สารตกค้าง จากกรมปศุสัตว์',
     },
   ];
 
@@ -94,13 +151,68 @@ export default function Standards() {
             โครงสร้างมาตรฐานที่รับประกันความสะอาด ความปลอดภัย และความสม่ำเสมอของวัตถุดิบสำหรับธุรกิจ
           </p>
 
-          <div className="grid four" style={{ marginTop: '32px' }}>
-            {certs.map((c) => (
-              <div className="card" key={c.title} style={{ borderTop: '3px solid var(--red)' }}>
-                <div className="num">CERTIFICATION</div>
-                <h3 style={{ fontSize: '24px', margin: '4px 0 2px', color: 'var(--red)' }}>{c.title}</h3>
-                <div style={{ fontSize: '12px', color: 'var(--gold)', fontWeight: 600, marginBottom: '10px' }}>{c.subtitle}</div>
-                <p className="small" style={{ color: '#6e584a' }}>{c.desc}</p>
+          <div className="grid three" style={{ marginTop: '32px' }}>
+            {certs.map((c, idx) => (
+              <div
+                className="card"
+                key={c.id || idx}
+                style={{
+                  borderTop: '4px solid var(--red)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  background: '#ffffff',
+                }}
+              >
+                <div>
+                  <div className="num">CERTIFICATION {idx + 1}</div>
+                  <h3 style={{ fontSize: '22px', margin: '6px 0 8px', color: 'var(--red)' }}>{c.name}</h3>
+                  <p className="small" style={{ color: '#6e584a', lineHeight: 1.65, marginBottom: '16px' }}>
+                    {c.description}
+                  </p>
+                </div>
+
+                {c.document_url ? (
+                  <div style={{ marginTop: '14px', borderTop: '1px solid #eee', paddingTop: '12px' }}>
+                    <div
+                      style={{
+                        position: 'relative',
+                        borderRadius: '6px',
+                        overflow: 'hidden',
+                        border: '1px solid #ebd8c6',
+                        cursor: 'pointer',
+                        background: '#faf6f0',
+                        textAlign: 'center',
+                        padding: '8px',
+                      }}
+                      onClick={() => setPreviewDoc({ name: c.name, url: c.document_url! })}
+                    >
+                      <img
+                        src={c.document_url}
+                        alt={c.name}
+                        style={{ maxHeight: '180px', width: 'auto', margin: '0 auto', display: 'block', borderRadius: '4px' }}
+                      />
+                      <div
+                        style={{
+                          marginTop: '8px',
+                          fontSize: '12px',
+                          color: 'var(--red)',
+                          fontWeight: 700,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '4px',
+                        }}
+                      >
+                        🔍 คลิกเพื่อดูเอกสารรับรองฉบับเต็ม
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ marginTop: '12px', fontSize: '12px', color: '#888', fontStyle: 'italic' }}>
+                    ✓ ผ่านการรับรองมาตรฐานสากล
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -114,9 +226,6 @@ export default function Standards() {
                 <p style={{ margin: 0, color: '#6e584a', lineHeight: 1.7 }}>
                   วัตถุดิบเนื้อสุกรทุกล็อตมาจากแหล่งที่สามารถตรวจสอบย้อนกลับได้ (Traceable Origin) พร้อมระบบบันทึกและควบคุมกระบวนการตั้งแต่วัตถุดิบต้นทาง การตัดแต่ง จนถึงการจัดเก็บในห้องเย็นเพื่อความโปร่งใสและมั่นใจสูงสุด
                 </p>
-                <div className="stat-tbc" style={{ marginTop: '8px', color: '#9e8c80' }}>
-                  * หมายเหตุ: แสดง Certificate / เอกสารรับรองฉบับจริงเมื่อได้รับการยืนยันและอัปโหลดจากบริษัท
-                </div>
               </div>
             </div>
           </div>
@@ -128,6 +237,54 @@ export default function Standards() {
           </div>
         </div>
       </section>
+
+      {/* Lightbox Modal for Certificate Preview */}
+      {previewDoc && (
+        <div
+          className="cert-modal-backdrop"
+          onClick={() => setPreviewDoc(null)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.75)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+          }}
+        >
+          <div
+            style={{
+              background: '#fff',
+              padding: '20px',
+              borderRadius: '8px',
+              maxWidth: '700px',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              position: 'relative',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
+              <h3 style={{ margin: 0, color: 'var(--red)', fontSize: '18px' }}>🏅 เอกสารรับรอง: {previewDoc.name}</h3>
+              <button
+                type="button"
+                onClick={() => setPreviewDoc(null)}
+                style={{ background: 'none', border: 'none', fontSize: '22px', cursor: 'pointer', color: '#888' }}
+              >
+                ✕
+              </button>
+            </div>
+            <img
+              src={previewDoc.url}
+              alt={previewDoc.name}
+              style={{ width: '100%', height: 'auto', display: 'block', borderRadius: '4px' }}
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 }
