@@ -46,7 +46,52 @@ export function CmsRfq() {
     setLoading(true);
     let list: Rfq[] = [];
 
-    // 1. Try Supabase
+    // Helper to format any RFQ source into Rfq structure
+    function parseRfq(item: any, fallbackId?: string): Rfq {
+      const comp = item.company || {};
+      const cust = item.customer || {};
+      const specs = item.specs || {};
+
+      return {
+        id: item.id || item.ref || item.reference || fallbackId || `rfq-${Math.random()}`,
+        reference: item.reference || item.ref || 'RFQ',
+        status: item.status === 'ใหม่' ? 'new' : item.status || 'new',
+        company_name: item.company_name || comp.companyName || cust.company || 'ไม่ระบุ',
+        contact_name: item.contact_name || comp.contactName || cust.name || 'ไม่ระบุ',
+        phone: item.phone || comp.phone || cust.phone || '-',
+        email: item.email || comp.email || cust.email || '-',
+        line_id: item.line_id || comp.lineId || cust.line || '',
+        address: item.address || specs.deliveryLocation || cust.address || '',
+        notes:
+          item.notes ||
+          [specs.orderFrequency, specs.additionalNotes].filter(Boolean).join(' | ') ||
+          cust.detail ||
+          '',
+        created_at: item.created_at || item.createdAt || new Date().toISOString(),
+        items: (item.items || item.rfq_items || []).map((i: any) => ({
+          product_name: i.product_name || i.name || i.product?.name || 'สินค้า',
+          sku: i.sku || i.code || i.product?.code || '',
+          quantity: i.quantity || i.qty || 1,
+          unit: i.unit || 'กก.',
+          note: i.note || i.spec_note || '',
+        })),
+      };
+    }
+
+    // 1. Try Server API /api/rfq
+    try {
+      const res = await fetch('/api/rfq', { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        if (Array.isArray(json)) {
+          list = json.map((r: any, idx: number) => parseRfq(r, `api-${idx}`));
+        }
+      }
+    } catch {
+      // ignore
+    }
+
+    // 2. Try Supabase
     try {
       const client = supabaseBrowser();
       const { data: dbRfqs, error } = await client
@@ -55,46 +100,35 @@ export function CmsRfq() {
         .order('created_at', { ascending: false });
 
       if (!error && dbRfqs && dbRfqs.length > 0) {
-        list = dbRfqs.map((r: any) => ({
-          ...r,
-          items: r.rfq_items || [],
-        }));
+        const existingRefs = new Set(list.map((r) => r.reference));
+        for (const r of dbRfqs) {
+          const parsed = parseRfq({ ...r, items: r.rfq_items || [] });
+          if (!existingRefs.has(parsed.reference)) {
+            list.push(parsed);
+          }
+        }
       }
     } catch {
       // ignore
     }
 
-    // 2. Load local submissions as well if any
+    // 3. Load local submissions as well
     if (typeof window !== 'undefined') {
       try {
         const localSaved = JSON.parse(localStorage.getItem('dct-rfq-submissions') || '[]');
         if (Array.isArray(localSaved)) {
-          const formattedLocal: Rfq[] = localSaved.map((item: any, idx: number) => ({
-            id: item.ref || `local-${idx}`,
-            reference: item.ref,
-            status: item.status === 'ใหม่' ? 'new' : item.status || 'new',
-            company_name: item.customer?.company || 'ไม่ระบุ',
-            contact_name: item.customer?.name || 'ไม่ระบุ',
-            phone: item.customer?.phone || '-',
-            email: item.customer?.email || '-',
-            line_id: item.customer?.line || '',
-            address: item.customer?.address || '',
-            notes: item.customer?.detail || '',
-            created_at: item.createdAt,
-            items: (item.items || []).map((i: any) => ({
-              product_name: i.product?.name || 'สินค้า',
-              sku: i.product?.code || '',
-              quantity: i.qty || 1,
-              unit: i.unit || 'กก.',
-              note: i.note || '',
-            })),
-          }));
-
-          // Merge without duplicate references
           const existingRefs = new Set(list.map((r) => r.reference));
-          for (const loc of formattedLocal) {
-            if (!existingRefs.has(loc.reference)) {
-              list.push(loc);
+          for (let idx = 0; idx < localSaved.length; idx++) {
+            const loc = localSaved[idx];
+            const parsed = parseRfq(loc, `local-${idx}`);
+            if (!existingRefs.has(parsed.reference)) {
+              list.push(parsed);
+            } else {
+              // Replace placeholder item with full local details if needed
+              const index = list.findIndex((r) => r.reference === parsed.reference);
+              if (index !== -1 && list[index].company_name === 'ไม่ระบุ' && parsed.company_name !== 'ไม่ระบุ') {
+                list[index] = parsed;
+              }
             }
           }
         }

@@ -1,10 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { defaultContactSettings } from '@/lib/settings';
 
+// In-memory server cache for submitted RFQs across all clients
+let serverRfqs: any[] = [];
+
+export async function GET() {
+  return NextResponse.json(serverRfqs);
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { ref, company, specs, items, createdAt } = body;
+
+    // Save to in-memory server cache
+    if (ref) {
+      serverRfqs = [
+        {
+          id: ref,
+          reference: ref,
+          status: 'new',
+          company,
+          specs,
+          items,
+          createdAt: createdAt || new Date().toISOString(),
+        },
+        ...serverRfqs.filter((r) => r.reference !== ref && r.id !== ref),
+      ].slice(0, 100);
+    }
 
     const recipientEmail =
       body?.contactSettings?.email?.trim() ||
