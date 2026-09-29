@@ -115,10 +115,9 @@ export const resources: Record<string, Resource> = {
       { key: 'active', label: 'เปิดแสดงผล', type: 'checkbox' },
     ],
     defaultList: () => [
-      { id: 'cert-1', name: 'GHP (Good Hygiene Practice)', description: 'มาตรฐานสุขลักษณะที่ดีในการผลิตอาหาร', active: true },
-      { id: 'cert-2', name: 'HACCP', description: 'ระบบการวิเคราะห์อันตรายและจุดวิกฤตที่ต้องควบคุม', active: true },
-      { id: 'cert-3', name: 'อย. (สำนักงานคณะกรรมการอาหารและยา)', description: 'การขึ้นทะเบียนและมาตรฐานความปลอดภัยทางอาหาร', active: true },
-      { id: 'cert-4', name: 'ปศุสัตว์ OK', description: 'มาตรฐานสถานที่จำหน่ายเนื้อสัตว์ที่ถูกสุขลักษณะจากกรมปศุสัตว์', active: true },
+      { id: 'cert-1', name: 'GHP Certified (Good Hygiene Practices)', description: 'มาตรฐานสุขลักษณะที่ดีในกระบวนการผลิตอาหาร ได้รับการรับรองโดย Intertek', document_url: '/certificates/ghp-intertek-cert.jpg', active: true },
+      { id: 'cert-2', name: 'HACCP Standard', description: 'ระบบการจัดการความปลอดภัยของอาหาร วิเคราะห์อันตรายและควบคุมจุดวิกฤตตลอดห่วงโซ่การผลิต ได้รับการรับรองโดย Intertek', document_url: '/certificates/ghp-intertek-cert.jpg', active: true },
+      { id: 'cert-3', name: 'อย. และ ปศุสัตว์ OK', description: 'การรับรองมาตรฐานสถานที่ผลิตและตัดแต่งเนื้อสัตว์จาก อย. และกรมปศุสัตว์ ปลอดสารเร่งเนื้อแดง', document_url: '', active: true },
     ],
   },
   articles: {

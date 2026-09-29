@@ -14,15 +14,15 @@ type CertificateItem = {
 
 const defaultCerts: CertificateItem[] = [
   {
-    name: 'GHP Certified',
-    description: 'มาตรฐานสุขลักษณะที่ดีในกระบวนการผลิตอาหาร การจัดการสิ่งแวดล้อม และสุขอนามัยส่วนบุคคลของผู้ปฏิบัติงาน',
-    document_url: '',
+    name: 'GHP Certified (Good Hygiene Practices)',
+    description: 'มาตรฐานสุขลักษณะที่ดีในกระบวนการผลิตอาหาร การจัดการสิ่งแวดล้อม และสุขอนามัยส่วนบุคคลของผู้ปฏิบัติงาน ได้รับการรับรองโดย Intertek',
+    document_url: '/certificates/ghp-intertek-cert.jpg',
     active: true,
   },
   {
     name: 'HACCP Standard',
-    description: 'ระบบการจัดการความปลอดภัยของอาหาร วิเคราะห์อันตรายและควบคุมจุดวิกฤตตลอดห่วงโซ่การผลิต',
-    document_url: '',
+    description: 'ระบบการจัดการความปลอดภัยของอาหาร วิเคราะห์อันตรายและควบคุมจุดวิกฤตตลอดห่วงโซ่การผลิต ครอบคลุมการตัดแต่งและแช่เยือกแข็ง ได้รับการรับรองโดย Intertek',
+    document_url: '/certificates/ghp-intertek-cert.jpg',
     active: true,
   },
   {
@@ -74,7 +74,14 @@ export default function Standards() {
       }
 
       if (loaded.length > 0) {
-        setCerts(loaded);
+        setCerts(
+          loaded.map((c) => {
+            if (!c.document_url && (c.name.includes('GHP') || c.name.includes('HACCP'))) {
+              return { ...c, document_url: '/certificates/ghp-intertek-cert.jpg' };
+            }
+            return c;
+          })
+        );
       }
     }
 
