@@ -6,6 +6,7 @@ import { useCart } from '@/components/site';
 import { products as allProducts } from '@/lib/data';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 import { useLanguage } from '@/lib/language';
+import { getContactSettings } from '@/lib/settings';
 
 export default function RFQ() {
   const { lang, t } = useLanguage();
@@ -116,10 +117,14 @@ export default function RFQ() {
 
     // 2. Send Email Notification via /api/rfq
     try {
+      const contactSettings = await getContactSettings();
       await fetch('/api/rfq', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(submissionPayload),
+        body: JSON.stringify({
+          ...submissionPayload,
+          contactSettings,
+        }),
       });
     } catch {
       // Graceful fallback

@@ -9,8 +9,22 @@ export async function POST(req: NextRequest) {
     const recipientEmail =
       process.env.RFQ_RECIPIENT_EMAIL ||
       process.env.CONTACT_EMAIL ||
+      body?.contactSettings?.email ||
       defaultContactSettings.email ||
       'sales@dcintertrade.com';
+
+    const rawCc =
+      body?.contactSettings?.email_cc ||
+      process.env.RFQ_CC_EMAILS ||
+      defaultContactSettings.email_cc ||
+      '';
+
+    const ccEmails: string[] = rawCc
+      ? rawCc
+          .split(',')
+          .map((e: string) => e.trim())
+          .filter((e: string) => Boolean(e) && e.includes('@') && e.toLowerCase() !== recipientEmail.toLowerCase())
+      : [];
 
     // Format products list HTML
     const itemsHtml =
@@ -195,6 +209,7 @@ export async function POST(req: NextRequest) {
           body: JSON.stringify({
             from: process.env.EMAIL_FROM || 'DCT Website <sales@dcintertrade.com>',
             to: [recipientEmail],
+            cc: ccEmails.length > 0 ? ccEmails : undefined,
             subject: emailSubject,
             html: emailHtml,
             reply_to: company?.email || undefined,
@@ -224,6 +239,7 @@ export async function POST(req: NextRequest) {
             specs,
             items,
             recipient: recipientEmail,
+            cc: ccEmails,
             createdAt,
           }),
         });
@@ -237,10 +253,11 @@ export async function POST(req: NextRequest) {
       success: true,
       ref,
       recipient: recipientEmail,
+      cc: ccEmails,
       emailSent,
       error: emailError,
       message: emailSent
-        ? `ส่งข้อมูลคำขอราคาไปยัง ${recipientEmail} เรียบร้อยแล้ว`
+        ? `ส่งข้อมูลคำขอราคาไปยัง ${recipientEmail}${ccEmails.length > 0 ? ` (CC: ${ccEmails.join(', ')})` : ''} เรียบร้อยแล้ว`
         : `บันทึกคำขอใบเสนอราคาในระบบเรียบร้อยแล้ว`,
     });
   } catch (error: any) {

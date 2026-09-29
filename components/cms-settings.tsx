@@ -162,15 +162,28 @@ export function CmsSettings() {
               </label>
 
               <label className="login-label">
-                อีเมลติดต่อ *
+                อีเมลติดต่อหลัก *
                 <input
                   className="field"
                   type="email"
                   value={contact.email}
                   onChange={(e) => handleContactChange('email', e.target.value)}
                   required
-                  placeholder="เช่น sales@duangcharoen.com"
+                  placeholder="เช่น sales@dcintertrade.com"
                 />
+              </label>
+
+              <label className="login-label">
+                อีเมลรับสำเนาแจ้งเตือนเพิ่มเติม (CC)
+                <input
+                  className="field"
+                  value={contact.email_cc || ''}
+                  onChange={(e) => handleContactChange('email_cc', e.target.value)}
+                  placeholder="เช่น admin@dcintertrade.com, manager@gmail.com (คั่นด้วยจุลภาค)"
+                />
+                <span style={{ fontSize: '12px', color: '#7a6557', marginTop: '4px', display: 'block', fontWeight: 'normal' }}>
+                  💡 ใส่อีเมลที่ต้องการให้ได้รับสำเนาคำขอราคา (ใส่ได้หลายอีเมล โดยคั่นด้วยเครื่องหมายจุลภาค <code>,</code>)
+                </span>
               </label>
 
               <label className="login-label">

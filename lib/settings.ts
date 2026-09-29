@@ -10,6 +10,7 @@ export type ContactSettings = {
   phone: string;
   phone_secondary: string;
   email: string;
+  email_cc?: string;
   website?: string;
   line_id: string;
   business_hours: string;
@@ -39,6 +40,7 @@ export const defaultContactSettings: ContactSettings = {
   phone: '0825161718',
   phone_secondary: '',
   email: 'sales@dcintertrade.com',
+  email_cc: '',
   website: 'www.dcintertrade.com',
   line_id: '',
   business_hours: 'จันทร์ - เสาร์: 08:00 - 17:00 น.',
