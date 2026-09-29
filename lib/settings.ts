@@ -44,7 +44,7 @@ export const defaultContactSettings: ContactSettings = {
   email: 'sales@dcintertrade.com',
   email_cc: 'krit.dhm@gmail.com',
   resend_api_key: '',
-  email_from: 'DCT Website <onboarding@resend.dev>',
+  email_from: 'DCT Website <noreply@dcintertrade.com>',
   website: 'www.dcintertrade.com',
   line_id: '',
   business_hours: 'จันทร์ - เสาร์: 08:00 - 17:00 น.',

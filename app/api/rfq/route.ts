@@ -207,7 +207,7 @@ export async function POST(req: NextRequest) {
       body?.contactSettings?.email_from ||
       process.env.EMAIL_FROM ||
       defaultContactSettings.email_from ||
-      'DCT Website <onboarding@resend.dev>';
+      'DCT Website <noreply@dcintertrade.com>';
 
     // 1. Try Resend API
     if (resendApiKey) {
