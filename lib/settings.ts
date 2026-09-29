@@ -38,7 +38,7 @@ export const defaultContactSettings: ContactSettings = {
   address: '49/203 หมู่ที่ 7 ตำบลคลองสอง อำเภอคลองหลวง จ. ปทุมธานี 12120',
   phone: '0825161718',
   phone_secondary: '',
-  email: 'doungchalern.dct@gmail.com',
+  email: 'sales@dcintertrade.com',
   website: 'www.dcintertrade.com',
   line_id: '',
   business_hours: 'จันทร์ - เสาร์: 08:00 - 17:00 น.',

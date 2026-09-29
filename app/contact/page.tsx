@@ -74,8 +74,8 @@ export default function Contact() {
             <div className="spec">
               <span>{lang === 'en' ? 'Email' : 'อีเมล'}</span>
               <b>
-                <a href={`mailto:${contact.email || 'doungchalern.dct@gmail.com'}`} style={{ color: 'var(--red)', textDecoration: 'none' }}>
-                  {contact.email || 'doungchalern.dct@gmail.com'}
+                <a href={`mailto:${contact.email || 'sales@dcintertrade.com'}`} style={{ color: 'var(--red)', textDecoration: 'none' }}>
+                  {contact.email || 'sales@dcintertrade.com'}
                 </a>
               </b>
             </div>

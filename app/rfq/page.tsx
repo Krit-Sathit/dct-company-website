@@ -114,7 +114,18 @@ export default function RFQ() {
       // Fallback
     }
 
-    // 2. Safe local store
+    // 2. Send Email Notification via /api/rfq
+    try {
+      await fetch('/api/rfq', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(submissionPayload),
+      });
+    } catch {
+      // Graceful fallback
+    }
+
+    // 3. Safe local store
     if (typeof window !== 'undefined') {
       const saved = JSON.parse(localStorage.getItem('dct-rfq-submissions') || '[]');
       localStorage.setItem('dct-rfq-submissions', JSON.stringify([submissionPayload, ...saved]));
