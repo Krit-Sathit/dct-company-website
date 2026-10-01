@@ -3,10 +3,7 @@ import { defaultContactSettings, defaultCompanyProfile } from '@/lib/settings';
 
 // In-memory server store (persists during deployment runtime across all clients)
 let globalContact = { ...defaultContactSettings };
-let globalProfile = {
-  ...defaultCompanyProfile,
-  hero_image_url: '/hero-banner.webp',
-};
+let globalProfile = { ...defaultCompanyProfile };
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

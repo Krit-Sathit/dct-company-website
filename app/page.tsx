@@ -150,7 +150,15 @@ export default function Home() {
     }
   };
 
-  const heroImage = profile.hero_image_url || '/hero-banner.webp';
+  const customHero =
+    profile.hero_image_url &&
+    profile.hero_image_url !== '/hero-new.png' &&
+    profile.hero_image_url !== '/hero-banner.webp'
+      ? {
+          background: `linear-gradient(90deg, rgba(255, 252, 247, 0.55) 0%, rgba(255, 252, 247, 0.3) 24%, rgba(255, 252, 247, 0.06) 38%, transparent 48%), url('${profile.hero_image_url}') center center / 100% 100% no-repeat`,
+        }
+      : undefined;
+
   const aboutImage = contact.image_url || '/about-factory-new.png';
 
   return (
@@ -158,16 +166,11 @@ export default function Home() {
       {/* =========================================================================
           ROW 1: FULL-WIDTH PANORAMIC HERO BANNER (Slide 1)
           ========================================================================= */}
-      <section
-        className="hero-master-v2"
-        style={profile.hero_image_url ? { backgroundImage: `linear-gradient(90deg, rgba(20,12,8,0.92) 0%, rgba(20,12,8,0.7) 50%, rgba(20,12,8,0.2) 100%), url('${heroImage}')` } : undefined}
-      >
+      <section className="hero-master-v2" style={customHero}>
         <div className="wrap">
           <div className="hero-master-left">
-            <h1>{lang === 'th' && profile.headline ? profile.headline : t('hero_title')}</h1>
-            <p className="hero-sub">
-              {lang === 'th' && profile.subheadline ? profile.subheadline : t('hero_sub')}
-            </p>
+            <h1>{t('hero_title')}</h1>
+            <p className="hero-sub">{t('hero_sub')}</p>
 
             <div className="hero-master-actions">
               <Link className="pill-btn primary" href="/products">
