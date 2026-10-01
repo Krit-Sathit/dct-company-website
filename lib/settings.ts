@@ -70,19 +70,21 @@ const CONTACT_KEY = 'dct_contact_settings';
 const PROFILE_KEY = 'dct_profile_settings';
 
 export async function getContactSettings(): Promise<ContactSettings> {
-  // 1. Check local storage cache
-  if (typeof window !== 'undefined') {
-    const cached = localStorage.getItem(CONTACT_KEY);
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached);
-        if (parsed && typeof parsed === 'object') {
-          return { ...defaultContactSettings, ...parsed };
+  // 1. Try Server API first (always freshest in multi-client runtime)
+  try {
+    const res = await fetch('/api/settings?type=contact', { cache: 'no-store' });
+    if (res.ok) {
+      const json = await res.json();
+      if (json && typeof json === 'object') {
+        const merged = { ...defaultContactSettings, ...json };
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(CONTACT_KEY, JSON.stringify(merged));
         }
-      } catch {
-        // ignore
+        return merged;
       }
     }
+  } catch {
+    // ignore
   }
 
   // 2. Try Supabase if configured
@@ -107,15 +109,19 @@ export async function getContactSettings(): Promise<ContactSettings> {
     }
   }
 
-  // 3. Try Server API
-  try {
-    const res = await fetch('/api/settings?type=contact', { cache: 'no-store' });
-    if (res.ok) {
-      const json = await res.json();
-      return { ...defaultContactSettings, ...json };
+  // 3. Fallback to local storage cache
+  if (typeof window !== 'undefined') {
+    const cached = localStorage.getItem(CONTACT_KEY);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (parsed && typeof parsed === 'object') {
+          return { ...defaultContactSettings, ...parsed };
+        }
+      } catch {
+        // ignore
+      }
     }
-  } catch {
-    // ignore
   }
 
   return defaultContactSettings;
@@ -125,6 +131,7 @@ export async function saveContactSettings(settings: ContactSettings): Promise<{ 
   // 1. Save to local storage
   if (typeof window !== 'undefined') {
     localStorage.setItem(CONTACT_KEY, JSON.stringify(settings));
+    window.dispatchEvent(new CustomEvent('dct_settings_updated', { detail: { type: 'contact', data: settings } }));
   }
 
   // 2. Save to Server API
@@ -156,19 +163,21 @@ export async function saveContactSettings(settings: ContactSettings): Promise<{ 
 }
 
 export async function getCompanyProfile(): Promise<CompanyProfileSettings> {
-  // 1. Check local storage cache
-  if (typeof window !== 'undefined') {
-    const cached = localStorage.getItem(PROFILE_KEY);
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached);
-        if (parsed && typeof parsed === 'object') {
-          return { ...defaultCompanyProfile, ...parsed };
+  // 1. Try Server API first
+  try {
+    const res = await fetch('/api/settings?type=company_profile', { cache: 'no-store' });
+    if (res.ok) {
+      const json = await res.json();
+      if (json && typeof json === 'object') {
+        const merged = { ...defaultCompanyProfile, ...json };
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(PROFILE_KEY, JSON.stringify(merged));
         }
-      } catch {
-        // ignore
+        return merged;
       }
     }
+  } catch {
+    // ignore
   }
 
   // 2. Try Supabase if configured
@@ -193,15 +202,19 @@ export async function getCompanyProfile(): Promise<CompanyProfileSettings> {
     }
   }
 
-  // 3. Try Server API
-  try {
-    const res = await fetch('/api/settings?type=company_profile', { cache: 'no-store' });
-    if (res.ok) {
-      const json = await res.json();
-      return { ...defaultCompanyProfile, ...json };
+  // 3. Fallback to local storage cache
+  if (typeof window !== 'undefined') {
+    const cached = localStorage.getItem(PROFILE_KEY);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (parsed && typeof parsed === 'object') {
+          return { ...defaultCompanyProfile, ...parsed };
+        }
+      } catch {
+        // ignore
+      }
     }
-  } catch {
-    // ignore
   }
 
   return defaultCompanyProfile;
@@ -211,6 +224,7 @@ export async function saveCompanyProfile(profile: CompanyProfileSettings): Promi
   // 1. Save to local storage
   if (typeof window !== 'undefined') {
     localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+    window.dispatchEvent(new CustomEvent('dct_settings_updated', { detail: { type: 'company_profile', data: profile } }));
   }
 
   // 2. Save to Server API

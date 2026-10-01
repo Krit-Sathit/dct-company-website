@@ -15,6 +15,12 @@ export default function Contact() {
       setContact(data);
     }
     void load();
+
+    const handleUpdate = () => {
+      void load();
+    };
+    window.addEventListener('dct_settings_updated', handleUpdate);
+    return () => window.removeEventListener('dct_settings_updated', handleUpdate);
   }, []);
 
   const factoryImage = contact.image_url || '/about-factory-new.png';
@@ -71,6 +77,16 @@ export default function Contact() {
                 </a>
               </b>
             </div>
+            {contact.phone_secondary && (
+              <div className="spec">
+                <span>{lang === 'en' ? 'Mobile / Secondary' : 'เบอร์โทรศัพท์มือถือ (สำรอง)'}</span>
+                <b>
+                  <a href={`tel:${contact.phone_secondary}`} style={{ color: 'var(--red)', textDecoration: 'none' }}>
+                    {contact.phone_secondary}
+                  </a>
+                </b>
+              </div>
+            )}
             <div className="spec">
               <span>{lang === 'en' ? 'Email' : 'อีเมล'}</span>
               <b>

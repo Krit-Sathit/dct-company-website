@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { products as allProducts } from '@/lib/data';
+import { products as defaultProducts, Product } from '@/lib/data';
 import { useLanguage } from '@/lib/language';
+import { getCompanyProfile, getContactSettings, defaultCompanyProfile, defaultContactSettings, CompanyProfileSettings, ContactSettings } from '@/lib/settings';
+import { supabaseBrowser, isSupabaseConfigured } from '@/lib/supabase-browser';
 import {
   IconRibbon,
   IconShield,
@@ -23,7 +25,104 @@ import {
 
 export default function Home() {
   const { lang, t } = useLanguage();
-  const featuredProds = allProducts.slice(0, 4);
+  const [productList, setProductList] = useState<Product[]>(defaultProducts);
+  const [profile, setProfile] = useState<CompanyProfileSettings>(defaultCompanyProfile);
+  const [contact, setContact] = useState<ContactSettings>(defaultContactSettings);
+
+  const featuredProds = productList.slice(0, 4);
+
+  useEffect(() => {
+    async function loadData() {
+      // 1. Load Profile & Contact
+      const [profData, contactData] = await Promise.all([
+        getCompanyProfile(),
+        getContactSettings(),
+      ]);
+      setProfile(profData);
+      setContact(contactData);
+
+      // 2. Load Products (Supabase -> Server API -> Fallback)
+      if (isSupabaseConfigured()) {
+        try {
+          const client = supabaseBrowser();
+          const { data } = await client.from('products').select('*').eq('active', true);
+          if (data && data.length > 0) {
+            setProductList(
+              data.map((p: any) => ({
+                id: p.slug || p.id,
+                name: p.name,
+                nameEn: p.name_en || p.nameEn,
+                code: p.sku || 'DCT-PK-000',
+                category: p.category_id || p.category || 'ชิ้นส่วนมาตรฐาน',
+                description: p.description || '',
+                type: p.product_type || p.type || 'สดแช่เย็น (Chilled) / แช่แข็ง (Frozen)',
+                cut: p.cutting_options || p.cut_format || p.cut || 'Custom cut',
+                thickness: p.portion_thickness || p.thickness || 'ตามสเปก',
+                meatFatRatio: p.meat_fat_ratio || p.meatFatRatio || 'ตามสเปก',
+                pack: p.packing || p.pack || 'Vacuum pack',
+                storage: p.storage || 'แช่เย็น 0-4°C / แช่แข็ง -18°C',
+                shelfLife: p.shelf_life || p.shelfLife || 'แช่เย็น 7-14 วัน / แช่แข็ง 6-12 เดือน',
+                moq: p.moq || 'ขั้นต่ำ 20 กก.',
+                use: p.recommended_use || p.use || 'ธุรกิจอาหาร',
+                image: p.image_url || p.image || '/products/pork-neck.webp',
+              }))
+            );
+            return;
+          }
+        } catch {}
+      }
+
+      try {
+        const res = await fetch('/api/cms?table=products', { cache: 'no-store' });
+        if (res.ok) {
+          const serverProducts = await res.json();
+          if (Array.isArray(serverProducts) && serverProducts.length > 0) {
+            const activeOnes = serverProducts.filter((p: any) => p.active !== false);
+            if (activeOnes.length > 0) {
+              setProductList(
+                activeOnes.map((p: any) => ({
+                  id: p.slug || p.id,
+                  name: p.name,
+                  nameEn: p.name_en || p.nameEn,
+                  code: p.sku || p.code || 'DCT-PK-000',
+                  category: p.category_id || p.category || 'ชิ้นส่วนมาตรฐาน',
+                  description: p.description || '',
+                  type: p.product_type || p.type || 'สดแช่เย็น (Chilled) / แช่แข็ง (Frozen)',
+                  cut: p.cutting_options || p.cut_format || p.cut || 'Custom cut',
+                  thickness: p.portion_thickness || p.thickness || 'ตามสเปก',
+                  meatFatRatio: p.meat_fat_ratio || p.meatFatRatio || 'ตามสเปก',
+                  pack: p.packing || p.pack || 'Vacuum pack',
+                  storage: p.storage || 'แช่เย็น 0-4°C / แช่แข็ง -18°C',
+                  shelfLife: p.shelf_life || p.shelfLife || 'แช่เย็น 7-14 วัน / แช่แข็ง 6-12 เดือน',
+                  moq: p.moq || 'ขั้นต่ำ 20 กก.',
+                  use: p.recommended_use || p.use || 'ธุรกิจอาหาร',
+                  image: p.image_url || p.image || '/products/pork-neck.webp',
+                }))
+              );
+            }
+          }
+        }
+      } catch {}
+    }
+
+    void loadData();
+
+    const handleSettingsUpdate = () => {
+      void loadData();
+    };
+    const handleCmsUpdate = (e: any) => {
+      if (!e.detail || e.detail.table === 'products') {
+        void loadData();
+      }
+    };
+
+    window.addEventListener('dct_settings_updated', handleSettingsUpdate);
+    window.addEventListener('dct_cms_updated', handleCmsUpdate);
+    return () => {
+      window.removeEventListener('dct_settings_updated', handleSettingsUpdate);
+      window.removeEventListener('dct_cms_updated', handleCmsUpdate);
+    };
+  }, []);
 
   // Certificate Modal state (Slide 5)
   const [activeCert, setActiveCert] = useState<{
@@ -51,19 +150,23 @@ export default function Home() {
     }
   };
 
+  const heroImage = profile.hero_image_url || '/hero-banner.webp';
+  const aboutImage = contact.image_url || '/about-factory-new.png';
+
   return (
     <>
       {/* =========================================================================
           ROW 1: FULL-WIDTH PANORAMIC HERO BANNER (Slide 1)
-          - Headline: "วัตถุดิบคุณภาพ พร้อมส่งต่อให้ธุรกิจของคุณ" / English when EN
-          - Sub-headline: "เนื้อสุกรตัดแต่งตามสเปก พร้อมการจัดเก็บและจัดส่งที่ได้มาตรฐาน" / English when EN
           ========================================================================= */}
-      <section className="hero-master-v2">
+      <section
+        className="hero-master-v2"
+        style={profile.hero_image_url ? { backgroundImage: `linear-gradient(90deg, rgba(20,12,8,0.92) 0%, rgba(20,12,8,0.7) 50%, rgba(20,12,8,0.2) 100%), url('${heroImage}')` } : undefined}
+      >
         <div className="wrap">
           <div className="hero-master-left">
-            <h1>{t('hero_title')}</h1>
+            <h1>{lang === 'th' && profile.headline ? profile.headline : t('hero_title')}</h1>
             <p className="hero-sub">
-              {t('hero_sub')}
+              {lang === 'th' && profile.subheadline ? profile.subheadline : t('hero_sub')}
             </p>
 
             <div className="hero-master-actions">
@@ -234,7 +337,7 @@ export default function Home() {
                 <div
                   className="about-mockup-img"
                   style={{
-                    backgroundImage: `url('/about-factory-new.png')`,
+                    backgroundImage: `url('${aboutImage}')`,
                   }}
                 />
               </div>

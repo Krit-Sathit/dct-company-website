@@ -1,10 +1,29 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/lib/language';
+import { getCompanyProfile, getContactSettings, defaultCompanyProfile, defaultContactSettings, CompanyProfileSettings, ContactSettings } from '@/lib/settings';
 
 export default function About() {
   const { lang, t } = useLanguage();
+  const [profile, setProfile] = useState<CompanyProfileSettings>(defaultCompanyProfile);
+  const [contact, setContact] = useState<ContactSettings>(defaultContactSettings);
+
+  useEffect(() => {
+    async function load() {
+      const [p, c] = await Promise.all([getCompanyProfile(), getContactSettings()]);
+      setProfile(p);
+      setContact(c);
+    }
+    void load();
+
+    const handleUpdate = () => void load();
+    window.addEventListener('dct_settings_updated', handleUpdate);
+    return () => window.removeEventListener('dct_settings_updated', handleUpdate);
+  }, []);
+
+  const factoryImage = contact.image_url || '/about-factory-new.png';
 
   return (
     <>
@@ -15,12 +34,14 @@ export default function About() {
             {lang === 'en' ? 'ABOUT US · DOUNGCHALERN INTER TRADE' : 'เกี่ยวกับเรา · บริษัท ดวงเจริญอินเตอร์เทรด จำกัด'}
           </div>
           <h1>
-            {lang === 'en' ? 'The Foundation of Business-Ready Raw Ingredients' : 'เบื้องหลังวัตถุดิบที่พร้อมสำหรับธุรกิจ'}
+            {lang === 'th' && profile.headline ? profile.headline : (lang === 'en' ? 'The Foundation of Business-Ready Raw Ingredients' : 'เบื้องหลังวัตถุดิบที่พร้อมสำหรับธุรกิจ')}
           </h1>
           <p className="lead">
-            {lang === 'en'
-              ? 'DOUNGCHALERN INTER TRADE oversees every stage—from selection, precision cutting, cold storage to temperature-controlled delivery—so partners can operate seamlessly with utmost confidence in every shipment.'
-              : 'ดวงเจริญ อินเตอร์เทรด ดูแลตั้งแต่การคัดสรร ตัดแต่ง จัดเก็บ และจัดส่งวัตถุดิบเนื้อสุกร เพื่อให้คู่ค้าทำงานได้ง่ายขึ้นและมั่นใจในทุกการส่งมอบ'}
+            {lang === 'th' && profile.subheadline ? profile.subheadline : (
+              lang === 'en'
+                ? 'DOUNGCHALERN INTER TRADE oversees every stage—from selection, precision cutting, cold storage to temperature-controlled delivery—so partners can operate seamlessly with utmost confidence in every shipment.'
+                : 'ดวงเจริญ อินเตอร์เทรด ดูแลตั้งแต่การคัดสรร ตัดแต่ง จัดเก็บ และจัดส่งวัตถุดิบเนื้อสุกร เพื่อให้คู่ค้าทำงานได้ง่ายขึ้นและมั่นใจในทุกการส่งมอบ'
+            )}
           </p>
         </div>
       </section>
@@ -36,9 +57,11 @@ export default function About() {
                 : 'เราเข้าใจว่าธุรกิจต้องการวัตถุดิบที่ “พร้อมใช้”'}
             </h2>
             <p style={{ lineHeight: 1.85, color: '#5e483b', fontSize: '15.5px' }}>
-              {lang === 'en'
-                ? 'Backed by decades of experience in pork cutting and food supply chain management, DCT has built a seamless end-to-end operation—ranging from custom cutting to exact specifications, temperature-controlled warehousing, through to cold chain delivery—enabling our partners to manage ingredients effortlessly with dependable consistency in every single lot.'
-                : 'จากประสบการณ์ด้านการตัดแต่งเนื้อสุกรและการจัดการวัตถุดิบอาหาร DCT พัฒนาการทำงานให้ครอบคลุมตั้งแต่การตัดแต่งตามสเปก การจัดเก็บควบคุมอุณหภูมิไปจนถึงการจัดส่ง เพื่อช่วยให้คู่ค้าบริหารวัตถุดิบได้ง่ายและสม่ำเสมอมากขึ้น'}
+              {lang === 'th' && profile.about_summary ? profile.about_summary : (
+                lang === 'en'
+                  ? 'Backed by decades of experience in pork cutting and food supply chain management, DCT has built a seamless end-to-end operation—ranging from custom cutting to exact specifications, temperature-controlled warehousing, through to cold chain delivery—enabling our partners to manage ingredients effortlessly with dependable consistency in every single lot.'
+                  : 'จากประสบการณ์ด้านการตัดแต่งเนื้อสุกรและการจัดการวัตถุดิบอาหาร DCT พัฒนาการทำงานให้ครอบคลุมตั้งแต่การตัดแต่งตามสเปก การจัดเก็บควบคุมอุณหภูมิไปจนถึงการจัดส่ง เพื่อช่วยให้คู่ค้าบริหารวัตถุดิบได้ง่ายและสม่ำเสมอมากขึ้น'
+              )}
             </p>
             <div style={{ marginTop: '24px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               <span className="pill-tag">✓ ตัดแต่งตามสเปก (Custom Cut)</span>
@@ -49,7 +72,7 @@ export default function About() {
           <div
             className="photo"
             style={{
-              backgroundImage: `url('/about-factory-new.png')`,
+              backgroundImage: `url('${factoryImage}')`,
               boxShadow: '0 8px 30px rgba(0,0,0,0.08)',
               minHeight: '380px',
             }}

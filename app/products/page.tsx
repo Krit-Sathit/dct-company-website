@@ -33,19 +33,19 @@ export default function Products() {
             const mapped: Product[] = dbProducts.map((p) => ({
               id: p.slug || p.id,
               name: p.name,
-              nameEn: p.name_en,
-              code: p.sku || 'DCT-PK-000',
-              category: p.category || p.category_id || 'ชิ้นส่วนมาตรฐาน',
+              nameEn: p.name_en || p.nameEn,
+              code: p.sku || p.code || 'DCT-PK-000',
+              category: p.category_id || p.category || 'ชิ้นส่วนมาตรฐาน',
               description: p.description || '',
-              type: p.type || 'สดแช่เย็น (Chilled) / แช่แข็ง (Frozen)',
-              cut: p.cut_format || 'Custom cut',
-              thickness: p.thickness || 'ตามสเปก',
-              meatFatRatio: p.meat_fat_ratio || 'ตามสเปก',
-              pack: p.packing || 'Vacuum pack',
+              type: p.product_type || p.type || 'สดแช่เย็น (Chilled) / แช่แข็ง (Frozen)',
+              cut: p.cutting_options || p.cut_format || p.cut || 'Custom cut',
+              thickness: p.portion_thickness || p.thickness || 'ตามสเปก',
+              meatFatRatio: p.meat_fat_ratio || p.meatFatRatio || 'ตามสเปก',
+              pack: p.packing || p.pack || 'Vacuum pack',
               storage: p.storage || 'แช่เย็น 0-4°C / แช่แข็ง -18°C',
-              shelfLife: p.shelf_life || 'แช่เย็น 7-14 วัน / แช่แข็ง 6-12 เดือน',
+              shelfLife: p.shelf_life || p.shelfLife || 'แช่เย็น 7-14 วัน / แช่แข็ง 6-12 เดือน',
               moq: p.moq || 'ขั้นต่ำ 20 กก.',
-              use: p.recommended_use || 'ธุรกิจอาหาร',
+              use: p.recommended_use || p.use || 'ธุรกิจอาหาร',
               image: p.image_url || p.image || '/products/pork-neck.webp',
             }));
             setProductList(mapped);
@@ -58,9 +58,23 @@ export default function Products() {
 
       // 2. Fetch from Server API (Auto-CMS Store)
       try {
-        const res = await fetch('/api/cms?table=products', { cache: 'no-store' });
-        if (res.ok) {
-          const serverProducts = await res.json();
+        const [prodRes, catRes] = await Promise.all([
+          fetch('/api/cms?table=products', { cache: 'no-store' }),
+          fetch('/api/cms?table=categories', { cache: 'no-store' }),
+        ]);
+
+        if (catRes.ok) {
+          const serverCats = await catRes.json();
+          if (Array.isArray(serverCats) && serverCats.length > 0) {
+            const activeCats = serverCats.filter((c: any) => c.active !== false).map((c: any) => c.name);
+            if (activeCats.length > 0) {
+              setCatList(['ทั้งหมด', ...activeCats]);
+            }
+          }
+        }
+
+        if (prodRes.ok) {
+          const serverProducts = await prodRes.json();
           if (Array.isArray(serverProducts) && serverProducts.length > 0) {
             const activeOnes = serverProducts.filter((p: any) => p.active !== false);
             if (activeOnes.length > 0) {
@@ -68,17 +82,17 @@ export default function Products() {
                 activeOnes.map((p: any) => ({
                   id: p.slug || p.id,
                   name: p.name,
-                  nameEn: p.nameEn,
-                  code: p.sku || 'DCT-PK-000',
-                  category: p.category || 'ชิ้นส่วนมาตรฐาน',
+                  nameEn: p.name_en || p.nameEn,
+                  code: p.sku || p.code || 'DCT-PK-000',
+                  category: p.category_id || p.category || 'ชิ้นส่วนมาตรฐาน',
                   description: p.description || '',
-                  type: p.type || 'สดแช่เย็น (Chilled) / แช่แข็ง (Frozen)',
-                  cut: p.cut_format || p.cut || 'Custom cut',
-                  thickness: p.thickness || 'ตามสเปก',
-                  meatFatRatio: p.meatFatRatio || 'ตามสเปก',
+                  type: p.product_type || p.type || 'สดแช่เย็น (Chilled) / แช่แข็ง (Frozen)',
+                  cut: p.cutting_options || p.cut_format || p.cut || 'Custom cut',
+                  thickness: p.portion_thickness || p.thickness || 'ตามสเปก',
+                  meatFatRatio: p.meat_fat_ratio || p.meatFatRatio || 'ตามสเปก',
                   pack: p.packing || p.pack || 'Vacuum pack',
                   storage: p.storage || 'แช่เย็น 0-4°C / แช่แข็ง -18°C',
-                  shelfLife: p.shelfLife || 'แช่เย็น 7-14 วัน / แช่แข็ง 6-12 เดือน',
+                  shelfLife: p.shelf_life || p.shelfLife || 'แช่เย็น 7-14 วัน / แช่แข็ง 6-12 เดือน',
                   moq: p.moq || 'ขั้นต่ำ 20 กก.',
                   use: p.recommended_use || p.use || 'ธุรกิจอาหาร',
                   image: p.image_url || p.image || '/products/pork-neck.webp',
@@ -96,6 +110,14 @@ export default function Products() {
       setProductList(defaultProducts);
     }
     void load();
+
+    const handleCmsUpdate = (e: any) => {
+      if (!e.detail || e.detail.table === 'products' || e.detail.table === 'categories') {
+        void load();
+      }
+    };
+    window.addEventListener('dct_cms_updated', handleCmsUpdate);
+    return () => window.removeEventListener('dct_cms_updated', handleCmsUpdate);
   }, []);
 
   const list = productList.filter(

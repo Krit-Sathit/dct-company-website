@@ -1,24 +1,114 @@
 'use client';
 
-import { use } from 'react';
+import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { products as defaultProducts, Product } from '@/lib/data';
 import { AddButton } from '@/components/site';
 import { useLanguage } from '@/lib/language';
+import { supabaseBrowser, isSupabaseConfigured } from '@/lib/supabase-browser';
 
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { lang } = useLanguage();
   const decodedId = decodeURIComponent(id);
 
-  // Match by id or slug
-  const p: Product | undefined = defaultProducts.find(
-    (x) => x.id === decodedId || x.code.toLowerCase() === decodedId.toLowerCase()
+  const [productList, setProductList] = useState<Product[]>(defaultProducts);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      if (isSupabaseConfigured()) {
+        try {
+          const client = supabaseBrowser();
+          const { data: dbProducts } = await client.from('products').select('*').eq('active', true);
+          if (dbProducts && dbProducts.length > 0) {
+            setProductList(
+              dbProducts.map((p) => ({
+                id: p.slug || p.id,
+                name: p.name,
+                nameEn: p.name_en || p.nameEn,
+                code: p.sku || p.code || 'DCT-PK-000',
+                category: p.category_id || p.category || 'ชิ้นส่วนมาตรฐาน',
+                description: p.description || '',
+                type: p.product_type || p.type || 'สดแช่เย็น (Chilled) / แช่แข็ง (Frozen)',
+                cut: p.cutting_options || p.cut_format || p.cut || 'Custom cut',
+                thickness: p.portion_thickness || p.thickness || 'ตามสเปก',
+                meatFatRatio: p.meat_fat_ratio || p.meatFatRatio || 'ตามสเปก',
+                pack: p.packing || p.pack || 'Vacuum pack',
+                storage: p.storage || 'แช่เย็น 0-4°C / แช่แข็ง -18°C',
+                shelfLife: p.shelf_life || p.shelfLife || 'แช่เย็น 7-14 วัน / แช่แข็ง 6-12 เดือน',
+                moq: p.moq || 'ขั้นต่ำ 20 กก.',
+                use: p.recommended_use || p.use || 'ธุรกิจอาหาร',
+                image: p.image_url || p.image || '/products/pork-neck.webp',
+              }))
+            );
+            setLoading(false);
+            return;
+          }
+        } catch {}
+      }
+
+      try {
+        const res = await fetch('/api/cms?table=products', { cache: 'no-store' });
+        if (res.ok) {
+          const serverProducts = await res.json();
+          if (Array.isArray(serverProducts) && serverProducts.length > 0) {
+            const activeOnes = serverProducts.filter((p: any) => p.active !== false);
+            if (activeOnes.length > 0) {
+              setProductList(
+                activeOnes.map((p: any) => ({
+                  id: p.slug || p.id,
+                  name: p.name,
+                  nameEn: p.name_en || p.nameEn,
+                  code: p.sku || p.code || 'DCT-PK-000',
+                  category: p.category_id || p.category || 'ชิ้นส่วนมาตรฐาน',
+                  description: p.description || '',
+                  type: p.product_type || p.type || 'สดแช่เย็น (Chilled) / แช่แข็ง (Frozen)',
+                  cut: p.cutting_options || p.cut_format || p.cut || 'Custom cut',
+                  thickness: p.portion_thickness || p.thickness || 'ตามสเปก',
+                  meatFatRatio: p.meat_fat_ratio || p.meatFatRatio || 'ตามสเปก',
+                  pack: p.packing || p.pack || 'Vacuum pack',
+                  storage: p.storage || 'แช่เย็น 0-4°C / แช่แข็ง -18°C',
+                  shelfLife: p.shelf_life || p.shelfLife || 'แช่เย็น 7-14 วัน / แช่แข็ง 6-12 เดือน',
+                  moq: p.moq || 'ขั้นต่ำ 20 กก.',
+                  use: p.recommended_use || p.use || 'ธุรกิจอาหาร',
+                  image: p.image_url || p.image || '/products/pork-neck.webp',
+                }))
+              );
+            }
+          }
+        }
+      } catch {}
+      setLoading(false);
+    }
+
+    void load();
+
+    const handleCmsUpdate = (e: any) => {
+      if (!e.detail || e.detail.table === 'products') void load();
+    };
+    window.addEventListener('dct_cms_updated', handleCmsUpdate);
+    return () => window.removeEventListener('dct_cms_updated', handleCmsUpdate);
+  }, []);
+
+  // Match by id or slug or code
+  const p: Product | undefined = productList.find(
+    (x) => x.id === decodedId || (x.code && x.code.toLowerCase() === decodedId.toLowerCase())
+  ) || defaultProducts.find(
+    (x) => x.id === decodedId || (x.code && x.code.toLowerCase() === decodedId.toLowerCase())
   );
 
-  if (!p) {
+  if (!p && !loading) {
     return notFound();
+  }
+
+  if (!p) {
+    return (
+      <div className="wrap section" style={{ padding: '80px 0', textAlign: 'center' }}>
+        <p className="lead">กำลังโหลดข้อมูลสินค้า...</p>
+      </div>
+    );
   }
 
   const isEn = lang === 'en';

@@ -58,7 +58,22 @@ export default function Standards() {
         }
       }
 
-      // 2. Try LocalStorage CMS cache
+      // 2. Try Server API
+      if (loaded.length === 0) {
+        try {
+          const res = await fetch('/api/cms?table=certificates', { cache: 'no-store' });
+          if (res.ok) {
+            const serverData = await res.json();
+            if (Array.isArray(serverData) && serverData.length > 0) {
+              loaded = serverData.filter((c: any) => c.active !== false);
+            }
+          }
+        } catch {
+          // ignore
+        }
+      }
+
+      // 3. Try LocalStorage CMS cache
       if (loaded.length === 0 && typeof window !== 'undefined') {
         try {
           const cached = localStorage.getItem('dct_cms_certificates');
@@ -86,6 +101,12 @@ export default function Standards() {
     }
 
     void loadCertificates();
+
+    const handleCmsUpdate = (e: any) => {
+      if (!e.detail || e.detail.table === 'certificates') void loadCertificates();
+    };
+    window.addEventListener('dct_cms_updated', handleCmsUpdate);
+    return () => window.removeEventListener('dct_cms_updated', handleCmsUpdate);
   }, []);
 
   const processes = [

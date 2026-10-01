@@ -244,6 +244,15 @@ export function Footer() {
 
   useEffect(() => {
     getContactSettings().then((data) => setContact(data));
+
+    const handleSettingsUpdate = (e: any) => {
+      if (!e.detail || e.detail.type === 'contact') {
+        getContactSettings().then((data) => setContact(data));
+      }
+    };
+
+    window.addEventListener('dct_settings_updated', handleSettingsUpdate);
+    return () => window.removeEventListener('dct_settings_updated', handleSettingsUpdate);
   }, []);
 
   return (
@@ -316,17 +325,24 @@ export function Footer() {
         <div className="footer-col">
           <h4>{t('footer_contact')}</h4>
           <ul>
-            <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span>📞</span>
-              <a href={`tel:${contact.phone}`}>{contact.phone}</a>
+            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
+              <span style={{ marginTop: '2px' }}>📞</span>
+              <div>
+                <a href={`tel:${contact.phone}`}>{contact.phone || '0825161718'}</a>
+                {contact.phone_secondary && (
+                  <div style={{ marginTop: '2px' }}>
+                    <a href={`tel:${contact.phone_secondary}`}>{contact.phone_secondary}</a>
+                  </div>
+                )}
+              </div>
             </li>
             <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span>✉️</span>
-              <a href={`mailto:${contact.email}`}>{contact.email}</a>
+              <a href={`mailto:${contact.email}`}>{contact.email || 'sales@dcintertrade.com'}</a>
             </li>
             <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span>🌐</span>
-              <a href="https://www.dcintertrade.com" target="_blank" rel="noopener noreferrer">{contact.website || 'www.dcintertrade.com'}</a>
+              <a href={`https://${contact.website || 'www.dcintertrade.com'}`} target="_blank" rel="noopener noreferrer">{contact.website || 'www.dcintertrade.com'}</a>
             </li>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
               <span>📍</span>

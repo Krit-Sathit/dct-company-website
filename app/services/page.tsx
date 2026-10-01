@@ -3,11 +3,144 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/lib/language';
+import { supabaseBrowser, isSupabaseConfigured } from '@/lib/supabase-browser';
+
+const defaultServicesList = [
+  {
+    id: 'service-01',
+    num: '01',
+    tag: '01 · Custom Cutting',
+    titleTh: 'ตัดแต่งตามสเปก',
+    titleEn: 'Custom Cutting',
+    subTag: null,
+    descTh: 'ตัดแต่งเนื้อสุกรตามรูปแบบที่เหมาะกับการใช้งานของแต่ละธุรกิจ',
+    descEn: 'Precision pork cutting tailored to meet the exact culinary and production needs of each business.',
+    ctaTh: 'สอบถามสเปก',
+    ctaEn: 'Inquire Cutting Specs',
+    ctaHref: '/rfq',
+    img: '/service-custom-cut.png',
+    alt: 'ตัดแต่งตามสเปก - Custom Cutting',
+  },
+  {
+    id: 'service-02',
+    num: '02',
+    tag: '02 · Packaging Solutions',
+    titleTh: 'บริการบรรจุภัณฑ์',
+    titleEn: 'Packaging Solutions',
+    subTag: null,
+    descTh: 'บรรจุวัตถุดิบในรูปแบบที่เหมาะกับสินค้าและการใช้งานของธุรกิจ',
+    descEn: 'Industrial packaging formats designed to best protect quality, extend shelf-life, and simplify kitchen usage.',
+    ctaTh: 'สอบถามรูปแบบการแพ็ก',
+    ctaEn: 'Inquire Packaging Options',
+    ctaHref: '/rfq',
+    img: '/service-packaging.png',
+    alt: 'บริการบรรจุภัณฑ์ - Packaging Solutions',
+  },
+  {
+    id: 'service-03',
+    num: '03',
+    tag: '03 · Cold Storage',
+    titleTh: 'คลังสินค้าควบคุมอุณหภูมิ',
+    titleEn: 'Cold Storage',
+    subTag: 'CHILLED · FROZEN',
+    descTh: 'บริการจัดเก็บวัตถุดิบในสภาวะอุณหภูมิที่เหมาะสมกับสินค้า',
+    descEn: 'Temperature-controlled warehousing maintaining optimum conditions for chilled and frozen products.',
+    ctaTh: 'สอบถามบริการ',
+    ctaEn: 'Inquire Storage',
+    ctaHref: '/contact',
+    img: '/service-cold-storage.png',
+    alt: 'คลังสินค้าควบคุมอุณหภูมิ - Cold Storage',
+  },
+  {
+    id: 'service-04',
+    num: '04',
+    tag: '04 · Cold Chain Logistics',
+    titleTh: 'จัดส่งควบคุมอุณหภูมิ',
+    titleEn: 'Cold Chain Logistics',
+    subTag: 'TEMPERATURE CONTROL · BUSINESS DELIVERY',
+    descTh: 'ดูแลการจัดส่งวัตถุดิบด้วยระบบควบคุมอุณหภูมิที่เหมาะสม',
+    descEn: 'Dedicated refrigerated fleet delivering on-time with unbroken temperature monitoring from warehouse to your door.',
+    ctaTh: 'สอบถามการจัดส่ง',
+    ctaEn: 'Inquire Delivery Schedules',
+    ctaHref: '/contact',
+    img: '/service-delivery.png',
+    alt: 'จัดส่งควบคุมอุณหภูมิ - Cold Chain Logistics',
+  },
+];
 
 export default function Services() {
   const { lang } = useLanguage();
   const [scrollProgress, setScrollProgress] = useState(25);
   const [activeStep, setActiveStep] = useState(1);
+  const [servicesList, setServicesList] = useState(defaultServicesList);
+
+  useEffect(() => {
+    async function load() {
+      if (isSupabaseConfigured()) {
+        try {
+          const client = supabaseBrowser();
+          const { data } = await client.from('services').select('*').eq('active', true);
+          if (data && data.length > 0) {
+            setServicesList(
+              data.map((s, idx) => ({
+                id: `service-0${idx + 1}`,
+                num: `0${idx + 1}`,
+                tag: `0${idx + 1} · ${s.title}`,
+                titleTh: s.title,
+                titleEn: s.title_en || s.title,
+                subTag: idx === 2 ? 'CHILLED · FROZEN' : idx === 3 ? 'TEMPERATURE CONTROL · BUSINESS DELIVERY' : null,
+                descTh: s.description,
+                descEn: s.description_en || s.description,
+                ctaTh: idx < 2 ? 'สอบถามสเปก' : 'สอบถามบริการ',
+                ctaEn: idx < 2 ? 'Inquire Specs' : 'Inquire Service',
+                ctaHref: idx < 2 ? '/rfq' : '/contact',
+                img: s.image_url || defaultServicesList[idx % defaultServicesList.length].img,
+                alt: s.title,
+              }))
+            );
+            return;
+          }
+        } catch {}
+      }
+
+      try {
+        const res = await fetch('/api/cms?table=services', { cache: 'no-store' });
+        if (res.ok) {
+          const serverData = await res.json();
+          if (Array.isArray(serverData) && serverData.length > 0) {
+            const activeOnes = serverData.filter((s: any) => s.active !== false);
+            if (activeOnes.length > 0) {
+              setServicesList(
+                activeOnes.map((s: any, idx: number) => ({
+                  id: `service-0${idx + 1}`,
+                  num: `0${idx + 1}`,
+                  tag: `0${idx + 1} · ${s.title}`,
+                  titleTh: s.title,
+                  titleEn: s.title_en || s.title,
+                  subTag: idx === 2 ? 'CHILLED · FROZEN' : idx === 3 ? 'TEMPERATURE CONTROL · BUSINESS DELIVERY' : null,
+                  descTh: s.description,
+                  descEn: s.description_en || s.description,
+                  ctaTh: idx < 2 ? 'สอบถามสเปก' : 'สอบถามบริการ',
+                  ctaEn: idx < 2 ? 'Inquire Specs' : 'Inquire Service',
+                  ctaHref: idx < 2 ? '/rfq' : '/contact',
+                  img: s.image_url || defaultServicesList[idx % defaultServicesList.length].img,
+                  alt: s.title,
+                }))
+              );
+            }
+          }
+        }
+      } catch {}
+    }
+
+    void load();
+
+    const handleCmsUpdate = (e: any) => {
+      if (!e.detail || e.detail.table === 'services') void load();
+    };
+    window.addEventListener('dct_cms_updated', handleCmsUpdate);
+    return () => window.removeEventListener('dct_cms_updated', handleCmsUpdate);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,69 +178,6 @@ export default function Services() {
       });
     }
   };
-
-  const servicesList = [
-    {
-      id: 'service-01',
-      num: '01',
-      tag: '01 · Custom Cutting',
-      titleTh: 'ตัดแต่งตามสเปก',
-      titleEn: 'Custom Cutting',
-      subTag: null,
-      descTh: 'ตัดแต่งเนื้อสุกรตามรูปแบบที่เหมาะกับการใช้งานของแต่ละธุรกิจ',
-      descEn: 'Precision pork cutting tailored to meet the exact culinary and production needs of each business.',
-      ctaTh: 'สอบถามสเปก',
-      ctaEn: 'Inquire Cutting Specs',
-      ctaHref: '/rfq',
-      img: '/service-custom-cut.png',
-      alt: 'ตัดแต่งตามสเปก - Custom Cutting',
-    },
-    {
-      id: 'service-02',
-      num: '02',
-      tag: '02 · Packaging Solutions',
-      titleTh: 'บริการบรรจุภัณฑ์',
-      titleEn: 'Packaging Solutions',
-      subTag: null,
-      descTh: 'บรรจุวัตถุดิบในรูปแบบที่เหมาะกับสินค้าและการใช้งานของธุรกิจ',
-      descEn: 'Industrial packaging formats designed to best protect quality, extend shelf-life, and simplify kitchen usage.',
-      ctaTh: 'สอบถามรูปแบบการแพ็ก',
-      ctaEn: 'Inquire Packaging Options',
-      ctaHref: '/rfq',
-      img: '/service-packaging.png',
-      alt: 'บริการบรรจุภัณฑ์ - Packaging Solutions',
-    },
-    {
-      id: 'service-03',
-      num: '03',
-      tag: '03 · Cold Storage',
-      titleTh: 'คลังสินค้าควบคุมอุณหภูมิ',
-      titleEn: 'Cold Storage',
-      subTag: 'CHILLED · FROZEN',
-      descTh: 'บริการจัดเก็บวัตถุดิบในสภาวะอุณหภูมิที่เหมาะสมกับสินค้า',
-      descEn: 'Temperature-controlled warehousing maintaining optimum conditions for chilled and frozen products.',
-      ctaTh: 'สอบถามบริการ',
-      ctaEn: 'Inquire Storage',
-      ctaHref: '/contact',
-      img: '/service-cold-storage.png',
-      alt: 'คลังสินค้าควบคุมอุณหภูมิ - Cold Storage',
-    },
-    {
-      id: 'service-04',
-      num: '04',
-      tag: '04 · Cold Chain Logistics',
-      titleTh: 'จัดส่งควบคุมอุณหภูมิ',
-      titleEn: 'Cold Chain Logistics',
-      subTag: 'TEMPERATURE CONTROL · BUSINESS DELIVERY',
-      descTh: 'ดูแลการจัดส่งวัตถุดิบด้วยระบบควบคุมอุณหภูมิที่เหมาะสม',
-      descEn: 'Dedicated refrigerated fleet delivering on-time with unbroken temperature monitoring from warehouse to your door.',
-      ctaTh: 'สอบถามการจัดส่ง',
-      ctaEn: 'Inquire Delivery Schedules',
-      ctaHref: '/contact',
-      img: '/service-delivery.png',
-      alt: 'จัดส่งควบคุมอุณหภูมิ - Cold Chain Logistics',
-    },
-  ];
 
   return (
     <>

@@ -317,12 +317,18 @@ export function CmsCrud({ resourceKey }: { resourceKey: keyof typeof resources }
     // 3. Update local UI state immediately
     setRows((prev) => {
       const idx = prev.findIndex((r) => (editing?.id && r.id === editing.id) || (payload.slug && r.slug === payload.slug));
+      let updated: Row[];
       if (idx >= 0) {
-        const updated = [...prev];
+        updated = [...prev];
         updated[idx] = { ...updated[idx], ...payload };
-        return updated;
+      } else {
+        updated = [...prev, { ...payload, id: payload.id || payload.slug || `item-${Date.now()}` }];
       }
-      return [...prev, { ...payload, id: payload.id || payload.slug || `item-${Date.now()}` }];
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`dct_cms_${resource.table}`, JSON.stringify(updated));
+        window.dispatchEvent(new CustomEvent('dct_cms_updated', { detail: { table: resource.table } }));
+      }
+      return updated;
     });
 
     setSaving(false);
@@ -362,7 +368,14 @@ export function CmsCrud({ resourceKey }: { resourceKey: keyof typeof resources }
     }
 
     // 3. Update local state
-    setRows((prev) => prev.filter((r) => r.id !== row.id && (!row.slug || r.slug !== row.slug)));
+    setRows((prev) => {
+      const updated = prev.filter((r) => r.id !== row.id && (!row.slug || r.slug !== row.slug));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`dct_cms_${resource.table}`, JSON.stringify(updated));
+        window.dispatchEvent(new CustomEvent('dct_cms_updated', { detail: { table: resource.table } }));
+      }
+      return updated;
+    });
     if (editing?.id === row.id) cancel();
     setMessage({ text: '✅ ลบรายการเรียบร้อยแล้ว', type: 'success' });
   }
