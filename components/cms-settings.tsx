@@ -90,22 +90,34 @@ export function CmsSettings() {
         </div>
       </div>
 
-      <div className="settings-subtabs" style={{ display: 'flex', gap: '8px', margin: '20px 0', borderBottom: '1px solid #eadfd4', paddingBottom: '12px' }}>
+      <div className="settings-subtabs" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '20px 0', borderBottom: '1px solid #eadfd4', paddingBottom: '12px', flexWrap: 'wrap', gap: '10px' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            className={`button ${activeSubTab === 'contact' ? '' : 'secondary'}`}
+            onClick={() => { setActiveSubTab('contact'); setMessage(null); }}
+            style={{ padding: '8px 16px', fontSize: '14px' }}
+          >
+            📍 ข้อมูลติดต่อ & รูปภาพโรงงาน
+          </button>
+          <button
+            type="button"
+            className={`button ${activeSubTab === 'profile' ? '' : 'secondary'}`}
+            onClick={() => { setActiveSubTab('profile'); setMessage(null); }}
+            style={{ padding: '8px 16px', fontSize: '14px' }}
+          >
+            🏷️ ข้อมูลแบรนด์ & รูปภาพหน้าแรก
+          </button>
+        </div>
+
         <button
           type="button"
-          className={`button ${activeSubTab === 'contact' ? '' : 'secondary'}`}
-          onClick={() => { setActiveSubTab('contact'); setMessage(null); }}
-          style={{ padding: '8px 16px', fontSize: '14px' }}
+          onClick={(e) => handleSave(e as any)}
+          disabled={saving}
+          className="button"
+          style={{ padding: '8px 20px', fontSize: '14px', background: 'var(--red)', color: '#fff' }}
         >
-          📍 ข้อมูลติดต่อ & รูปภาพโรงงาน
-        </button>
-        <button
-          type="button"
-          className={`button ${activeSubTab === 'profile' ? '' : 'secondary'}`}
-          onClick={() => { setActiveSubTab('profile'); setMessage(null); }}
-          style={{ padding: '8px 16px', fontSize: '14px' }}
-        >
-          🏷️ ข้อมูลแบรนด์ & รูปภาพหน้าแรก
+          {saving ? '⏳ กำลังบันทึก…' : '💾 บันทึกข้อมูลทันที'}
         </button>
       </div>
 

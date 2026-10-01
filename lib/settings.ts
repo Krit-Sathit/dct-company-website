@@ -40,7 +40,7 @@ export const defaultContactSettings: ContactSettings = {
   registration_no: '',
   address: '49/203 หมู่ที่ 7 ตำบลคลองสอง อำเภอคลองหลวง จ. ปทุมธานี 12120',
   phone: '0825161718',
-  phone_secondary: '',
+  phone_secondary: '0984444466',
   email: 'sales@dcintertrade.com',
   email_cc: 'krit.dhm@gmail.com',
   resend_api_key: '',
