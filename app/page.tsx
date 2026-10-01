@@ -31,8 +31,11 @@ export default function Home() {
     fullName: string;
     certNo: string;
     issuer: string;
+    issueDate?: string;
     expiry: string;
     desc: string;
+    imageUrl?: string;
+    scope?: string;
   } | null>(null);
 
   // Slider ref for smooth horizontal scrolling (Slide 2)
@@ -82,9 +85,6 @@ export default function Home() {
         <div className="wrap">
           {/* =========================================================================
               ROW 2: สินค้าแนะนำ (Slide 2)
-              - ย้ายขึ้นมาเป็น Section ที่ 2 ทันที
-              - สไลด์ภาพ / Carousel พร้อมปุ่มเลื่อนและ Hover Zoom เพิ่มความไดนามิก
-              - ภาษาไทย 100% ไม่ปนภาษาอังกฤษ (สลับภาษาอังกฤษเมื่อกด EN)
               ========================================================================= */}
           <section className="row-products-full" style={{ marginTop: 0 }}>
             <div className="mockup-card">
@@ -159,9 +159,6 @@ export default function Home() {
 
           {/* =========================================================================
               ROW 3: ทำไมธุรกิจเลือกเรา & ไฮไลท์จุดเด่นสถิติ (Slide 3)
-              - ลบกลุ่มลูกค้าของเราออก
-              - ทำไมธุรกิจเลือกเรายาวเต็มความกว้าง
-              - รวมตัวเลข 4 ตัวที่ยืนยันแล้ว
               ========================================================================= */}
           <section style={{ marginTop: '20px' }}>
             <div className="mockup-card">
@@ -219,9 +216,6 @@ export default function Home() {
 
           {/* =========================================================================
               ROW 4: เกี่ยวกับเรา (Slide 4 & Slide 23)
-              - เอาบริการกล่องใหญ่ออก
-              - ขยายเกี่ยวกับเราให้กว้างเต็มตา
-              - ทำแถบไฮไลท์บริการ 4 ด้านด้านล่างพร้อมลิงก์ไปหน้าบริการเต็ม (ขยายใหญ่ขึ้นตาม Slide 23)
               ========================================================================= */}
           <section style={{ marginTop: '20px' }}>
             <div className="mockup-card">
@@ -240,7 +234,7 @@ export default function Home() {
                 <div
                   className="about-mockup-img"
                   style={{
-                    backgroundImage: `url('/about-factory.jpg')`,
+                    backgroundImage: `url('/about-factory-new.png')`,
                   }}
                 />
               </div>
@@ -303,70 +297,91 @@ export default function Home() {
 
           {/* =========================================================================
               ROW 5: มาตรฐานการผลิตที่คุณวางใจ (Slide 5)
-              - มีปุ่มเปิดดูเอกสารจริง (Modal)
               ========================================================================= */}
           <section style={{ marginTop: '20px' }}>
             <div className="mockup-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                 <h3 className="sec-title" style={{ margin: 0 }}>{t('standards_title')}</h3>
                 <span style={{ fontSize: '12px', color: '#7a6557' }}>
-                  {lang === 'en' ? '*Click card to view certificate preview' : '*กดที่การ์ดเพื่อดูเอกสารรับรองตัวอย่าง'}
+                  {lang === 'en' ? '*Click card to view certificate preview' : '*กดที่การ์ดเพื่อดูเอกสารรับรองตัวจริง'}
                 </span>
               </div>
               <div className="standards-content-split">
                 <div className="standards-badges-col">
+                  {/* Badge 1: GHPs */}
                   <div
                     className="standard-mini-badge clickable"
                     onClick={() =>
                       setActiveCert({
-                        name: 'GHPs',
-                        fullName: lang === 'en' ? 'Good Hygiene Practices (International Food Hygiene Standard)' : 'Good Hygiene Practices (มาตรฐานสุขลักษณะที่ดีในการผลิตอาหาร)',
-                        certNo: 'GHP-DCT-2025/089',
-                        issuer: lang === 'en' ? 'Department of Livestock Development / Certification Body' : 'กรมปศุสัตว์ / สถาบันรับรองมาตรฐานสากล',
-                        expiry: lang === 'en' ? '31 December 2027' : '31 ธันวาคม 2570',
-                        desc: lang === 'en' ? 'Certified pork cut and processing procedures, hygiene facilities, and personnel health protocols.' : 'รับรองกระบวนการผลิต การจัดการสุขอนามัยของสถานที่ บุคลากร และเครื่องมือเครื่องจักรในโรงงานตัดแต่งเนื้อสุกร',
+                        name: 'GHPs Certified',
+                        fullName: lang === 'en'
+                          ? 'Good Hygiene Practices (GHPs) — CXC 1-1969 (Revised 2022)'
+                          : 'Good Hygiene Practices (GHPs) — มาตรฐานสุขลักษณะที่ดีในการผลิตอาหาร',
+                        certNo: '24042407001',
+                        issuer: 'Intertek Industry and Certification Services (Thailand) Limited (ACFS)',
+                        issueDate: lang === 'en' ? '02 October 2024' : '02 ตุลาคม 2567',
+                        expiry: lang === 'en' ? '01 October 2027' : '01 ตุลาคม 2570',
+                        scope: 'การผลิต (การตัด, การตัดแต่ง) ของเนื้อหมูแช่เย็น หรือแช่เยือกแข็ง, หมูบดแช่เยือกแข็ง, หมูหมักแช่เยือกแข็ง และเครื่องในแช่เยือกแข็ง',
+                        desc: lang === 'en'
+                          ? 'Certified by Intertek for pork processing, custom cut, chilling, and personnel hygiene in compliance with global food safety standards.'
+                          : 'ได้รับการตรวจประเมินและรับรองจาก Intertek ว่า บริษัท ดวงเจริญอินเตอร์เทรด จำกัด ปฏิบัติตามมาตรฐานการจัดการสุขลักษณะที่ดีในกระบวนการผลิตอาหารอย่างเคร่งครัด',
+                        imageUrl: '/certificates/ghp-intertek-cert.jpg',
                       })
                     }
                   >
                     <IconRibbon size={24} color="#8B1E1E" />
                     <div style={{ flex: 1 }}>
-                      <h5>GHPs</h5>
-                      <p>Good Hygiene Practices</p>
+                      <h5>GHPs Certified</h5>
+                      <p>Good Hygiene Practices (Intertek)</p>
                     </div>
                     <span className="view-cert-badge">{t('view_cert')}</span>
                   </div>
 
+                  {/* Badge 2: HACCP */}
                   <div
                     className="standard-mini-badge clickable"
                     onClick={() =>
                       setActiveCert({
-                        name: 'HACCP',
-                        fullName: lang === 'en' ? 'Hazard Analysis and Critical Control Point System' : 'Hazard Analysis and Critical Control Point System (ระบบวิเคราะห์อันตรายและจุดวิกฤตที่ต้องควบคุม)',
-                        certNo: 'HACCP-DCT-2025/112',
-                        issuer: lang === 'en' ? 'Department of Livestock Development / Certification Body' : 'กรมปศุสัตว์ / สถาบันรับรองมาตรฐานสากล',
-                        expiry: lang === 'en' ? '31 December 2027' : '31 ธันวาคม 2570',
-                        desc: lang === 'en' ? 'Certified critical control point monitoring across cutting, chilling, and packing to guarantee 100% food safety.' : 'รับรองระบบการวิเคราะห์อันตรายและจุดวิกฤตที่ต้องควบคุมในการผลิตเนื้อสุกร เพื่อความปลอดภัยต่อผู้บริโภค 100%',
+                        name: 'HACCP Standard',
+                        fullName: lang === 'en'
+                          ? 'Hazard Analysis and Critical Control Point System (HACCP) — CXC 1-1969'
+                          : 'Hazard Analysis and Critical Control Point System (HACCP) — ระบบวิเคราะห์อันตรายและจุดวิกฤตที่ต้องควบคุม',
+                        certNo: '24042407001',
+                        issuer: 'Intertek Industry and Certification Services (Thailand) Limited (ACFS)',
+                        issueDate: lang === 'en' ? '02 October 2024' : '02 ตุลาคม 2567',
+                        expiry: lang === 'en' ? '01 October 2027' : '01 ตุลาคม 2570',
+                        scope: 'การผลิต (การตัด, การตัดแต่ง) ของเนื้อหมูแช่เย็น หรือแช่เยือกแข็ง, หมูบดแช่เยือกแข็ง, หมูหมักแช่เยือกแข็ง และเครื่องในแช่เยือกแข็ง',
+                        desc: lang === 'en'
+                          ? 'Certified critical control point monitoring across cutting, chilling, and packing to guarantee 100% food safety.'
+                          : 'ได้รับการรับรองระบบ HACCP จาก Intertek ครอบคลุมการควบคุมจุดวิกฤตในทุกกระบวนการตัดแต่ง จัดเก็บ และรักษาอุณหภูมิ เพื่อความปลอดภัยสูงสุดต่อผู้บริโภค',
+                        imageUrl: '/certificates/ghp-intertek-cert.jpg',
                       })
                     }
                   >
                     <IconShield size={24} color="#8B1E1E" />
                     <div style={{ flex: 1 }}>
-                      <h5>HACCP</h5>
+                      <h5>HACCP Standard</h5>
                       <p>Hazard Analysis & Critical Control</p>
                     </div>
                     <span className="view-cert-badge">{t('view_cert')}</span>
                   </div>
 
+                  {/* Badge 3: Quality Control & Traceability */}
                   <div
                     className="standard-mini-badge clickable"
                     onClick={() =>
                       setActiveCert({
-                        name: lang === 'en' ? 'Quality Control System' : 'ระบบควบคุมคุณภาพ',
-                        fullName: 'Quality Control & Traceability System',
+                        name: lang === 'en' ? 'Quality Control & Traceability' : 'ระบบควบคุมคุณภาพ & ตรวจสอบย้อนกลับ',
+                        fullName: 'Quality Control & Traceable Origin System',
                         certNo: 'QC-TRACE-DCT-2026',
-                        issuer: lang === 'en' ? 'QC Department, Duangcharoen Intertrade Co., Ltd.' : 'ฝ่ายประกันคุณภาพ บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด',
-                        expiry: lang === 'en' ? 'Annual Audit & Review' : 'ทบทวนและตรวจสอบประจำปี',
-                        desc: lang === 'en' ? '24-hour Cold Chain temperature monitoring and batch-level traceability for every cut piece.' : 'ระบบควบคุมอุณหภูมิ Cold Chain 24 ชม. และระบบตรวจสอบย้อนกลับ (Traceability) ได้ทุกชิ้นส่วนและทุกล็อตสินค้า',
+                        issuer: lang === 'en' ? 'Quality Assurance Department, Duangcharoen Intertrade Co., Ltd.' : 'ฝ่ายประกันคุณภาพ บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด',
+                        issueDate: lang === 'en' ? 'Continuous Audit' : 'ตรวจประเมินต่อเนื่อง',
+                        expiry: lang === 'en' ? 'Annual Review 2027' : 'ทบทวนและตรวจสอบประจำปี 2570',
+                        scope: 'ควบคุมอุณหภูมิ Cold Chain ตลอด 24 ชม. และระบบบันทึก Lot Number ย้อนกลับถึงฟาร์มต้นทาง',
+                        desc: lang === 'en'
+                          ? '24-hour Cold Chain temperature monitoring and batch-level traceability for every cut piece.'
+                          : 'ระบบควบคุมอุณหภูมิ Cold Chain 24 ชม. และระบบตรวจสอบย้อนกลับ (Traceability) ได้ทุกชิ้นส่วนและทุกล็อตสินค้า เพื่อความโปร่งใสและมั่นใจสูงสุด',
+                        imageUrl: '/certificates/ghp-intertek-cert.jpg',
                       })
                     }
                   >
@@ -417,52 +432,89 @@ export default function Home() {
       </div>
 
       {/* =========================================================================
-          MODAL: ดูเอกสารรับรองมาตรฐาน (Slide 5)
+          MODAL: ดูเอกสารรับรองมาตรฐานพร้อมรูปภาพจริง (Slide 5)
           ========================================================================= */}
       {activeCert && (
         <div className="cert-modal-backdrop" onClick={() => setActiveCert(null)}>
-          <div className="cert-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '12px', marginBottom: '16px' }}>
+          <div
+            className="cert-modal-content"
+            style={{ maxWidth: '680px', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #8B1E1E', paddingBottom: '12px', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span style={{ fontSize: '24px' }}>📜</span>
-                <h3 style={{ margin: 0, fontSize: '18px', color: 'var(--red)' }}>{activeCert.name}</h3>
+                <h3 style={{ margin: 0, fontSize: '19px', color: 'var(--red)', fontWeight: 'bold' }}>{activeCert.name}</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setActiveCert(null)}
-                style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#888' }}
+                style={{ background: 'none', border: 'none', fontSize: '22px', cursor: 'pointer', color: '#888' }}
               >
                 ✕
               </button>
             </div>
 
-            <p style={{ fontWeight: 700, fontSize: '15px', color: 'var(--ink)', margin: '0 0 10px' }}>
-              {activeCert.fullName}
-            </p>
-            <p style={{ fontSize: '13px', lineHeight: 1.6, color: '#555', margin: '0 0 16px' }}>
-              {activeCert.desc}
-            </p>
+            <div style={{ overflowY: 'auto', flex: 1, paddingRight: '4px' }}>
+              <p style={{ fontWeight: 700, fontSize: '15px', color: 'var(--ink)', margin: '0 0 8px' }}>
+                {activeCert.fullName}
+              </p>
+              <p style={{ fontSize: '13.5px', lineHeight: 1.65, color: '#555', margin: '0 0 16px' }}>
+                {activeCert.desc}
+              </p>
 
-            <div style={{ background: '#fcf8f3', border: '1px solid #ebd8c6', borderRadius: '6px', padding: '14px', fontSize: '13px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ color: '#7a6557' }}>{t('cert_no')}:</span>
-                <b>{activeCert.certNo}</b>
+              {/* ข้อมูลทะเบียนใบรับรองจริง */}
+              <div style={{ background: '#fcf8f3', border: '1px solid #ebd8c6', borderRadius: '8px', padding: '16px', fontSize: '13.5px', lineHeight: 1.8, marginBottom: '18px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
+                  <span style={{ color: '#7a6557' }}>{t('cert_no')} (Certificate No.):</span>
+                  <b style={{ color: 'var(--red)', letterSpacing: '0.05em' }}>{activeCert.certNo}</b>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
+                  <span style={{ color: '#7a6557' }}>{t('cert_issuer')} (Issued by):</span>
+                  <b>{activeCert.issuer}</b>
+                </div>
+                {activeCert.issueDate && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
+                    <span style={{ color: '#7a6557' }}>วันที่ออกใบรับรอง (Issue Date):</span>
+                    <b>{activeCert.issueDate}</b>
+                  </div>
+                )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
+                  <span style={{ color: '#7a6557' }}>{t('cert_expiry')} (Expiry Date):</span>
+                  <b style={{ color: '#188038' }}>{activeCert.expiry}</b>
+                </div>
+                {activeCert.scope && (
+                  <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px dashed #ded4c8', fontSize: '12.5px', color: '#685548' }}>
+                    <b>ขอบเขตการรับรอง (Scope):</b> {activeCert.scope}
+                  </div>
+                )}
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ color: '#7a6557' }}>{t('cert_issuer')}:</span>
-                <b>{activeCert.issuer}</b>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#7a6557' }}>{t('cert_expiry')}:</span>
-                <b style={{ color: '#188038' }}>{activeCert.expiry}</b>
-              </div>
+
+              {/* แสดงรูปภาพใบรับรองจริง */}
+              {activeCert.imageUrl && (
+                <div style={{ marginTop: '16px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--red)', marginBottom: '8px' }}>
+                    🏅 เอกสารรับรองฉบับจริง (Intertek Certificate of Registration):
+                  </div>
+                  <div style={{ border: '1px solid #ebd8c6', borderRadius: '8px', overflow: 'hidden', background: '#faf6f0', padding: '10px' }}>
+                    <img
+                      src={activeCert.imageUrl}
+                      alt={activeCert.name}
+                      style={{ maxWidth: '100%', maxHeight: '420px', width: 'auto', margin: '0 auto', display: 'block', borderRadius: '4px', boxShadow: '0 4px 14px rgba(0,0,0,0.08)' }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', paddingTop: '14px', borderTop: '1px solid #eee' }}>
+              <Link href="/standards" className="button alt" style={{ fontSize: '12.5px', padding: '7px 16px' }} onClick={() => setActiveCert(null)}>
+                ดูหน้ามาตรฐานทั้งหมด →
+              </Link>
               <button
                 type="button"
                 className="pill-btn primary"
-                style={{ fontSize: '13px', padding: '8px 20px' }}
+                style={{ fontSize: '13px', padding: '8px 22px' }}
                 onClick={() => setActiveCert(null)}
               >
                 {t('cert_close')}
