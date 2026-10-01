@@ -79,7 +79,7 @@ export default function Contact() {
             </div>
             {contact.phone_secondary && (
               <div className="spec">
-                <span>{lang === 'en' ? 'Mobile / Secondary' : 'เบอร์โทรศัพท์มือถือ (สำรอง)'}</span>
+                <span>{lang === 'en' ? 'Mobile / Hotline' : 'เบอร์โทรศัพท์มือถือ / สายด่วน'}</span>
                 <b>
                   <a href={`tel:${contact.phone_secondary}`} style={{ color: 'var(--red)', textDecoration: 'none' }}>
                     {contact.phone_secondary}
