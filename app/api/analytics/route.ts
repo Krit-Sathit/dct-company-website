@@ -1,5 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseBrowser, isSupabaseConfigured } from '@/lib/supabase-browser';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pbaujhdiskgjcjehxdkw.supabase.co';
+const supabaseKey =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  'sb_publishable_UWhbGSeCtJsFyZj15FHxzg_X75RaYku';
+
+function getSupabaseServerClient() {
+  if (supabaseUrl && supabaseKey) {
+    return createClient(supabaseUrl, supabaseKey);
+  }
+  return null;
+}
 
 // Fallback in-memory analytics store
 interface PageViewRecord {
@@ -64,9 +77,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Attempt save to Supabase if configured
-    if (isSupabaseConfigured()) {
+    const client = getSupabaseServerClient();
+    if (client) {
       try {
-        const client = supabaseBrowser();
         await client.from('page_views').insert({
           path: record.path,
           visitor_id: record.visitor_id,
@@ -89,9 +102,9 @@ export async function GET() {
     let allViews: PageViewRecord[] = [];
 
     // Try fetching from Supabase first
-    if (isSupabaseConfigured()) {
+    const client = getSupabaseServerClient();
+    if (client) {
       try {
-        const client = supabaseBrowser();
         const { data, error } = await client
           .from('page_views')
           .select('*')
