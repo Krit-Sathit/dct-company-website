@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { CmsCrud } from '@/components/cms-crud';
 import { CmsSettings } from '@/components/cms-settings';
 import { CmsRfq } from '@/components/cms-rfq';
+import { CmsAnalytics } from '@/components/cms-analytics';
 import { supabaseBrowser, isSupabaseConfigured } from '@/lib/supabase-browser';
 
 type Tab =
@@ -246,13 +247,16 @@ export default function Admin() {
       </div>
 
       {tab === 'overview' && (
-        <section className="card">
-          <h2>📊 ภาพรวมระบบจัดการเนื้อหา (Overview)</h2>
-          <p className="lead" style={{ marginBottom: '24px' }}>
-            ยินดีต้อนรับสู่ระบบบริหารจัดการเว็บไซต์ DCT B2B Food Supply Partner
-          </p>
+        <section className="card" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          <CmsAnalytics />
 
-          <div className="grid four" style={{ marginBottom: '32px' }}>
+          <hr style={{ border: 0, borderTop: '1px solid #e8e1d9', margin: '8px 0' }} />
+
+          <div>
+            <h3 style={{ margin: '0 0 16px', fontSize: '18px', color: 'var(--brown)' }}>
+              🗂️ สถานะเนื้อหาในระบบ (CMS Content Overview)
+            </h3>
+            <div className="grid four">
             <div
               className="card"
               style={{ cursor: 'pointer', borderLeft: '4px solid var(--red)' }}
@@ -293,6 +297,7 @@ export default function Admin() {
               <p className="small">บทความ ข่าวสาร และสาระน่ารู้ธุรกิจอาหาร</p>
             </div>
           </div>
+        </div>
 
           <h3>⚡ ทางลัดด่วน (Quick Actions)</h3>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '14px' }}>
