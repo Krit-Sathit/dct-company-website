@@ -111,7 +111,29 @@ create table if not exists rfq_items (
   note text
 );
 
+create table if not exists page_views (
+  id uuid primary key default uuid_generate_v4(),
+  path text not null,
+  visitor_id text not null,
+  device text default 'desktop',
+  referrer text,
+  created_at timestamptz default now()
+);
+
+create index if not exists idx_page_views_created_at on page_views(created_at desc);
+create index if not exists idx_page_views_path on page_views(path);
+create index if not exists idx_page_views_visitor on page_views(visitor_id);
+
 -- 3. Row Level Security (Allow Full Access for Website & Admin)
+alter table page_views enable row level security;
+drop policy if exists "Allow insert page_views for all" on page_views;
+create policy "Allow insert page_views for all" on page_views for insert with check (true);
+
+drop policy if exists "Allow read page_views for all" on page_views;
+create policy "Allow read page_views for all" on page_views for select using (true);
+
+grant all on table page_views to anon, authenticated;
+
 alter table site_settings enable row level security;
 drop policy if exists "Allow all access to site_settings" on site_settings;
 create policy "Allow all access to site_settings" on site_settings for all using (true) with check (true);
