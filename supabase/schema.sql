@@ -153,3 +153,32 @@ insert into products (name, slug, sku, description, cut_format, packing, storage
 ('ซี่โครงหมู', 'ribs', 'DCT-PK-045', 'ซี่โครงหมูสำหรับเมนูอบ ตุ๋น และย่าง จัดรูปแบบตามการใช้งาน', 'Rack / Cut pieces', 'Custom pack', 'แช่เย็นหรือแช่แข็ง', 'ร้านอาหาร โรงแรม และครัวกลาง', 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=1000&q=80', true),
 ('หมูบดตามสเปก', 'mince', 'DCT-PK-060', 'กำหนดระดับการบดและสัดส่วนเนื้อ-ไขมันตามกระบวนการผลิตของคุณ', 'Mince ตามขนาดที่ตกลง', '1 / 5 กก. Vacuum', 'แช่เย็นหรือแช่แข็ง', 'โรงงานแปรรูปและครัวกลาง', 'https://images.unsplash.com/photo-1588168333986-5078d3ae3976?auto=format&fit=crop&w=1000&q=80', true)
 on conflict (slug) do nothing;
+
+insert into services (title, slug, description, image_url, active) values
+('บริการตัดแต่งเนื้อสัตว์ตามสเปก', 'custom-cutting', 'รองรับการตัดแต่งตามความต้องการของลูกค้า เช่น สไลซ์ (Slice), หั่นเต๋า (Dice), บด (Mince), และตัดแต่งตามขนาดและน้ำหนักที่กำหนด (Portion Cut) พร้อมระบบควบคุมความหนาและสัดส่วนเนื้อต่อไขมันตามสเปก', '/service-custom-cut.png', true),
+('บริการบรรจุภัณฑ์และแพ็กสินค้า', 'packaging', 'บรรจุแบบสุญญากาศ (Vacuum Seal) ช่วยคงความสดและยืดอายุการเก็บรักษา รวมถึงการแพ็กแบบ Bulk หรือแยกรองรับการใช้งานของครัวกลาง พร้อมพิมพ์ฉลากสินค้าและระบุ Lot Number ชัดเจน', '/service-packaging.png', true),
+('บริการคลังสินค้าควบคุมอุณหภูมิ', 'cold-storage', 'คลังจัดเก็บสินค้าควบคุมอุณหภูมิมาตรฐานสากล ทั้งห้องชิลด์ (Chilled: 0°C ถึง 4°C) และห้องฟรีซ (Frozen: -18°C หรือต่ำกว่า) พร้อมระบบมอนิเตอร์อุณหภูมิตลอด 24 ชั่วโมง', '/service-cold-storage.png', true),
+('บริการขนส่ง Cold Chain ทั่วประเทศ', 'cold-chain-logistics', 'บริการกระจายสินค้าด้วยรถห้องเย็นปรับอุณหภูมิตามประเภทสินค้า ทั้งในเขตกรุงเทพฯ ปริมณฑล และต่างจังหวัด รับประกันการควบคุมอุณหภูมิตลอดเส้นทางการขนส่งเพื่อความสดใหม่สูงสุด', '/service-delivery.png', true)
+on conflict (slug) do nothing;
+
+insert into site_settings (key, value) values
+('contact', '{"phone": "02-123-4567", "phone_secondary": "098-444-4466", "email": "info@dcintertrade.com", "line_id": "@dcintertrade", "address": "99/9 หมู่ 5 ต.บางบัวทอง อ.บางบัวทอง จ.นนทบุรี 11110"}'::jsonb)
+on conflict (key) do nothing;
+
+-- 5. Storage Bucket for uploaded images
+insert into storage.buckets (id, name, public)
+values ('dct-media', 'dct-media', true)
+on conflict (id) do nothing;
+
+drop policy if exists "Public Access" on storage.objects;
+create policy "Public Access" on storage.objects for select using (bucket_id = 'dct-media');
+
+drop policy if exists "Allow all uploads" on storage.objects;
+create policy "Allow all uploads" on storage.objects for insert with check (bucket_id = 'dct-media');
+
+drop policy if exists "Allow all updates" on storage.objects;
+create policy "Allow all updates" on storage.objects for update using (bucket_id = 'dct-media');
+
+drop policy if exists "Allow all deletes" on storage.objects;
+create policy "Allow all deletes" on storage.objects for delete using (bucket_id = 'dct-media');
+

@@ -2,8 +2,11 @@
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pbaujhdiskgjcjehxdkw.supabase.co';
+const key =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  'sb_publishable_UWhbGSeCtJsFyZj15FHxzg_X75RaYku';
 
 export const isSupabaseConfigured = (): boolean => {
   return Boolean(url && url.startsWith('http') && key);
