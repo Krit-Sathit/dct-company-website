@@ -146,12 +146,12 @@ insert into categories (name, slug, description, sort_order, active) values
 on conflict (slug) do nothing;
 
 insert into products (name, slug, sku, description, cut_format, packing, storage, recommended_use, image_url, active) values
-('เนื้อหมูตัดแต่ง', 'trimmed-pork', 'DCT-PK-001', 'เนื้อสุกรคัดสรรสำหรับครัวกลางและธุรกิจอาหาร รองรับการตัดแต่งตามสเปก', 'Trim ตามสเปกลูกค้า', '5 กก. / Vacuum pack', 'แช่เย็นหรือแช่แข็งตามข้อตกลง', 'ครัวกลาง ร้านอาหาร และโรงงาน', 'https://images.unsplash.com/photo-1603048297172-c92544798d5a?auto=format&fit=crop&w=1000&q=80', true),
-('สามชั้นคัดเกรด', 'pork-belly', 'DCT-PK-014', 'สามชั้นคัดสัดส่วนชั้นเนื้อและไขมัน เพื่อความสม่ำเสมอในการปรุง', 'Whole / Slice / Custom cut', 'Vacuum pack ตามสเปก', 'แช่เย็นหรือแช่แข็ง', 'ร้านอาหาร ชาบู และผลิตภัณฑ์แปรรูป', 'https://images.unsplash.com/photo-1602470520998-f4a52199a3d6?auto=format&fit=crop&w=1000&q=80', true),
-('สันคอหมู', 'pork-neck', 'DCT-PK-022', 'สันคอหมูพร้อมปรับขนาดและความหนาสำหรับเมนูย่างหรือหมัก', 'Whole / Slice', '5 กก. / Custom', 'แช่เย็นหรือแช่แข็ง', 'ร้านอาหารและครัวกลาง', 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=1000&q=80', true),
-('สันนอกหมู', 'loin', 'DCT-PK-031', 'เนื้อสันนอกตัดแต่งพร้อมใช้งาน สื่อสารสเปกเพื่อควบคุมต้นทุนได้ง่าย', 'Trim / Portion', 'Vacuum pack', 'แช่เย็นหรือแช่แข็ง', 'สเต๊ก หมูทอด และอาหารพร้อมปรุง', 'https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=1000&q=80', true),
-('ซี่โครงหมู', 'ribs', 'DCT-PK-045', 'ซี่โครงหมูสำหรับเมนูอบ ตุ๋น และย่าง จัดรูปแบบตามการใช้งาน', 'Rack / Cut pieces', 'Custom pack', 'แช่เย็นหรือแช่แข็ง', 'ร้านอาหาร โรงแรม และครัวกลาง', 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=1000&q=80', true),
-('หมูบดตามสเปก', 'mince', 'DCT-PK-060', 'กำหนดระดับการบดและสัดส่วนเนื้อ-ไขมันตามกระบวนการผลิตของคุณ', 'Mince ตามขนาดที่ตกลง', '1 / 5 กก. Vacuum', 'แช่เย็นหรือแช่แข็ง', 'โรงงานแปรรูปและครัวกลาง', 'https://images.unsplash.com/photo-1588168333986-5078d3ae3976?auto=format&fit=crop&w=1000&q=80', true)
+('เนื้อหมูตัดแต่ง', 'trimmed-pork', 'DCT-PK-001', 'เนื้อสุกรคัดสรรสำหรับครัวกลางและธุรกิจอาหาร รองรับการตัดแต่งตามสเปก', 'Trim ตามสเปกลูกค้า', '5 กก. / Vacuum pack', 'แช่เย็นหรือแช่แข็งตามข้อตกลง', 'ครัวกลาง ร้านอาหาร และโรงงาน', '/products/trimmed-pork.webp', true),
+('สามชั้นคัดเกรด', 'pork-belly', 'DCT-PK-014', 'สามชั้นคัดสัดส่วนชั้นเนื้อและไขมัน เพื่อความสม่ำเสมอในการปรุง', 'Whole / Slice / Custom cut', 'Vacuum pack ตามสเปก', 'แช่เย็นหรือแช่แข็ง', 'ร้านอาหาร ชาบู และผลิตภัณฑ์แปรรูป', '/products/pork-belly.webp', true),
+('สันคอหมู', 'pork-neck', 'DCT-PK-022', 'สันคอหมูพร้อมปรับขนาดและความหนาสำหรับเมนูย่างหรือหมัก', 'Whole / Slice', '5 กก. / Custom', 'แช่เย็นหรือแช่แข็ง', 'ร้านอาหารและครัวกลาง', '/products/pork-neck.webp', true),
+('สันนอกหมู', 'loin', 'DCT-PK-031', 'เนื้อสันนอกตัดแต่งพร้อมใช้งาน สื่อสารสเปกเพื่อควบคุมต้นทุนได้ง่าย', 'Trim / Portion', 'Vacuum pack', 'แช่เย็นหรือแช่แข็ง', 'สเต๊ก หมูทอด และอาหารพร้อมปรุง', '/products/loin.webp', true),
+('ซี่โครงหมู', 'ribs', 'DCT-PK-045', 'ซี่โครงหมูสำหรับเมนูอบ ตุ๋น และย่าง จัดรูปแบบตามการใช้งาน', 'Rack / Cut pieces', 'Custom pack', 'แช่เย็นหรือแช่แข็ง', 'ร้านอาหาร โรงแรม และครัวกลาง', '/products/ribs.webp', true),
+('หมูบดตามสเปก', 'mince', 'DCT-PK-060', 'กำหนดระดับการบดและสัดส่วนเนื้อ-ไขมันตามกระบวนการผลิตของคุณ', 'Mince ตามขนาดที่ตกลง', '1 / 5 กก. Vacuum', 'แช่เย็นหรือแช่แข็ง', 'โรงงานแปรรูปและครัวกลาง', '/products/mince.webp', true)
 on conflict (slug) do nothing;
 
 insert into services (title, slug, description, image_url, active) values
