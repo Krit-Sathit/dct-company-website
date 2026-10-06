@@ -75,62 +75,78 @@ export default function Services() {
   const [servicesList, setServicesList] = useState(defaultServicesList);
 
   useEffect(() => {
+    function mapServices(rawList: any[]) {
+      if (!Array.isArray(rawList) || rawList.length === 0) return defaultServicesList;
+      const active = rawList.filter((s: any) => s.active !== false);
+      if (active.length === 0) return defaultServicesList;
+
+      return defaultServicesList.map((def, idx) => {
+        const found = active.find((s: any) => {
+          if (s.slug) {
+            if (s.slug === 'custom-cutting' && idx === 0) return true;
+            if (s.slug === 'packaging' && idx === 1) return true;
+            if (s.slug === 'cold-storage' && idx === 2) return true;
+            if (s.slug === 'cold-chain-logistics' && idx === 3) return true;
+          }
+          if (s.title && (s.title.toLowerCase().includes(def.titleEn.toLowerCase()) || def.titleTh.includes(s.title))) return true;
+          if (s.id && (s.id === `srv-${idx + 1}` || s.id === `service-0${idx + 1}`)) return true;
+          return false;
+        }) || active[idx];
+
+        if (!found) return def;
+
+        return {
+          ...def,
+          titleTh: found.title || def.titleTh,
+          titleEn: found.title_en || found.title || def.titleEn,
+          descTh: found.description || def.descTh,
+          descEn: found.description_en || found.description || def.descEn,
+          img: found.image_url || def.img,
+          alt: found.title || def.alt,
+        };
+      });
+    }
+
     async function load() {
+      // 1. Try Supabase if configured
       if (isSupabaseConfigured()) {
         try {
           const client = supabaseBrowser();
           const { data } = await client.from('services').select('*').eq('active', true);
           if (data && data.length > 0) {
-            setServicesList(
-              data.map((s, idx) => ({
-                id: `service-0${idx + 1}`,
-                num: `0${idx + 1}`,
-                tag: `0${idx + 1} · ${s.title}`,
-                titleTh: s.title,
-                titleEn: s.title_en || s.title,
-                subTag: idx === 2 ? 'CHILLED · FROZEN' : idx === 3 ? 'TEMPERATURE CONTROL · BUSINESS DELIVERY' : null,
-                descTh: s.description,
-                descEn: s.description_en || s.description,
-                ctaTh: idx < 2 ? 'สอบถามสเปก' : 'สอบถามบริการ',
-                ctaEn: idx < 2 ? 'Inquire Specs' : 'Inquire Service',
-                ctaHref: idx < 2 ? '/rfq' : '/contact',
-                img: s.image_url || defaultServicesList[idx % defaultServicesList.length].img,
-                alt: s.title,
-              }))
-            );
+            setServicesList(mapServices(data));
             return;
           }
         } catch {}
       }
 
+      // 2. Try Server API
       try {
         const res = await fetch('/api/cms?table=services', { cache: 'no-store' });
         if (res.ok) {
           const serverData = await res.json();
           if (Array.isArray(serverData) && serverData.length > 0) {
-            const activeOnes = serverData.filter((s: any) => s.active !== false);
-            if (activeOnes.length > 0) {
-              setServicesList(
-                activeOnes.map((s: any, idx: number) => ({
-                  id: `service-0${idx + 1}`,
-                  num: `0${idx + 1}`,
-                  tag: `0${idx + 1} · ${s.title}`,
-                  titleTh: s.title,
-                  titleEn: s.title_en || s.title,
-                  subTag: idx === 2 ? 'CHILLED · FROZEN' : idx === 3 ? 'TEMPERATURE CONTROL · BUSINESS DELIVERY' : null,
-                  descTh: s.description,
-                  descEn: s.description_en || s.description,
-                  ctaTh: idx < 2 ? 'สอบถามสเปก' : 'สอบถามบริการ',
-                  ctaEn: idx < 2 ? 'Inquire Specs' : 'Inquire Service',
-                  ctaHref: idx < 2 ? '/rfq' : '/contact',
-                  img: s.image_url || defaultServicesList[idx % defaultServicesList.length].img,
-                  alt: s.title,
-                }))
-              );
-            }
+            setServicesList(mapServices(serverData));
+            return;
           }
         }
       } catch {}
+
+      // 3. Try LocalStorage CMS cache fallback
+      if (typeof window !== 'undefined') {
+        try {
+          const cached = localStorage.getItem('dct_cms_services');
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setServicesList(mapServices(parsed));
+              return;
+            }
+          }
+        } catch {}
+      }
+
+      setServicesList(defaultServicesList);
     }
 
     void load();
