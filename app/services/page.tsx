@@ -132,20 +132,6 @@ export default function Services() {
         }
       } catch {}
 
-      // 3. Try LocalStorage CMS cache fallback
-      if (typeof window !== 'undefined') {
-        try {
-          const cached = localStorage.getItem('dct_cms_services');
-          if (cached) {
-            const parsed = JSON.parse(cached);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              setServicesList(mapServices(parsed));
-              return;
-            }
-          }
-        } catch {}
-      }
-
       setServicesList(defaultServicesList);
     }
 

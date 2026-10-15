@@ -1,11 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { defaultContactSettings } from '@/lib/settings';
+import { getSupabaseServer } from '@/lib/supabase-server';
 
-// In-memory server cache for submitted RFQs across all clients
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+// In-memory server cache as secondary fallback
 let serverRfqs: any[] = [];
 
 export async function GET() {
-  return NextResponse.json(serverRfqs);
+  const supabase = getSupabaseServer();
+  try {
+    const { data, error } = await supabase
+      .from('rfqs')
+      .select('*, rfq_items(*)')
+      .order('created_at', { ascending: false });
+
+    if (!error && data) {
+      return NextResponse.json(data, {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
+        },
+      });
+    }
+  } catch (err) {
+    console.error('[RFQ API] Error loading RFQs from database:', err);
+  }
+
+  return NextResponse.json(serverRfqs, {
+    headers: {
+      'Cache-Control': 'no-store, no-cache, must-revalidate',
+    },
+  });
 }
 
 export async function POST(req: NextRequest) {
@@ -13,7 +39,47 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { ref, company, specs, items, createdAt } = body;
 
-    // Save to in-memory server cache
+    const supabase = getSupabaseServer();
+
+    // 1. Direct write to Supabase Database
+    try {
+      const { data: rfqRow, error: rfqErr } = await supabase
+        .from('rfqs')
+        .upsert(
+          {
+            reference: ref || `RFQ-${Date.now()}`,
+            status: 'new',
+            company_name: company?.companyName || 'ไม่ระบุ',
+            contact_name: company?.contactName || 'ไม่ระบุ',
+            phone: company?.phone || '-',
+            email: company?.email || '-',
+            line_id: company?.lineId || '',
+            address: specs?.deliveryLocation || '',
+            notes: [specs?.orderFrequency, specs?.additionalNotes].filter(Boolean).join(' | '),
+            created_at: createdAt || new Date().toISOString(),
+          },
+          { onConflict: 'reference' }
+        )
+        .select()
+        .single();
+
+      if (!rfqErr && rfqRow?.id && items && items.length > 0) {
+        await supabase.from('rfq_items').delete().eq('rfq_id', rfqRow.id);
+        const itemRows = items.map((i: any) => ({
+          rfq_id: rfqRow.id,
+          product_name: i.name || i.product_name || 'สินค้า',
+          sku: i.code || i.sku || '',
+          quantity: Number(i.qty || i.quantity || 1),
+          unit: i.unit || 'กก.',
+          note: i.note || '',
+        }));
+        await supabase.from('rfq_items').insert(itemRows);
+      }
+    } catch (dbErr) {
+      console.error('[RFQ API] Error saving RFQ to database:', dbErr);
+    }
+
+    // Save to in-memory server cache as fallback
     if (ref) {
       serverRfqs = [
         {
@@ -332,5 +398,66 @@ export async function POST(req: NextRequest) {
       { success: false, message: error?.message || 'Server error' },
       { status: 500 }
     );
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { id, reference, status } = body;
+
+    const supabase = getSupabaseServer();
+    let query = supabase.from('rfqs').update({ status });
+
+    if (id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(id))) {
+      query = query.eq('id', id);
+    } else if (reference) {
+      query = query.eq('reference', reference);
+    } else {
+      return NextResponse.json({ success: false, message: 'Missing RFQ ID or reference' }, { status: 400 });
+    }
+
+    const { error } = await query;
+    if (error) {
+      return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    }
+
+    // Keep memory fallback in sync
+    serverRfqs = serverRfqs.map((r) =>
+      r.id === id || r.reference === reference ? { ...r, status } : r
+    );
+
+    return NextResponse.json({ success: true, message: 'Status updated' });
+  } catch (err: any) {
+    return NextResponse.json({ success: false, message: err?.message || 'Server error' }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+    const reference = searchParams.get('reference');
+
+    const supabase = getSupabaseServer();
+    let query = supabase.from('rfqs').delete();
+
+    if (id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(id))) {
+      query = query.eq('id', id);
+    } else if (reference) {
+      query = query.eq('reference', reference);
+    } else {
+      return NextResponse.json({ success: false, message: 'Missing RFQ ID or reference' }, { status: 400 });
+    }
+
+    const { error } = await query;
+    if (error) {
+      return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    }
+
+    serverRfqs = serverRfqs.filter((r) => r.id !== id && r.reference !== reference);
+    return NextResponse.json({ success: true, message: 'RFQ deleted' });
+  } catch (err: any) {
+    return NextResponse.json({ success: false, message: err?.message || 'Server error' }, { status: 500 });
   }
 }

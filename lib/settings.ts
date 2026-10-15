@@ -128,38 +128,45 @@ export async function getContactSettings(): Promise<ContactSettings> {
 }
 
 export async function saveContactSettings(settings: ContactSettings): Promise<{ success: boolean; message: string }> {
-  // 1. Save to Supabase first if configured
-  if (isSupabaseConfigured()) {
-    try {
+  try {
+    // 1. Save to Supabase first if configured
+    if (isSupabaseConfigured()) {
       const client = supabaseBrowser();
-      await client.from('site_settings').upsert({
+      const { error } = await client.from('site_settings').upsert({
         key: 'contact',
         value: settings,
         updated_at: new Date().toISOString(),
       });
-    } catch (e) {
-      console.error('[Save Contact] Supabase error:', e);
+      if (error) {
+        console.error('[Save Contact] Supabase error:', error);
+        throw new Error(error.message);
+      }
     }
-  }
 
-  // 2. Save to Server API
-  try {
-    await fetch('/api/settings', {
+    // 2. Save to Server API
+    const res = await fetch('/api/settings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'contact', data: settings }),
     });
-  } catch {
-    // ignore
-  }
+    const json = await res.json();
+    if (!res.ok || !json.success) {
+      throw new Error(json?.message || 'Server API save failed');
+    }
 
-  // 3. Save to local storage and notify all open tabs/components
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(CONTACT_KEY, JSON.stringify(settings));
-    window.dispatchEvent(new CustomEvent('dct_settings_updated', { detail: { type: 'contact', data: settings } }));
-  }
+    // 3. Update cache and notify
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(CONTACT_KEY, JSON.stringify(settings));
+      window.dispatchEvent(new CustomEvent('dct_settings_updated', { detail: { type: 'contact', data: settings } }));
+    }
 
-  return { success: true, message: '✅ บันทึกข้อมูลและอัปเดตหน้าเว็บเรียบร้อยแล้ว' };
+    return { success: true, message: '✅ บันทึกข้อมูลลงฐานข้อมูล Supabase สำเร็จและอัปเดตหน้าเว็บแล้ว' };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: `❌ เกิดข้อผิดพลาดในการบันทึกลงฐานข้อมูล: ${err?.message || 'โปรดตรวจสอบการเชื่อมต่อ'}`,
+    };
+  }
 }
 
 export async function getCompanyProfile(): Promise<CompanyProfileSettings> {
@@ -221,36 +228,43 @@ export async function getCompanyProfile(): Promise<CompanyProfileSettings> {
 }
 
 export async function saveCompanyProfile(profile: CompanyProfileSettings): Promise<{ success: boolean; message: string }> {
-  // 1. Save to Supabase first if configured
-  if (isSupabaseConfigured()) {
-    try {
+  try {
+    // 1. Save to Supabase first if configured
+    if (isSupabaseConfigured()) {
       const client = supabaseBrowser();
-      await client.from('site_settings').upsert({
+      const { error } = await client.from('site_settings').upsert({
         key: 'company_profile',
         value: profile,
         updated_at: new Date().toISOString(),
       });
-    } catch (e) {
-      console.error('[Save Profile] Supabase error:', e);
+      if (error) {
+        console.error('[Save Profile] Supabase error:', error);
+        throw new Error(error.message);
+      }
     }
-  }
 
-  // 2. Save to Server API
-  try {
-    await fetch('/api/settings', {
+    // 2. Save to Server API
+    const res = await fetch('/api/settings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'company_profile', data: profile }),
     });
-  } catch {
-    // ignore
-  }
+    const json = await res.json();
+    if (!res.ok || !json.success) {
+      throw new Error(json?.message || 'Server API save failed');
+    }
 
-  // 3. Save to local storage and notify all open tabs/components
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-    window.dispatchEvent(new CustomEvent('dct_settings_updated', { detail: { type: 'company_profile', data: profile } }));
-  }
+    // 3. Update cache and notify
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+      window.dispatchEvent(new CustomEvent('dct_settings_updated', { detail: { type: 'company_profile', data: profile } }));
+    }
 
-  return { success: true, message: '✅ บันทึกรูปภาพและข้อมูลขึ้นหน้าเว็บเรียบร้อยแล้ว' };
+    return { success: true, message: '✅ บันทึกรูปภาพและข้อมูลลงฐานข้อมูล Supabase สำเร็จแล้ว' };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: `❌ เกิดข้อผิดพลาดในการบันทึกลงฐานข้อมูล: ${err?.message || 'โปรดตรวจสอบการเชื่อมต่อ'}`,
+    };
+  }
 }

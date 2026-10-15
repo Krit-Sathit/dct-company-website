@@ -73,20 +73,6 @@ export default function Standards() {
         }
       }
 
-      // 3. Try LocalStorage CMS cache
-      if (loaded.length === 0 && typeof window !== 'undefined') {
-        try {
-          const cached = localStorage.getItem('dct_cms_certificates');
-          if (cached) {
-            const parsed = JSON.parse(cached);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              loaded = parsed.filter((c: any) => c.active !== false);
-            }
-          }
-        } catch {
-          // ignore
-        }
-      }
 
       if (loaded.length > 0) {
         setCerts(

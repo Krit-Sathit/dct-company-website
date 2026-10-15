@@ -196,49 +196,27 @@ export function CmsCrud({ resourceKey }: { resourceKey: keyof typeof resources }
   );
 
   async function load() {
-    // 1. Try Supabase first if configured
-    if (isSupabaseConfigured()) {
-      try {
-        const client = supabaseBrowser();
-        const [{ data, error }, { data: categoryData }] = await Promise.all([
-          client.from(resource.table).select('*'),
-          client.from('categories').select('id,name,slug'),
-        ]);
-
-        if (!error && data && data.length > 0) {
-          setRows(data as Row[]);
-          if (categoryData && categoryData.length > 0) {
-            setCategories(categoryData as Row[]);
-          }
-          return;
-        }
-      } catch {
-        // Fallback to Server API
-      }
-    }
-
-    // 2. Fetch from Server API
+    // 1. Direct from Database via /api/cms (always live Supabase Postgres)
     try {
-      const res = await fetch(`/api/cms?table=${resource.table}`, { cache: 'no-store' });
+      const [res, catRes] = await Promise.all([
+        fetch(`/api/cms?table=${resource.table}`, { cache: 'no-store' }),
+        fetch('/api/cms?table=categories', { cache: 'no-store' }),
+      ]);
       if (res.ok) {
         const serverData = await res.json();
-        if (Array.isArray(serverData) && serverData.length > 0) {
+        if (Array.isArray(serverData)) {
           setRows(serverData as Row[]);
-          setCategories(
-            mockCategories.filter((c) => c !== 'ทั้งหมด').map((c, i) => ({ id: `cat-${i + 1}`, name: c, slug: c }))
-          );
-          return;
         }
       }
-    } catch {
-      // ignore
+      if (catRes.ok) {
+        const catData = await catRes.json();
+        if (Array.isArray(catData)) {
+          setCategories(catData as Row[]);
+        }
+      }
+    } catch (e) {
+      console.error('[CMS] Error loading data from database:', e);
     }
-
-    // 3. Default fallback
-    setRows(resource.defaultList ? resource.defaultList() : []);
-    setCategories(
-      mockCategories.filter((c) => c !== 'ทั้งหมด').map((c, i) => ({ id: `cat-${i + 1}`, name: c, slug: c }))
-    );
   }
 
   useEffect(() => {
@@ -277,74 +255,47 @@ export function CmsCrud({ resourceKey }: { resourceKey: keyof typeof resources }
       if (field.key === 'category_id' && !payload[field.key]) payload[field.key] = null;
     }
 
-    // 1. Always save to Server API (Universal Realtime Store)
     try {
-      await fetch('/api/cms', {
+      const res = await fetch('/api/cms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           table: resource.table,
           action: 'save',
-          data: { ...payload, id: editing?.id || payload.id || payload.slug || `item-${Date.now()}` },
+          data: { ...payload, id: editing?.id || undefined },
         }),
       });
-    } catch {
-      // ignore
-    }
 
-    // 2. Also save to Supabase if configured (without blocking on table cache error)
-    if (isSupabaseConfigured()) {
-      try {
-        const client = supabaseBrowser();
-        const dbPayload = { ...payload };
-        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(editing?.id || ''));
-        delete dbPayload.id;
-
-        if (editing?.id && isUuid) {
-          await client.from(resource.table).update(dbPayload).eq('id', editing.id);
-        } else if (payload.slug) {
-          await client.from(resource.table).upsert({ ...dbPayload, slug: payload.slug }, { onConflict: 'slug' });
-        } else if (editing?.id) {
-          await client.from(resource.table).update(dbPayload).eq('id', editing.id);
-        } else {
-          await client.from(resource.table).insert(dbPayload);
-        }
-      } catch {
-        // Supabase error gracefully bypassed
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        throw new Error(json.message || 'บันทึกลงฐานข้อมูลล้มเหลว');
       }
-    }
 
-    // 3. Update local UI state immediately
-    setRows((prev) => {
-      const idx = prev.findIndex((r) => (editing?.id && r.id === editing.id) || (payload.slug && r.slug === payload.slug));
-      let updated: Row[];
-      if (idx >= 0) {
-        updated = [...prev];
-        updated[idx] = { ...updated[idx], ...payload };
-      } else {
-        updated = [...prev, { ...payload, id: payload.id || payload.slug || `item-${Date.now()}` }];
-      }
+      // Reload fresh rows directly from database
+      await load();
       if (typeof window !== 'undefined') {
-        localStorage.setItem(`dct_cms_${resource.table}`, JSON.stringify(updated));
         window.dispatchEvent(new CustomEvent('dct_cms_updated', { detail: { table: resource.table } }));
       }
-      return updated;
-    });
-
-    setSaving(false);
-    setMessage({
-      text: '✅ บันทึกข้อมูลและอัปเดตรูปภาพเรียบร้อยแล้ว',
-      type: 'success',
-    });
-    cancel();
+      setSaving(false);
+      setMessage({
+        text: '✅ บันทึกลงฐานข้อมูล Supabase สำเร็จเรียบร้อยแล้ว',
+        type: 'success',
+      });
+      cancel();
+    } catch (err: any) {
+      setSaving(false);
+      setMessage({
+        text: `❌ เกิดข้อผิดพลาดในการบันทึกลงฐานข้อมูล: ${err?.message || 'โปรดตรวจสอบการเชื่อมต่อ'}`,
+        type: 'error',
+      });
+    }
   }
 
   async function remove(row: Row) {
     if (!window.confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบ “${row[resource.primary]}”?`)) return;
 
-    // 1. Delete from Server API
     try {
-      await fetch('/api/cms', {
+      const res = await fetch('/api/cms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -353,31 +304,24 @@ export function CmsCrud({ resourceKey }: { resourceKey: keyof typeof resources }
           data: row,
         }),
       });
-    } catch {
-      // ignore
-    }
 
-    // 2. Delete from Supabase if configured
-    if (isSupabaseConfigured() && row.id) {
-      try {
-        const client = supabaseBrowser();
-        await client.from(resource.table).delete().eq('id', row.id);
-      } catch {
-        // ignore
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        throw new Error(json.message || 'ลบข้อมูลจากฐานข้อมูลล้มเหลว');
       }
-    }
 
-    // 3. Update local state
-    setRows((prev) => {
-      const updated = prev.filter((r) => r.id !== row.id && (!row.slug || r.slug !== row.slug));
+      await load();
       if (typeof window !== 'undefined') {
-        localStorage.setItem(`dct_cms_${resource.table}`, JSON.stringify(updated));
         window.dispatchEvent(new CustomEvent('dct_cms_updated', { detail: { table: resource.table } }));
       }
-      return updated;
-    });
-    if (editing?.id === row.id) cancel();
-    setMessage({ text: '✅ ลบรายการเรียบร้อยแล้ว', type: 'success' });
+      if (editing?.id === row.id) cancel();
+      setMessage({ text: '✅ ลบรายการออกจากฐานข้อมูล Supabase เรียบร้อยแล้ว', type: 'success' });
+    } catch (err: any) {
+      setMessage({
+        text: `❌ เกิดข้อผิดพลาดในการลบจากฐานข้อมูล: ${err?.message || 'โปรดตรวจสอบการเชื่อมต่อ'}`,
+        type: 'error',
+      });
+    }
   }
 
   const filteredRows = rows.filter((r) => {

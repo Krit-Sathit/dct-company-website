@@ -78,63 +78,17 @@ export function CmsRfq() {
       };
     }
 
-    // 1. Try Server API /api/rfq
+    // 1. Fetch direct from Supabase Database via /api/rfq (no-store)
     try {
       const res = await fetch('/api/rfq', { cache: 'no-store' });
       if (res.ok) {
         const json = await res.json();
         if (Array.isArray(json)) {
-          list = json.map((r: any, idx: number) => parseRfq(r, `api-${idx}`));
+          list = json.map((r: any, idx: number) => parseRfq(r, `rfq-${idx}`));
         }
       }
-    } catch {
-      // ignore
-    }
-
-    // 2. Try Supabase
-    try {
-      const client = supabaseBrowser();
-      const { data: dbRfqs, error } = await client
-        .from('rfqs')
-        .select('*, rfq_items(*)')
-        .order('created_at', { ascending: false });
-
-      if (!error && dbRfqs && dbRfqs.length > 0) {
-        const existingRefs = new Set(list.map((r) => r.reference));
-        for (const r of dbRfqs) {
-          const parsed = parseRfq({ ...r, items: r.rfq_items || [] });
-          if (!existingRefs.has(parsed.reference)) {
-            list.push(parsed);
-          }
-        }
-      }
-    } catch {
-      // ignore
-    }
-
-    // 3. Load local submissions as well
-    if (typeof window !== 'undefined') {
-      try {
-        const localSaved = JSON.parse(localStorage.getItem('dct-rfq-submissions') || '[]');
-        if (Array.isArray(localSaved)) {
-          const existingRefs = new Set(list.map((r) => r.reference));
-          for (let idx = 0; idx < localSaved.length; idx++) {
-            const loc = localSaved[idx];
-            const parsed = parseRfq(loc, `local-${idx}`);
-            if (!existingRefs.has(parsed.reference)) {
-              list.push(parsed);
-            } else {
-              // Replace placeholder item with full local details if needed
-              const index = list.findIndex((r) => r.reference === parsed.reference);
-              if (index !== -1 && list[index].company_name === 'ไม่ระบุ' && parsed.company_name !== 'ไม่ระบุ') {
-                list[index] = parsed;
-              }
-            }
-          }
-        }
-      } catch {
-        // ignore
-      }
+    } catch (err) {
+      console.error('[CMS RFQ] Database query error:', err);
     }
 
     setRfqs(list);
@@ -147,74 +101,47 @@ export function CmsRfq() {
 
   async function handleStatusChange(rfqId: string, newStatus: string) {
     setMessage('');
-    // Update local state
-    setRfqs((prev) =>
-      prev.map((r) => (r.id === rfqId ? { ...r, status: newStatus } : r))
-    );
-    if (selectedRfq && selectedRfq.id === rfqId) {
-      setSelectedRfq((prev) => (prev ? { ...prev, status: newStatus } : null));
-    }
-
-    // Update in Supabase
     try {
-      const client = supabaseBrowser();
-      const { error } = await client
-        .from('rfqs')
-        .update({ status: newStatus })
-        .eq('id', rfqId);
-
-      if (error) {
-        // If it's a local rfq, update in localStorage
-        updateLocalStorageRfq(rfqId, { status: newStatus });
-      }
-      setMessage('อัปเดตสถานะใบเสนอราคาเรียบร้อยแล้ว');
-    } catch {
-      updateLocalStorageRfq(rfqId, { status: newStatus });
-      setMessage('อัปเดตสถานะเรียบร้อยแล้ว');
-    }
-  }
-
-  function updateLocalStorageRfq(idOrRef: string, changes: Partial<Rfq>) {
-    if (typeof window === 'undefined') return;
-    try {
-      const local = JSON.parse(localStorage.getItem('dct-rfq-submissions') || '[]');
-      const updated = local.map((item: any) => {
-        if (item.ref === idOrRef || `local-${item.ref}` === idOrRef) {
-          return { ...item, ...changes };
-        }
-        return item;
+      const res = await fetch('/api/rfq', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: rfqId, status: newStatus }),
       });
-      localStorage.setItem('dct-rfq-submissions', JSON.stringify(updated));
-    } catch {
-      // ignore
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        throw new Error(json.message || 'Update failed');
+      }
+
+      setRfqs((prev) =>
+        prev.map((r) => (r.id === rfqId ? { ...r, status: newStatus } : r))
+      );
+      if (selectedRfq && selectedRfq.id === rfqId) {
+        setSelectedRfq((prev) => (prev ? { ...prev, status: newStatus } : null));
+      }
+      setMessage('✅ อัปเดตสถานะในฐานข้อมูลสำเร็จเรียบร้อยแล้ว');
+    } catch (err: any) {
+      setMessage(`❌ เกิดข้อผิดพลาดในการอัปเดตสถานะ: ${err?.message || 'โปรดลองใหม่อีกครั้ง'}`);
     }
   }
 
   async function handleDeleteRfq(rfq: Rfq) {
-    if (!window.confirm(`คุณต้องการลบคำขอใบเสนอราคา ${rfq.reference} ใช่หรือไม่?`)) return;
+    if (!window.confirm(`คุณต้องการลบคำขอใบเสนอราคา ${rfq.reference} ออกจากฐานข้อมูลใช่หรือไม่?`)) return;
 
-    // Delete in Supabase
     try {
-      const client = supabaseBrowser();
-      await client.from('rfqs').delete().eq('id', rfq.id);
-    } catch {
-      // ignore
-    }
-
-    // Delete in localStorage
-    if (typeof window !== 'undefined') {
-      try {
-        const local = JSON.parse(localStorage.getItem('dct-rfq-submissions') || '[]');
-        const filtered = local.filter((item: any) => item.ref !== rfq.reference);
-        localStorage.setItem('dct-rfq-submissions', JSON.stringify(filtered));
-      } catch {
-        // ignore
+      const res = await fetch(`/api/rfq?id=${encodeURIComponent(rfq.id)}&reference=${encodeURIComponent(rfq.reference)}`, {
+        method: 'DELETE',
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        throw new Error(json.message || 'Delete failed');
       }
-    }
 
-    setRfqs((prev) => prev.filter((r) => r.id !== rfq.id));
-    if (selectedRfq?.id === rfq.id) setSelectedRfq(null);
-    setMessage(`ลบรายการ ${rfq.reference} เรียบร้อยแล้ว`);
+      setRfqs((prev) => prev.filter((r) => r.id !== rfq.id));
+      if (selectedRfq?.id === rfq.id) setSelectedRfq(null);
+      setMessage(`✅ ลบรายการ ${rfq.reference} จากฐานข้อมูลสำเร็จเรียบร้อยแล้ว`);
+    } catch (err: any) {
+      setMessage(`❌ เกิดข้อผิดพลาดในการลบ: ${err?.message || 'โปรดลองใหม่อีกครั้ง'}`);
+    }
   }
 
   const filteredRfqs = rfqs.filter((r) => {

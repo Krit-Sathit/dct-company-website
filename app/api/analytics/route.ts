@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseServer } from '@/lib/supabase-server';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pbaujhdiskgjcjehxdkw.supabase.co';
-const supabaseKey =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-  'sb_publishable_UWhbGSeCtJsFyZj15FHxzg_X75RaYku';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 function getSupabaseServerClient() {
-  if (supabaseUrl && supabaseKey) {
-    return createClient(supabaseUrl, supabaseKey);
-  }
-  return null;
+  return getSupabaseServer();
 }
 
 // Fallback in-memory analytics store
