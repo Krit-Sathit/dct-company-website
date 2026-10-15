@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { products as defaultProducts } from '@/lib/data';
+import { getSupabaseServer } from '@/lib/supabase-server';
 
-// In-memory server store for all CMS resources
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+// In-memory fallback for initial render / offline fallback
 const cmsStore: Record<string, any[]> = {
   products: defaultProducts.map((p) => ({
     id: p.id,
@@ -52,11 +56,35 @@ const cmsStore: Record<string, any[]> = {
   ],
 };
 
+const NO_CACHE_HEADERS = {
+  'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+};
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const table = searchParams.get('table') || 'products';
-  const data = cmsStore[table] || [];
-  return NextResponse.json(data);
+
+  const supabase = getSupabaseServer();
+
+  // 1. Try Supabase site_settings for this table's persistent data
+  try {
+    const { data, error } = await supabase
+      .from('site_settings')
+      .select('value')
+      .eq('key', `cms_${table}`)
+      .maybeSingle();
+
+    if (!error && Array.isArray(data?.value) && data.value.length > 0) {
+      cmsStore[table] = data.value;
+      return NextResponse.json(data.value, { headers: NO_CACHE_HEADERS });
+    }
+  } catch (err) {
+    console.error(`[CMS API] Supabase error fetching cms_${table}:`, err);
+  }
+
+  // 2. Fallback to memory
+  const fallbackData = cmsStore[table] || [];
+  return NextResponse.json(fallbackData, { headers: NO_CACHE_HEADERS });
 }
 
 export async function POST(req: NextRequest) {
@@ -64,32 +92,63 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { table, action, data } = body;
 
-    if (!table || !cmsStore[table]) {
-      cmsStore[table] = [];
+    if (!table) {
+      return NextResponse.json({ success: false, message: 'Missing table' }, { status: 400 });
     }
+
+    const supabase = getSupabaseServer();
+
+    // First fetch current list from Supabase if available
+    let currentList = cmsStore[table] || [];
+    try {
+      const { data: remoteData } = await supabase
+        .from('site_settings')
+        .select('value')
+        .eq('key', `cms_${table}`)
+        .maybeSingle();
+
+      if (Array.isArray(remoteData?.value)) {
+        currentList = remoteData.value;
+      }
+    } catch {
+      // use currentList fallback
+    }
+
+    let updatedList = [...currentList];
 
     if (action === 'delete') {
-      cmsStore[table] = cmsStore[table].filter(
-        (item) => item.id !== data.id && (!data.slug || item.slug !== data.slug)
+      updatedList = updatedList.filter(
+        (item) => item.id !== data?.id && (!data?.slug || item.slug !== data?.slug)
       );
-      return NextResponse.json({ success: true, data: cmsStore[table] });
-    }
-
-    // Save or Update
-    const list = [...cmsStore[table]];
-    const index = list.findIndex(
-      (item) => (data.id && item.id === data.id) || (data.slug && item.slug === data.slug)
-    );
-
-    if (index >= 0) {
-      list[index] = { ...list[index], ...data };
     } else {
-      list.push({ ...data, id: data.id || `item-${Date.now()}` });
+      // Save or Update
+      const index = updatedList.findIndex(
+        (item) => (data?.id && item.id === data.id) || (data?.slug && item.slug === data.slug)
+      );
+
+      if (index >= 0) {
+        updatedList[index] = { ...updatedList[index], ...data };
+      } else {
+        updatedList.push({ ...data, id: data?.id || `item-${Date.now()}` });
+      }
     }
 
-    cmsStore[table] = list;
-    return NextResponse.json({ success: true, data: cmsStore[table] });
+    // Persist to Supabase site_settings
+    try {
+      await supabase.from('site_settings').upsert({
+        key: `cms_${table}`,
+        value: updatedList,
+        updated_at: new Date().toISOString(),
+      });
+    } catch (e) {
+      console.error(`[CMS API] Failed to persist cms_${table} to Supabase:`, e);
+    }
+
+    // Keep in-memory store in sync
+    cmsStore[table] = updatedList;
+
+    return NextResponse.json({ success: true, data: updatedList }, { headers: NO_CACHE_HEADERS });
   } catch (err: any) {
-    return NextResponse.json({ success: false, message: err.message }, { status: 500 });
+    return NextResponse.json({ success: false, message: err?.message || 'Server error' }, { status: 500 });
   }
 }

@@ -194,7 +194,7 @@ insert into services (title, slug, description, image_url, active) values
 on conflict (slug) do nothing;
 
 insert into site_settings (key, value) values
-('contact', '{"phone": "02-123-4567", "phone_secondary": "098-444-4466", "email": "info@dcintertrade.com", "line_id": "@dcintertrade", "address": "99/9 หมู่ 5 ต.บางบัวทอง อ.บางบัวทอง จ.นนทบุรี 11110"}'::jsonb)
+('contact', '{"phone": "0825161718", "phone_secondary": "0886503392", "email": "sales@dcintertrade.com", "line_id": "", "address": "49/203 หมู่ที่ 7 ตำบลคลองสอง อำเภอคลองหลวง จ. ปทุมธานี 12120"}'::jsonb)
 on conflict (key) do nothing;
 
 -- 5. Storage Bucket for uploaded images

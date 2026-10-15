@@ -40,7 +40,7 @@ export const defaultContactSettings: ContactSettings = {
   registration_no: '',
   address: '49/203 หมู่ที่ 7 ตำบลคลองสอง อำเภอคลองหลวง จ. ปทุมธานี 12120',
   phone: '0825161718',
-  phone_secondary: '0984444466',
+  phone_secondary: '0886503392',
   email: 'sales@dcintertrade.com',
   email_cc: 'krit.dhm@gmail.com',
   resend_api_key: '',
@@ -70,24 +70,7 @@ const CONTACT_KEY = 'dct_contact_settings';
 const PROFILE_KEY = 'dct_profile_settings';
 
 export async function getContactSettings(): Promise<ContactSettings> {
-  // 1. Try Server API first (always freshest in multi-client runtime)
-  try {
-    const res = await fetch('/api/settings?type=contact', { cache: 'no-store' });
-    if (res.ok) {
-      const json = await res.json();
-      if (json && typeof json === 'object') {
-        const merged = { ...defaultContactSettings, ...json };
-        if (typeof window !== 'undefined') {
-          localStorage.setItem(CONTACT_KEY, JSON.stringify(merged));
-        }
-        return merged;
-      }
-    }
-  } catch {
-    // ignore
-  }
-
-  // 2. Try Supabase if configured
+  // 1. Try Supabase directly first (real-time single source of truth)
   if (isSupabaseConfigured()) {
     try {
       const client = supabaseBrowser();
@@ -109,6 +92,23 @@ export async function getContactSettings(): Promise<ContactSettings> {
     }
   }
 
+  // 2. Try Server API
+  try {
+    const res = await fetch('/api/settings?type=contact', { cache: 'no-store' });
+    if (res.ok) {
+      const json = await res.json();
+      if (json && typeof json === 'object') {
+        const merged = { ...defaultContactSettings, ...json };
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(CONTACT_KEY, JSON.stringify(merged));
+        }
+        return merged;
+      }
+    }
+  } catch {
+    // ignore
+  }
+
   // 3. Fallback to local storage cache
   if (typeof window !== 'undefined') {
     const cached = localStorage.getItem(CONTACT_KEY);
@@ -128,10 +128,18 @@ export async function getContactSettings(): Promise<ContactSettings> {
 }
 
 export async function saveContactSettings(settings: ContactSettings): Promise<{ success: boolean; message: string }> {
-  // 1. Save to local storage
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(CONTACT_KEY, JSON.stringify(settings));
-    window.dispatchEvent(new CustomEvent('dct_settings_updated', { detail: { type: 'contact', data: settings } }));
+  // 1. Save to Supabase first if configured
+  if (isSupabaseConfigured()) {
+    try {
+      const client = supabaseBrowser();
+      await client.from('site_settings').upsert({
+        key: 'contact',
+        value: settings,
+        updated_at: new Date().toISOString(),
+      });
+    } catch (e) {
+      console.error('[Save Contact] Supabase error:', e);
+    }
   }
 
   // 2. Save to Server API
@@ -145,42 +153,17 @@ export async function saveContactSettings(settings: ContactSettings): Promise<{ 
     // ignore
   }
 
-  // 3. Save to Supabase if configured
-  if (isSupabaseConfigured()) {
-    try {
-      const client = supabaseBrowser();
-      await client.from('site_settings').upsert({
-        key: 'contact',
-        value: settings,
-        updated_at: new Date().toISOString(),
-      });
-    } catch {
-      // ignore
-    }
+  // 3. Save to local storage and notify all open tabs/components
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(CONTACT_KEY, JSON.stringify(settings));
+    window.dispatchEvent(new CustomEvent('dct_settings_updated', { detail: { type: 'contact', data: settings } }));
   }
 
   return { success: true, message: '✅ บันทึกข้อมูลและอัปเดตหน้าเว็บเรียบร้อยแล้ว' };
 }
 
 export async function getCompanyProfile(): Promise<CompanyProfileSettings> {
-  // 1. Try Server API first
-  try {
-    const res = await fetch('/api/settings?type=company_profile', { cache: 'no-store' });
-    if (res.ok) {
-      const json = await res.json();
-      if (json && typeof json === 'object') {
-        const merged = { ...defaultCompanyProfile, ...json };
-        if (typeof window !== 'undefined') {
-          localStorage.setItem(PROFILE_KEY, JSON.stringify(merged));
-        }
-        return merged;
-      }
-    }
-  } catch {
-    // ignore
-  }
-
-  // 2. Try Supabase if configured
+  // 1. Try Supabase directly first
   if (isSupabaseConfigured()) {
     try {
       const client = supabaseBrowser();
@@ -202,6 +185,23 @@ export async function getCompanyProfile(): Promise<CompanyProfileSettings> {
     }
   }
 
+  // 2. Try Server API
+  try {
+    const res = await fetch('/api/settings?type=company_profile', { cache: 'no-store' });
+    if (res.ok) {
+      const json = await res.json();
+      if (json && typeof json === 'object') {
+        const merged = { ...defaultCompanyProfile, ...json };
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(PROFILE_KEY, JSON.stringify(merged));
+        }
+        return merged;
+      }
+    }
+  } catch {
+    // ignore
+  }
+
   // 3. Fallback to local storage cache
   if (typeof window !== 'undefined') {
     const cached = localStorage.getItem(PROFILE_KEY);
@@ -221,10 +221,18 @@ export async function getCompanyProfile(): Promise<CompanyProfileSettings> {
 }
 
 export async function saveCompanyProfile(profile: CompanyProfileSettings): Promise<{ success: boolean; message: string }> {
-  // 1. Save to local storage
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-    window.dispatchEvent(new CustomEvent('dct_settings_updated', { detail: { type: 'company_profile', data: profile } }));
+  // 1. Save to Supabase first if configured
+  if (isSupabaseConfigured()) {
+    try {
+      const client = supabaseBrowser();
+      await client.from('site_settings').upsert({
+        key: 'company_profile',
+        value: profile,
+        updated_at: new Date().toISOString(),
+      });
+    } catch (e) {
+      console.error('[Save Profile] Supabase error:', e);
+    }
   }
 
   // 2. Save to Server API
@@ -238,18 +246,10 @@ export async function saveCompanyProfile(profile: CompanyProfileSettings): Promi
     // ignore
   }
 
-  // 3. Save to Supabase if configured
-  if (isSupabaseConfigured()) {
-    try {
-      const client = supabaseBrowser();
-      await client.from('site_settings').upsert({
-        key: 'company_profile',
-        value: profile,
-        updated_at: new Date().toISOString(),
-      });
-    } catch {
-      // ignore
-    }
+  // 3. Save to local storage and notify all open tabs/components
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+    window.dispatchEvent(new CustomEvent('dct_settings_updated', { detail: { type: 'company_profile', data: profile } }));
   }
 
   return { success: true, message: '✅ บันทึกรูปภาพและข้อมูลขึ้นหน้าเว็บเรียบร้อยแล้ว' };
