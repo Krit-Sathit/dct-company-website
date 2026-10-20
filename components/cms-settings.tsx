@@ -325,6 +325,37 @@ export function CmsSettings() {
                 folder="homepage"
                 helperText="รูปภาพพื้นหลังส่วนหัวของหน้าแรก (ระบบจะปรับขนาดและแปลงเป็น WebP ให้อัตโนมัติ)"
               />
+
+              <div style={{ marginTop: '16px', padding: '14px', background: '#fcfaf6', border: '1px solid #ebd8c6', borderRadius: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                  <strong style={{ fontSize: '14px', color: 'var(--brown)' }}>🎥 วิดีโอพื้นหลัง Hero Banner (หน้าแรก - ตัวเลือกเสริม)</strong>
+                  {profile.hero_video_url && (
+                    <button
+                      type="button"
+                      onClick={() => handleProfileChange('hero_video_url', '')}
+                      style={{ background: 'none', border: 0, color: '#c53030', fontSize: '12px', cursor: 'pointer', textDecoration: 'underline' }}
+                    >
+                      ✕ นำวิดีโอออก (ใช้รูปภาพแทน)
+                    </button>
+                  )}
+                </div>
+                <input
+                  className="field"
+                  style={{ fontSize: '13px', marginBottom: '8px' }}
+                  placeholder="วางลิงก์ไฟล์วิดีโอ .mp4 หรือ WebM (เช่น https://.../banner.mp4 หรือ /hero-video.mp4)"
+                  value={profile.hero_video_url || ''}
+                  onChange={(e) => handleProfileChange('hero_video_url', e.target.value)}
+                />
+                <div style={{ fontSize: '12px', color: '#7a685c', lineHeight: 1.6, background: '#fff', padding: '10px 12px', borderRadius: '4px', border: '1px solid #ebd8c6' }}>
+                  💡 <b>สเปกวิดีโอที่แนะนำสำหรับส่งให้ช่างตัดต่อ/ทีมงาน:</b><br />
+                  • <b>สัดส่วน (Aspect Ratio):</b> 16:9 (เช่น 1920 × 1080 Full HD หรือ 1280 × 720 HD)<br />
+                  • <b>ฟอร์แมตไฟล์ (Format):</b> .mp4 (H.264 Codec) หรือ .webm<br />
+                  • <b>ขนาดไฟล์ (File Size):</b> <b>ไม่เกิน 5 - 10 MB</b> (แนะนำอย่างยิ่ง เพื่อให้หน้าเว็บโหลดเร็วและประหยัดเน็ตผู้ใช้)<br />
+                  • <b>ความยาว (Duration):</b> 8 - 15 วินาที ตัดต่อแบบวนลูปต่อเนื่อง (Seamless Loop)<br />
+                  • <b>เสียง (Audio):</b> <b>ไม่มีเสียง / ปิดเสียง (Muted)</b> (เพื่อให้เบราว์เซอร์อนุญาตให้เล่นอัตโนมัติ Autoplay)<br />
+                  • <b>เฟรมเรต (FPS):</b> 24 - 30 fps (ลื่นไหลและประหยัดขนาดไฟล์)
+                </div>
+              </div>
             </div>
 
             <div className="settings-col">

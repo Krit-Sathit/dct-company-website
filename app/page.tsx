@@ -167,7 +167,41 @@ export default function Home() {
           ROW 1: FULL-WIDTH PANORAMIC HERO BANNER (Slide 1)
           ========================================================================= */}
       <section className="hero-master-v2" style={customHero}>
-        <div className="wrap">
+        {profile.hero_video_url && (
+          <>
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              poster={profile.hero_image_url || '/hero-new.png'}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                zIndex: 1,
+              }}
+            >
+              <source src={profile.hero_video_url} type="video/mp4" />
+            </video>
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background: 'linear-gradient(90deg, rgba(255, 252, 247, 0.88) 0%, rgba(255, 252, 247, 0.72) 32%, rgba(255, 252, 247, 0.3) 55%, rgba(0, 0, 0, 0.15) 100%)',
+                zIndex: 2,
+                pointerEvents: 'none',
+              }}
+            />
+          </>
+        )}
+        <div className="wrap" style={{ position: 'relative', zIndex: 3 }}>
           <div className="hero-master-left">
             <h1>{t('hero_title')}</h1>
             <p className="hero-sub">{t('hero_sub')}</p>

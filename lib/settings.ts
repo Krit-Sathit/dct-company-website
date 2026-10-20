@@ -29,6 +29,7 @@ export type CompanyProfileSettings = {
   vision: string;
   mission: string;
   hero_image_url: string;
+  hero_video_url?: string;
   oem_section_image_url: string;
   oem_title: string;
   oem_description: string;
@@ -61,6 +62,7 @@ export const defaultCompanyProfile: CompanyProfileSettings = {
   vision: 'เป็นคู่ค้าที่ธุรกิจไว้วางใจในทุกเรื่องของวัตถุดิบ ด้วยคุณภาพที่สม่ำเสมอ การทำงานที่ได้มาตรฐาน และการส่งมอบที่เชื่อถือได้',
   mission: 'ยึดมั่นในมาตรฐาน GHP, HACCP และ อย. เพื่อส่งมอบวัตถุดิบที่ปลอดภัย รักษาห่วงโซ่อุณหภูมิ และเติบโตไปพร้อมกับคู่ค้า B2B',
   hero_image_url: '/hero-new.png',
+  hero_video_url: '',
   oem_section_image_url: '/service-custom-cut.png',
   oem_title: 'ดูแลวัตถุดิบ ตั้งแต่ต้นทางถึงมือคุณ',
   oem_description: 'ตัดแต่ง จัดเก็บ บรรจุ และจัดส่งอย่างเป็นระบบ เพื่อให้วัตถุดิบพร้อมสำหรับการใช้งานของธุรกิจ',

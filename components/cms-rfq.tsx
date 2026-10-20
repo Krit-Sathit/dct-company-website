@@ -23,6 +23,7 @@ type Rfq = {
   line_id?: string;
   address?: string;
   notes?: string;
+  attachments?: string[];
   created_at?: string;
   items?: RfqItem[];
 };
@@ -52,6 +53,24 @@ export function CmsRfq() {
       const cust = item.customer || {};
       const specs = item.specs || {};
 
+      const notesRaw =
+        item.notes ||
+        [specs.orderFrequency, specs.additionalNotes].filter(Boolean).join(' | ') ||
+        cust.detail ||
+        '';
+
+      let extractedAttachments: string[] = item.attachments || specs.attachedImages || [];
+      if (extractedAttachments.length === 0 && notesRaw.includes('[ATTACHMENTS]:')) {
+        const parts = notesRaw.split('[ATTACHMENTS]:');
+        if (parts[1]) {
+          extractedAttachments = parts[1]
+            .split(',')
+            .map((s: string) => s.trim())
+            .filter(Boolean);
+        }
+      }
+      const cleanNotes = notesRaw.split('[ATTACHMENTS]:')[0].trim();
+
       return {
         id: item.id || item.ref || item.reference || fallbackId || `rfq-${Math.random()}`,
         reference: item.reference || item.ref || 'RFQ',
@@ -62,11 +81,8 @@ export function CmsRfq() {
         email: item.email || comp.email || cust.email || '-',
         line_id: item.line_id || comp.lineId || cust.line || '',
         address: item.address || specs.deliveryLocation || cust.address || '',
-        notes:
-          item.notes ||
-          [specs.orderFrequency, specs.additionalNotes].filter(Boolean).join(' | ') ||
-          cust.detail ||
-          '',
+        notes: cleanNotes,
+        attachments: extractedAttachments,
         created_at: item.created_at || item.createdAt || new Date().toISOString(),
         items: (item.items || item.rfq_items || []).map((i: any) => ({
           product_name: i.product_name || i.name || i.product?.name || 'สินค้า',
@@ -240,11 +256,39 @@ export function CmsRfq() {
                     <span>📞 {rfq.phone}</span>
                     <span>{rfq.created_at ? new Date(rfq.created_at).toLocaleDateString('th-TH') : ''}</span>
                   </div>
-                  {rfq.items && rfq.items.length > 0 && (
-                    <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--gold)', fontWeight: 600 }}>
-                      📦 {rfq.items.length} รายการสินค้า
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', flexWrap: 'wrap', gap: '6px' }}>
+                    <div style={{ display: 'flex', gap: '10px', fontSize: '12px' }}>
+                      {rfq.items && rfq.items.length > 0 && (
+                        <span style={{ color: 'var(--gold)', fontWeight: 600 }}>
+                          📦 {rfq.items.length} รายการ
+                        </span>
+                      )}
+                      {rfq.attachments && rfq.attachments.length > 0 && (
+                        <span style={{ color: '#2b6cb0', fontWeight: 600 }}>
+                          📷 {rfq.attachments.length} รูป
+                        </span>
+                      )}
                     </div>
-                  )}
+                    <a
+                      href={`/rfq/print?ref=${encodeURIComponent(rfq.reference)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      style={{
+                        fontSize: '11px',
+                        padding: '3px 8px',
+                        borderRadius: '4px',
+                        background: '#f5efe6',
+                        color: 'var(--brown)',
+                        textDecoration: 'none',
+                        border: '1px solid #dcd1c4',
+                        fontWeight: 600,
+                      }}
+                      title="เปิดหน้าพิมพ์ / บันทึก PDF สำหรับรายการนี้"
+                    >
+                      📄 PDF
+                    </a>
+                  </div>
                 </div>
               );
             })}
@@ -311,7 +355,55 @@ export function CmsRfq() {
                 <p className="small">ไม่มีรายการสินค้าระบุ</p>
               )}
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', paddingTop: '15px', borderTop: '1px solid #eee' }}>
+              {selectedRfq.attachments && selectedRfq.attachments.length > 0 && (
+                <div style={{ marginBottom: '20px' }}>
+                  <h4 style={{ marginBottom: '8px' }}>📷 รูปภาพสเปก / ตัวอย่างสินค้าที่แนบมา ({selectedRfq.attachments.length})</h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '10px' }}>
+                    {selectedRfq.attachments.map((url, idx) => (
+                      <a
+                        key={idx}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'block',
+                          border: '1px solid #e0d5c5',
+                          borderRadius: '6px',
+                          overflow: 'hidden',
+                          position: 'relative',
+                          aspectRatio: '1/1',
+                          background: '#f9f9f9',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+                        }}
+                        title={`คลิกเพื่อเปิดดูรูปขนาดเต็ม (${idx + 1})`}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={url}
+                          alt={`รูปแนบ ${idx + 1}`}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                        <span
+                          style={{
+                            position: 'absolute',
+                            bottom: '3px',
+                            right: '3px',
+                            fontSize: '10px',
+                            background: 'rgba(0,0,0,0.65)',
+                            color: '#fff',
+                            padding: '1px 5px',
+                            borderRadius: '3px',
+                          }}
+                        >
+                          🔍 ขยาย
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', paddingTop: '15px', borderTop: '1px solid #eee', flexWrap: 'wrap', gap: '10px' }}>
                 <button
                   type="button"
                   className="button danger"
@@ -320,13 +412,24 @@ export function CmsRfq() {
                 >
                   🗑️ ลบคำขอนี้
                 </button>
-                <a
-                  href={`mailto:${selectedRfq.email}?subject=ใบเสนอราคาจาก บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด (อ้างอิง ${selectedRfq.reference})`}
-                  className="button"
-                  style={{ fontSize: '13px', padding: '8px 14px' }}
-                >
-                  ✉️ ส่งอีเมลตอบกลับลูกค้า
-                </a>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <a
+                    href={`/rfq/print?ref=${encodeURIComponent(selectedRfq.reference)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="button secondary"
+                    style={{ fontSize: '13px', padding: '8px 14px' }}
+                  >
+                    📄 พิมพ์ / บันทึก PDF
+                  </a>
+                  <a
+                    href={`mailto:${selectedRfq.email}?subject=ใบเสนอราคาจาก บริษัท ดวงเจริญ อินเตอร์เทรด จำกัด (อ้างอิง ${selectedRfq.reference})`}
+                    className="button"
+                    style={{ fontSize: '13px', padding: '8px 14px' }}
+                  >
+                    ✉️ ส่งอีเมลตอบกลับลูกค้า
+                  </a>
+                </div>
               </div>
             </div>
           )}

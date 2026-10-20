@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/components/site';
 import { products as allProducts } from '@/lib/data';
-import { supabaseBrowser } from '@/lib/supabase-browser';
+import { supabaseBrowser, isSupabaseConfigured } from '@/lib/supabase-browser';
 import { useLanguage } from '@/lib/language';
 import { getContactSettings } from '@/lib/settings';
 
@@ -41,6 +41,100 @@ export default function RFQ() {
     pdpaConsent: false,
   });
 
+  const [attachedPhotos, setAttachedPhotos] = useState<string[]>([]);
+  const [uploadingPhotos, setUploadingPhotos] = useState(false);
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploadingPhotos(true);
+    const newPhotos: string[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (!file.type.startsWith('image/')) continue;
+
+      try {
+        const canvas = document.createElement('canvas');
+        const img = document.createElement('img');
+        const dataUrl = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (ev) => resolve(ev.target?.result as string);
+          reader.readAsDataURL(file);
+        });
+
+        await new Promise<void>((resolve) => {
+          img.onload = () => resolve();
+          img.src = dataUrl;
+        });
+
+        const maxDim = 1600;
+        let width = img.width;
+        let height = img.height;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, 0, 0, width, height);
+        }
+
+        const blob = await new Promise<Blob | null>((resolve) => {
+          canvas.toBlob((b) => resolve(b), 'image/webp', 0.85);
+        });
+
+        let uploadedUrl = '';
+        if (blob && isSupabaseConfigured()) {
+          try {
+            const client = supabaseBrowser();
+            const fileName = `rfq-specs/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.webp`;
+            const { data, error } = await client.storage.from('dct-media').upload(fileName, blob, {
+              contentType: 'image/webp',
+              cacheControl: '31536000',
+              upsert: true,
+            });
+            if (!error && data?.path) {
+              const { data: pubData } = client.storage.from('dct-media').getPublicUrl(data.path);
+              if (pubData?.publicUrl) {
+                uploadedUrl = pubData.publicUrl;
+              }
+            }
+          } catch {
+            // fallback
+          }
+        }
+
+        if (!uploadedUrl) {
+          uploadedUrl = canvas.toDataURL('image/webp', 0.85);
+        }
+
+        newPhotos.push(uploadedUrl);
+      } catch (err) {
+        console.error('Error uploading photo:', err);
+      }
+    }
+
+    setAttachedPhotos((prev) => [...prev, ...newPhotos]);
+    setUploadingPhotos(false);
+    e.target.value = '';
+  };
+
+  const removePhoto = (index: number) => {
+    setAttachedPhotos((prev) => prev.filter((_, idx) => idx !== index));
+  };
+
   const handleOpenConfirm = () => {
     if (!companyData.companyName || !companyData.contactName || !companyData.phone || !companyData.email) {
       alert('กรุณากรอกข้อมูลบริษัท ชื่อผู้ติดต่อ เบอร์โทรศัพท์ และอีเมลให้ครบถ้วน');
@@ -73,7 +167,11 @@ export default function RFQ() {
     const submissionPayload = {
       ref,
       company: companyData,
-      specs: specData,
+      specs: {
+        ...specData,
+        attachedImages: attachedPhotos,
+      },
+      attachments: attachedPhotos,
       items: items.map((i) => ({
         id: i.product.id,
         name: i.product.name,
@@ -88,6 +186,10 @@ export default function RFQ() {
     // 1. Try Supabase
     try {
       const client = supabaseBrowser();
+      const notesFormatted = `${specData.orderFrequency} | ${specData.additionalNotes || 'ไม่มีหมายเหตุเพิ่มเติม'}${
+        attachedPhotos.length > 0 ? `\n\n[ATTACHMENTS]: ${attachedPhotos.join(' , ')}` : ''
+      }`;
+
       const { data: rfqRow } = await client
         .from('rfqs')
         .insert({
@@ -99,7 +201,7 @@ export default function RFQ() {
           email: companyData.email,
           line_id: companyData.lineId,
           address: specData.deliveryLocation,
-          notes: `${specData.orderFrequency} | ${specData.additionalNotes}`,
+          notes: notesFormatted,
         })
         .select()
         .single();
@@ -625,6 +727,98 @@ export default function RFQ() {
                         onChange={(e) => setSpecData({ ...specData, additionalNotes: e.target.value })}
                       />
                     </div>
+
+                    {/* ช่องแนบรูปภาพเพิ่มเติม (ไม่บังคับ) สำหรับเซลล์ถ่ายรูปสเปกลูกค้า */}
+                    <div style={{ gridColumn: '1/-1', marginTop: '6px', background: '#fdfbf7', border: '1.5px dashed #d8c7b5', borderRadius: '8px', padding: '16px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
+                        <div>
+                          <strong style={{ fontSize: '14px', color: 'var(--red)', display: 'block' }}>
+                            📸 แนบรูปภาพตัวอย่างสเปก / รูปถ่ายจากลูกค้า (ไม่บังคับ)
+                          </strong>
+                          <span style={{ fontSize: '12px', color: '#7a685c' }}>
+                            สำหรับให้เซลล์หรือลูกค้าถ่ายรูปสเปกจริง สัดส่วนเนื้อ/ไขมัน หรือตัวอย่างชิ้นส่วนที่ต้องการ (ถ่ายจากมือถือหรือเลือกไฟล์ได้ทันที)
+                          </span>
+                        </div>
+                        <label
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '8px 16px',
+                            background: uploadingPhotos ? '#999' : 'var(--red)',
+                            color: '#fff',
+                            borderRadius: '6px',
+                            fontSize: '13px',
+                            fontWeight: 600,
+                            cursor: uploadingPhotos ? 'wait' : 'pointer',
+                            userSelect: 'none',
+                          }}
+                        >
+                          {uploadingPhotos ? '⏳ กำลังอัปโหลด...' : '📷 + ถ่ายรูป / เลือกรูปภาพ'}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            capture="environment"
+                            disabled={uploadingPhotos}
+                            onChange={handlePhotoUpload}
+                            style={{ display: 'none' }}
+                          />
+                        </label>
+                      </div>
+
+                      {attachedPhotos.length > 0 ? (
+                        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #ebd8c6' }}>
+                          {attachedPhotos.map((url, idx) => (
+                            <div
+                              key={idx}
+                              style={{
+                                position: 'relative',
+                                width: '90px',
+                                height: '90px',
+                                borderRadius: '6px',
+                                overflow: 'hidden',
+                                border: '1.5px solid var(--gold)',
+                                boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+                              }}
+                            >
+                              <img src={url} alt={`Spec Attachment ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              <button
+                                type="button"
+                                onClick={() => removePhoto(idx)}
+                                style={{
+                                  position: 'absolute',
+                                  top: '3px',
+                                  right: '3px',
+                                  background: 'rgba(0,0,0,0.7)',
+                                  color: '#fff',
+                                  border: 0,
+                                  borderRadius: '50%',
+                                  width: '22px',
+                                  height: '22px',
+                                  fontSize: '12px',
+                                  fontWeight: 'bold',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                }}
+                                title="ลบรูปนี้"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ))}
+                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: '#7a685c' }}>
+                            แนบแล้ว {attachedPhotos.length} รูป (สามารถเพิ่มได้อีก)
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: '12px', color: '#998675', fontStyle: 'italic', marginTop: '4px' }}>
+                          ยังไม่ได้แนบรูปภาพ (ท่านสามารถกดส่งได้โดยไม่ต้องแนบรูป)
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* PDPA Consent Checkbox */}
@@ -679,6 +873,31 @@ export default function RFQ() {
                       <div><b>สถานที่ส่ง:</b> {specData.deliveryLocation || '-'}</div>
                       {specData.targetDate && <div><b>ช่วงเวลาที่ต้องการ:</b> {specData.targetDate}</div>}
                       {specData.additionalNotes && <div><b>หมายเหตุ:</b> {specData.additionalNotes}</div>}
+                      {attachedPhotos.length > 0 && (
+                        <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px dashed #eadfd4' }}>
+                          <b style={{ color: 'var(--red)', display: 'block', marginBottom: '8px' }}>
+                            📸 รูปภาพสเปกตัวอย่างที่แนบมา ({attachedPhotos.length} รูป):
+                          </b>
+                          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                            {attachedPhotos.map((url, idx) => (
+                              <a key={idx} href={url} target="_blank" rel="noopener noreferrer" title="คลิกเพื่อดูรูปขนาดเต็ม">
+                                <img
+                                  src={url}
+                                  alt={`Spec ${idx + 1}`}
+                                  style={{
+                                    width: '70px',
+                                    height: '70px',
+                                    objectFit: 'cover',
+                                    borderRadius: '4px',
+                                    border: '1.5px solid var(--gold)',
+                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                  }}
+                                />
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {items.length > 0 && (

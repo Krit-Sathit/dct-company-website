@@ -37,12 +37,17 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { ref, company, specs, items, createdAt } = body;
+    const { ref, company, specs, items, createdAt, attachments } = body;
+    const rawAttachments: string[] = attachments || specs?.attachedImages || [];
 
     const supabase = getSupabaseServer();
 
     // 1. Direct write to Supabase Database
     try {
+      const notesFormatted = `${[specs?.orderFrequency, specs?.additionalNotes].filter(Boolean).join(' | ')}${
+        rawAttachments.length > 0 ? `\n\n[ATTACHMENTS]: ${rawAttachments.join(' , ')}` : ''
+      }`;
+
       const { data: rfqRow, error: rfqErr } = await supabase
         .from('rfqs')
         .upsert(
@@ -55,7 +60,7 @@ export async function POST(req: NextRequest) {
             email: company?.email || '-',
             line_id: company?.lineId || '',
             address: specs?.deliveryLocation || '',
-            notes: [specs?.orderFrequency, specs?.additionalNotes].filter(Boolean).join(' | '),
+            notes: notesFormatted,
             created_at: createdAt || new Date().toISOString(),
           },
           { onConflict: 'reference' }
@@ -89,6 +94,7 @@ export async function POST(req: NextRequest) {
           company,
           specs,
           items,
+          attachments: rawAttachments,
           createdAt: createdAt || new Date().toISOString(),
         },
         ...serverRfqs.filter((r) => r.reference !== ref && r.id !== ref),
@@ -168,6 +174,30 @@ export async function POST(req: NextRequest) {
             .map((s: string) => `<span style="display: inline-block; background: #fdf2e9; color: #8B1E1E; padding: 4px 10px; border-radius: 4px; font-size: 13px; font-weight: bold; margin: 3px 4px 3px 0; border: 1px solid #ebd3bf;">✓ ${s}</span>`)
             .join(' ')
         : '-';
+
+    // Format attached photos HTML
+    const attachedPhotosHtml =
+      rawAttachments && rawAttachments.length > 0
+        ? `
+        <h3 style="color: #8B1E1E; border-bottom: 2px solid #8B1E1E; padding-bottom: 6px; margin-top: 24px; font-size: 16px;">
+          📸 3. รูปภาพสเปกตัวอย่าง / รูปถ่ายจากลูกค้า (${rawAttachments.length} รูป)
+        </h3>
+        <div style="margin-top: 14px; margin-bottom: 20px;">
+          ${rawAttachments
+            .map(
+              (url: string, idx: number) => `
+            <div style="display: inline-block; margin-right: 12px; margin-bottom: 12px; vertical-align: top; text-align: center;">
+              <a href="${url}" target="_blank" style="text-decoration: none;">
+                <img src="${url}" alt="Attachment ${idx + 1}" style="width: 130px; height: 130px; object-fit: cover; border-radius: 6px; border: 2px solid #ebd3bf; display: block;" />
+                <span style="display: inline-block; margin-top: 5px; font-size: 11px; color: #8B1E1E; font-weight: bold;">🔍 ดูรูปขนาดเต็ม #${idx + 1}</span>
+              </a>
+            </div>
+          `
+            )
+            .join('')}
+        </div>
+      `
+        : '';
 
     const emailSubject = `🥩 [คำขอใบเสนอราคาใหม่] ${company?.companyName || 'ลูกค้าใหม่'} (${ref || 'RFQ'})`;
 
@@ -265,15 +295,21 @@ export async function POST(req: NextRequest) {
               </tr>
             </table>
 
-            <!-- Section 3: Selected Products -->
+            <!-- Section 2.5: Attached Spec Photos (If any) -->
+            ${attachedPhotosHtml}
+
+            <!-- Section: Selected Products -->
             <h3 style="color: #8B1E1E; border-bottom: 2px solid #8B1E1E; padding-bottom: 6px; margin-top: 24px; font-size: 16px;">
-              🥩 3. รายการสินค้าที่ขอราคา (${items?.length || 0} รายการ)
+              🥩 ${rawAttachments && rawAttachments.length > 0 ? '4' : '3'}. รายการสินค้าที่ขอราคา (${items?.length || 0} รายการ)
             </h3>
             ${itemsHtml}
 
-            <!-- Action Button -->
+            <!-- Action Buttons: Download PDF & Open CMS -->
             <div style="margin-top: 32px; text-align: center; padding-top: 20px; border-top: 1px solid #eee;">
-              <a href="https://www.dcintertrade.com/admin" style="background: #8B1E1E; color: #ffffff; padding: 12px 28px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; font-size: 14px;">
+              <a href="https://www.dcintertrade.com/rfq/print?ref=${encodeURIComponent(ref || '')}" style="background: #2b6cb0; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; font-size: 14px; margin-right: 10px; margin-bottom: 10px;">
+                📄 ดาวน์โหลด / พิมพ์เป็นเอกสาร PDF
+              </a>
+              <a href="https://www.dcintertrade.com/admin" style="background: #8B1E1E; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; font-size: 14px; margin-bottom: 10px;">
                 🔍 เปิดดูในระบบหลังบ้าน CMS
               </a>
             </div>
